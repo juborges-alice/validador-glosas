@@ -1,0 +1,148 @@
+# Identificadores fixos — Daily Contas Médicas
+
+Arquivo de referência lido pelas 5 tarefas da rotina. Quando algo muda (time, canal,
+KPI novo, card novo), muda **aqui** — não dentro dos SKILL.md.
+
+## Operação
+
+| Item | Valor |
+|---|---|
+| Operação | Contas Médicas |
+| Alliance | Insurance |
+| Página da operação (Notion) | https://app.notion.com/p/37cf0f13146a8023b8ebe67185557704 |
+| Canal do Slack | `C0BH03QKUKY` (#daily_cm_ops_inteligentes) |
+| Executor / OM | juliana.borges@alice.com.br — resolver o Notion user ID com `notion-search` (`query_type: "user"`) a cada execução |
+| Dashboard Metabase | https://metabase.datalake.alice.tools/dashboard/1996-contas-medicas-clinicas-labs-e-cassi |
+| Daily síncrona | ~10h30–11h00 BRT, gravada com Anotações do Gemini |
+
+## Datatables (globais do OOS — não trocar)
+
+| Datatable | Data source | URL |
+|---|---|---|
+| Operações (hub) | `collection://764920f2-c8f4-409f-9452-bca186a2a1ad` | https://app.notion.com/p/3395d7113de345689453bfd0d5ddacfa |
+| KPIs | `collection://4c8ffc67-b817-48db-ab8c-04cb5c0c731e` | https://app.notion.com/p/c40fb19eaba74d2ba452837e9e19a690 |
+| Execuções de Rotina | `collection://00d00405-31e2-4670-abd1-168e986e55e9` | https://app.notion.com/p/6a214111ca244ea1a323a745440367f6 |
+| Decision Log (Log de Desvios e Decisões) | `collection://b619a21c-a5f8-4701-a477-f5d150f03066` | https://app.notion.com/p/5498ab1053f94465a1c959fa6bde1480 |
+| Action Log (Log Melhoria Contínua) | `collection://39ff0f13-146a-8001-b289-000b5fb3961c` | https://app.notion.com/p/39ff0f13146a80a98ffaee11d80038d8 |
+
+O **Action Log de Contas Médicas é o `Log Melhoria Contínua`** (Seção 8 da página da operação),
+filtrado por `Operações` = Contas Médicas. Não existe outra tabela de ações para esta operação.
+
+Encadeamento canônico: Execução de Rotina → (`Decisões geradas`) → Decision Log → (`Decisão de origem`) → Action Log.
+O Action Log **não** tem relation direta com Execuções de Rotina; ele se liga pela decisão.
+
+## Gravação da daily síncrona (Drive)
+
+Não existe uma pasta única: as anotações do Gemini nascem no Drive de quem gravou e são
+compartilhadas. **Busque por título, não por pasta:**
+
+```
+title contains 'Daily Contas Médicas' and title contains '<AAAA/MM/DD de hoje>'
+```
+
+Padrão do nome: `Daily Contas Médicas - AAAA/MM/DD HH:MM GMT-03:00 - Anotações do Gemini`
+(também aparece como `- Notes by Gemini`). Se houver mais de um, use o mais recente.
+Se não achar, registre a ausência no Bloco 6 e siga — não trave a execução.
+
+## KPIs de operação (ordem fixa da tabela do report)
+
+Fonte da verdade é o catálogo no Notion, lido a cada execução (`Operação` = Contas Médicas
+e `Priorizado para rotina?` contém a cadência do dia). A lista abaixo define **ordem e
+agrupamento** de exibição, nunca meta nem card.
+
+| # | KPI (nome completo no Notion) | Card | Cadência |
+|---|---|---|---|
+| 1 | Contas Médicas - % Glosa Geral - HI | 65942 | diária |
+| 2 | Contas Médicas - % Glosa por Tipo de HI | 50815 | diária |
+| 3 | Contas Médicas - % Glosa Alice por Prestador - HI | 65700 | diária |
+| 4 | Contas Médicas - R$ Recurso de Glosa acumulado | 65834 | diária |
+| 5 | Contas Médicas - SLA Recurso de Glosa - HI | 65858 | diária |
+| 6 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
+| 7 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
+| 8 | Contas Médicas - Qnt de guias analisadas por dia | 65840 | diária |
+| 9 | Contas Médicas - % PEGs sem NF | 65694 | diária |
+| 10 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
+| 11 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
+| 12 | Contas Médicas - % Resumos Criticados - HS | 30858 | diária |
+| 13 | Contas Médicas - Status das Críticas (por fatura) - HS | 66766 | diária |
+| 14 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária |
+| 15 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
+| 16 | Contas Médicas - SLA de Pagamento de HS | 35629 | diária |
+| 17 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
+
+Ao exibir no Slack e no Notion, **corte o prefixo `Contas Médicas - `**. Case pelo nome
+completo, exiba sem o prefixo.
+
+KPI priorizado que apareça no Notion e **não** esteja nesta lista: inclua ao final da tabela
+e avise `<@U03A4SS2P1Q>` numa resposta na thread da Mensagem 1, pedindo posição e responsável.
+
+## Cards de drill por KPI (KPIs de processo)
+
+A relation `KPIs operação <> processos` no catálogo é a fonte. A tabela abaixo é o atalho
+verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
+
+| KPI de operação | Cards de drill (ID Card metabase da linha de processo) |
+|---|---|
+| % Glosa Geral - HI | 50958 (R$ Glosado por Prestador Top 12) · 54617 (Glosa por Motivo Geral) · 50815 (% Glosa por Tipo de HI) |
+| % Glosa por Tipo de HI | 52038 (Labs) · 52037 (Clínicas) · 31223 (Hospitais) · 66204 (Motivo Top 10 prestadores) |
+| % Glosa Alice por Prestador - HI | 50958 (R$ Glosado por Prestador Top 12) |
+| R$ Recurso de Glosa acumulado | 54662 (Valor Recursado por prestador) · 54677 (Valor Recursado por Motivo Geral) |
+| SLA Recurso de Glosa - HI | 65835 (Qnt acumulada Recurso de Glosa) |
+| SLA de Análise de conta - HI | 65837 (guias/dia Hospitais) · 65839 (guias/dia Labs+Clínicas) · 32465 (PEGs por Status no SLA) |
+| PEGs por Status de Análise no SLA - HI | 65837 · 65839 |
+| Qnt de guias analisadas por dia | 65837 (Hospitais) · 65839 (Labs+Clínicas) |
+| % PEGs sem NF | 56231 (Top 10 prestadores com mais PEGs sem NF) · 49800 (Protocolos sem NF por valor e data) |
+| Faturamento total acumulado | 65831 (R$ Faturado por tipo de instituição) · 50631 (Volumetria de Guias por Prestador) · 26655 (R$ Faturamento por Prestador) |
+| R$ Faturado Cassi | — sem drill cadastrado |
+| % Resumos Criticados - HS | 66766 (Status das Críticas por fatura) · 38203 (% Críticas Acatadas) |
+| Status das Críticas (por fatura) - HS | 38203 |
+| Tempo para Resolução de Críticas - HS | — sem drill cadastrado |
+| % Faturas por Status - HS | — sem drill cadastrado |
+| SLA de Pagamento de HS | 35588 (Média de Dias Úteis Entre Etapas de Pagamento) |
+
+## BLOCO DE MAPEAMENTO DE RESPONSÁVEIS — editar aqui quando o time mudar
+
+**Status: PROPOSTA INICIAL — a OM precisa confirmar.** Enquanto um KPI estiver em
+`A DEFINIR`, o deep dive marca a OM e acrescenta a linha `**KPI sem responsável mapeado:
+<nome>**`. Isso é de propósito: força o mapeamento a ser preenchido em vez de sumir.
+
+```
+Fernanda Jerônimo  <@U044N26BETU>   [titular]
+Larissa Fukuda     <@U07BDH6D34M>   [cobrindo as férias da Fernanda — marcar as DUAS
+                                     enquanto a cobertura durar; quando a Fernanda voltar,
+                                     remover a Larissa daqui]
+  - % Glosa Geral - HI
+  - % Glosa por Tipo de HI
+  - % Glosa Alice por Prestador - HI
+  - R$ Recurso de Glosa acumulado
+  - SLA Recurso de Glosa - HI
+
+Alana Beckmann     <@U073Z4ENBNW>
+  - SLA de Análise de conta - HI
+  - PEGs por Status de Análise no SLA - HI
+  - Qnt de guias analisadas por dia
+  - % PEGs sem NF
+
+A DEFINIR — marcar a OM <@U03A4SS2P1Q> até alguém assumir
+  - % Resumos Criticados - HS
+  - Status das Críticas (por fatura) - HS
+  - Tempo para Resolução de Críticas - HS
+  - % Faturas por Status - HS
+  - SLA de Pagamento de HS
+
+SEM RESPONSÁVEL — indicadores de monitoramento, nunca geram deep dive
+  - Faturamento total acumulado
+  - R$ Faturado Cassi
+```
+
+`R$ Faturado Cassi` e `Faturamento total acumulado` continuam no farol e na tabela, mas não
+abrem deep dive nem cobrança: são leitura de volume, e a causa do Cassi já tem decisão
+vigente registrada (11/08 e 13/08). Se virarem 🔴, o texto referencia a decisão vigente.
+
+Marque sempre por ID (`<@U044N26BETU>`), nunca escreva o nome antes ou depois da menção.
+
+## OM
+
+`<@U03A4SS2P1Q>` — Juliana Borges. Dona dos itens `A DEFINIR`, dos escalonamentos e do
+mapeamento de responsáveis. **Não marcar por padrão** nas cobranças: só quando o item é
+`A DEFINIR`, é da alçada dela, ou é escalonamento.
