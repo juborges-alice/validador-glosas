@@ -8,59 +8,107 @@ Lido pelas 5 tarefas. As tarefas de sync não reimplementam nada disto.
 
 As cores respondem **"alguém precisa agir"**, não "está dentro da meta".
 
-| Farol | Significado |
-|---|---|
-| 🟢 | Dentro da meta / limiar não cruzado |
-| 🟡 | Atenção sem acionamento: dentro da meta com variação a monitorar, **ou** fora do limiar com o desvio já explicado por decisão vigente do OM |
-| 🔴 | Fora do limiar sem explicação vigente — acionamento imediato |
-| ⚪ | Sem meta e sem limiar aplicável — acompanhar tendência |
+Para cada KPI com valor, primeiro determine a direção ("maior é melhor" ou "menor é melhor")
+a partir da `Definição` / `Meta atual` / `Tipo de métrica`. Depois aplique:
 
-**Regra do ⚪.** KPI **sem dado** no dia entra como ⚪ e **não pontua** no farol (registrar
-para correção da fonte). KPI **sem meta nem limiar** é ⚪ normal e **pontua**.
+- **🟢 Verde** — atinge ou supera a `Meta atual`.
+- **🟡 Amarelo** — não atinge a meta, mas **não** cruzou o `Limiar de alerta`.
+- **🔴 Vermelho** — cruzou o `Limiar de alerta`.
+- **⚪** — KPI **sem dado** no dia. Não pontua no farol; registrar para correção da fonte.
+  Também ⚪ o KPI que não tenha nem meta nem limiar — acompanhar tendência.
 
-### Ordem de avaliação — sem pular etapa
+Casos de borda:
 
-**Etapa 1 — cor candidata pelo catálogo.** O `Limiar de alerta` de Contas Médicas é escrito
-em linguagem operacional e já traz a condição de disparo (ex: `% glosa > 5% no mês; ou
-crescimento > 1 p.p. vs. mês anterior`). Aplique o limiar **como está escrito**. Não invente
-threshold genérico por tipo de métrica.
+- Sem `Meta atual` mas com `Limiar de alerta`: só 🟢 (não cruzou) ou 🔴 (cruzou); **sem 🟡**.
+- Sem `Limiar de alerta` mas com `Meta atual`: só 🟢 (bate) ou 🔴 (não bate); **sem 🟡**.
+- **Limiar de tendência** (`crescimento > 1 p.p. vs. mês anterior`, `desvio > 20% vs. média
+  histórica`): avalie contra a **série/tendência**, não contra o ponto isolado.
 
-- Cruzou o limiar → candidata 🔴.
-- Tem `Meta atual` e não atinge, mas não cruzou o limiar → 🟡.
-- Tem `Meta atual` e atinge, e não cruzou o limiar → 🟢.
-- Sem `Meta atual`, só limiar → só 🟢 (não cruzou) ou 🔴 (cruzou). Sem 🟡 nesta etapa.
+**Regra de direção.** Variação na direção boa de um KPI "menor é melhor" nunca gera 🟡 nem 🔴 —
+confirma 🟢, qualquer que seja a magnitude.
 
-**Regra de direção.** Variação na direção boa de um KPI "menor é melhor" nunca gera 🟡 nem
-🔴 — confirma 🟢, qualquer que seja a magnitude. Determine a direção pela `Definição` /
-`Meta atual` / `Tipo de métrica`, nunca pelo nome.
+### O texto do limiar é a regra — leia-o inteiro
 
-**Etapa 2 — rebaixamento por decisão vigente (a única permitida).** Contas Médicas não tem
-árvore clínica de classificação. O que rebaixa 🔴 → 🟡 aqui é **exclusivamente** uma decisão
-vigente do Decision Log que já explica aquele desvio (ver §2). Nada mais rebaixa.
+O `Limiar de alerta` de Contas Médicas é escrito em linguagem operacional e **carrega
+condições dentro do próprio texto**. Aplique-o **exatamente como está escrito**; não reduza a
+um número nem invente threshold genérico por tipo de métrica. As condições que já existem hoje
+no catálogo, e que precisam ser respeitadas:
 
-**Guard-rail — sem rebaixamento fora da decisão vigente.** Se a Etapa 1 deu 🔴 e não existe
-decisão vigente explicativa para aquele KPI, o farol **é 🔴 e abre deep dive**. Não rebaixe
-por "parece pequeno", "é começo de mês", "amostra baixa" ou hipótese própria. Antes de
-publicar, confira: nenhum KPI 🟡 pode estar fora do limiar sem uma decisão vigente citada
-por link.
+- **Piso de materialidade** — `% Glosa Alice por Prestador - HI`: o limiar de 10 p.p. só vale
+  para prestadores com faturamento ≥ R$50.000 no mês. Prestador abaixo disso não entra no farol.
+- **Piso de idade** — `% Faturas por Status - HS`: só contam faturas há **mais de 7 dias** no
+  status, inclusive de meses passados. Fatura em trânsito normal não conta.
+- **Regra de dois estágios por dia do mês** — `% Glosa por Tipo de HI`: do **dia 1 ao 19** do
+  mês corrente, o critério de >1 p.p. é **tendência/informativo e NÃO dispara 🔴 sozinho** (o
+  volume do mês ainda está em maturação); a partir do **dia 20**, o mesmo critério vale como
+  alerta pleno e dispara 🔴. Reporte sempre o número; o que muda é a cor.
+- **Janela de risco, não de volume** — `PEGs por Status de Análise no SLA - HI`: o limiar é
+  PEGs em aberto com ≥5 dias úteis desde o `invoice_date` acima de 10% do total em aberto, **ou**
+  qualquer PEG em aberto com >7 dias úteis (já vencida). O critério antigo de ">40% do total em
+  aberto" foi descartado por disparar com volume normal de início de mês.
 
-**Tolerância zero — KPI com meta explícita.** `SLA de Análise de conta - HI` (meta 90%) e
-`PEGs por Status de Análise no SLA - HI` (meta 90%) são compromisso de serviço: **qualquer**
-valor abaixo da meta é 🔴, sem rebaixamento, mesmo com decisão vigente explicando a causa.
-Nesse caso a decisão vigente entra no texto ("causa já decidida em DD/MM"), mas a cor
-permanece 🔴. Se a operação passar a ter um KPI de prazo regulatório (ANS ou contratual),
-acrescente-o aqui.
+Quando um limiar for recalibrado no Notion, a mudança vale automaticamente: o catálogo é a
+fonte, este arquivo é só o resumo do que existe hoje.
 
-**Período de comparação.** Acompanha a cadência do KPI: diário lê o dia (ou o acúmulo
-retroativo, ver §5); semanal lê a semana. KPI com meta compara contra `Meta atual`. KPI sem
-meta compara contra o baseline que o próprio `Limiar de alerta` nomeia (ex: "média dos
-últimos 3 meses", "mês anterior") — nunca contra um baseline que você escolheu.
+### Rebaixamento 🔴 → 🟡 por decisão vigente
 
-**Caveats.** Sempre cite os `Caveats` do KPI ao reportar o número. Caveat vazio → "sem
-caveats registrados". Quando o farol só é o que é por causa de uma decisão metodológica
-vigente, diga isso no Caveat da linha: o leitor precisa saber qual régua foi usada.
+Decisão do OM, 16/09/2026: **decisão vigente explicativa rebaixa 🔴 para 🟡**. A lógica de
+cores em Contas Médicas passa a ter duas etapas.
 
----
+**Etapa 1 — cor candidata**, pelo limiar e pela meta, como descrito acima.
+
+**Etapa 2 — rebaixamento, a única exceção permitida.** Um KPI que a Etapa 1 deixou 🔴 vira 🟡
+quando existe decisão vigente do Decision Log que **já explica exatamente este desvio**. Nesse
+caso o KPI aparece 🟡, **com o link da decisão**, não abre deep dive no Slack e não gera entrada
+nova no Decision Log — o detalhamento fica na página do Notion.
+
+As duas classes de decisão agem de formas diferentes:
+
+- **Metodológica** — muda a cor **pelo número**, não por exceção. Ela redefine a janela, o piso
+  ou o filtro, você recalcula, e o farol sai do valor corrigido. Isso acontece na Etapa 1, não
+  aqui. Exemplo real: excluir mai/26 da baseline do INCOR levou o desvio de -27,26 p.p. para
+  +0,13 p.p. contra limiar de 10 p.p. — o KPI virou 🟢 porque o **número** mudou.
+- **Explicativa** — nomeia a causa ou registra trade-off deliberado. É esta que rebaixa na
+  Etapa 2. Exemplos vigentes: `SLA Recurso de Glosa - HI` (trade-off de 17/08 para proteger o
+  SLA de análise de contas), `R$ Recurso de Glosa acumulado` (capacidade realocada, 17/08),
+  `R$ Faturado Cassi` (atraso da própria Cassi, 11/08, veredito Recusada em 13/08).
+
+**Guard-rails do rebaixamento — sem eles a regra vira desculpa para esconder vermelho:**
+
+1. **Só rebaixa com decisão vigente citada por link.** Sem link, não rebaixa. Não existe
+   rebaixamento por "parece pequeno", "é começo de mês" (isso é a regra de dois estágios, e só
+   onde o limiar a define), "amostra baixa" ou hipótese sua.
+2. **A decisão precisa cobrir ESTE desvio**, não o KPI em geral. Decisão sobre o grupo Fleury
+   não rebaixa um desvio concentrado no Einstein.
+3. **Fato novo cancela o rebaixamento.** Se a magnitude mudou materialmente em relação a quando
+   a decisão foi tomada, ou se um KPI de processo trouxe achado novo, ou se o prazo da decisão
+   estourou, o KPI **segue 🔴** e o report apresenta **apenas o fato novo**, formulado como
+   pergunta ao OM. Foi assim que o Cassi virou pergunta de horizonte em 18/08: "eram 9 dias de
+   estagnação, hoje são 14".
+4. **Tolerância zero — dois KPIs nunca rebaixam.** `SLA de Análise de conta - HI` e
+   `PEGs por Status de Análise no SLA - HI` (ambos com meta explícita de 90%) são compromisso de
+   serviço: abaixo da meta é 🔴 mesmo com causa decidida. A decisão entra no texto, a cor não
+   muda. Se a operação passar a ter um KPI de prazo regulatório ou contratual, acrescente-o aqui.
+5. **Nunca sobe cor.** O rebaixamento só desce, e só de 🔴 para 🟡.
+
+**Vermelho previsível.** Rebaixar não resolve a causa: quando o mesmo KPI cai no limiar dia após
+dia pela mesma decisão, a proposta útil é perguntar ao OM o horizonte do trade-off e se o
+`Limiar de alerta` deveria ser calibrado — ver §2.
+
+O valor e a baseline usados aqui são os do cálculo **já com as decisões metodológicas vigentes
+aplicadas**. Antes de fechar o farol de qualquer KPI, releia o mapa do §2 e confirme que nenhuma
+decisão metodológica ficou de fora. Farol calculado sobre baseline que o OM já mandou corrigir é
+alerta falso — e alerta falso queima a confiança da operação no ritual.
+
+**Caveats.** Sempre cite os `Caveats` do KPI ao reportar o número. Caveat vazio → "sem caveats
+registrados". Quando o farol só é o que é por causa de uma decisão metodológica vigente ou de uma
+condição do limiar (piso, janela, estágio do mês), diga isso no Caveat da linha: o leitor precisa
+saber qual régua foi usada.
+
+**Período de comparação.** Acompanha a cadência do KPI: diário lê o dia (ou o acúmulo retroativo,
+ver §5); semanal lê a semana. KPI com meta compara contra `Meta atual`. KPI sem meta compara
+contra o baseline que o próprio `Limiar de alerta` nomeia (ex: "média dos últimos 3 meses", "mês
+anterior") — nunca contra um baseline que você escolheu.
 
 ## 2. Decisões vigentes — ler ANTES de calcular
 
@@ -90,8 +138,9 @@ Monte, antes de seguir, o mapa `KPI → decisões vigentes que o afetam`, classi
   Exemplos vigentes: desconsiderar mai/26 da média histórica do INCOR (17/08 → baseline
   Jun+Jul); piso de R$50.000 de faturamento no mês para `% Glosa Alice por Prestador`
   (11/08); piso de 7 dias no status para `% Faturas por Status - HS` (11/08).
-- **(b) Explicativa** — nomeia a causa do desvio ou registra trade-off deliberado. Aplica-se
-  na análise e no plano de ação, e é o que pode rebaixar 🔴 → 🟡 (exceto tolerância zero).
+- **(b) Explicativa** — nomeia a causa do desvio ou registra trade-off deliberado. É a que
+  **rebaixa 🔴 → 🟡** na Etapa 2 do farol (§1), respeitados os cinco guard-rails, e a que manda
+  referenciar a decisão em vez de abrir investigação nova.
   Exemplos vigentes: atraso no envio pela própria Cassi (11/08, veredito Recusada em 13/08);
   SLA de Recurso de Glosa sacrificado de propósito para proteger o SLA de análise de contas
   (17/08); capacidade realocada para a competência 08 (17/08).

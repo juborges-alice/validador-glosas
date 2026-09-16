@@ -47,11 +47,20 @@ explicitamente **pré**-daily. Se o horário da reunião mudar, mova a Routine.
 ## 3. O que é específico desta operação (× Autorização)
 
 - **Não existe árvore clínica de classificação** (Sem fator / Fila médica / Habitual). O que
-  rebaixa 🔴 → 🟡 aqui é **decisão vigente do Decision Log** — nada mais. Ver
-  `shared/01-regras-de-registro.md` §1 e §2.
-- **Tolerância zero** = KPI com meta explícita (`SLA de Análise de conta` e `PEGs por Status no
-  SLA`, ambos 90%): abaixo da meta é 🔴 mesmo com causa decidida. Se aparecer um prazo
-  regulatório/contratual na operação, acrescente-o ali.
+  rebaixa 🔴 → 🟡 aqui é **decisão vigente explicativa do Decision Log**, e nada mais — com cinco
+  guard-rails: só com link citado, a decisão tem que cobrir aquele desvio, fato novo cancela o
+  rebaixamento, `SLA de Análise de conta` e `PEGs por Status no SLA` nunca rebaixam (meta 90%),
+  e nunca sobe cor. Decisão metodológica é outra coisa: muda a cor pelo número, ao redefinir a
+  janela ou o piso. Ver `shared/01-regras-de-registro.md` §1 e §2.
+- **As condições moram dentro do texto do `Limiar de alerta`** — piso de materialidade, piso de
+  idade, regra de dois estágios por dia do mês, janela de risco. O catálogo do Notion é a fonte;
+  quando um limiar é recalibrado lá, a rotina passa a usar o novo na execução seguinte, sem
+  mexer em arquivo nenhum.
+- **Existe uma classe "alerta de trabalho"** (`shared/00-identificadores.md`): KPI que é fila,
+  não termômetro. Hoje só o `Recursos de Glosa Próximos do Vencimento`. Quando fica 🔴, o Slack
+  recebe a **lista para agir hoje** em vez de hipótese e plano de ação, mostrando os dois
+  horizontes — o que ainda dá pra salvar e o que já venceu mas segue em aberto — e vira
+  pendência `[Fila]` em vez de entrada no Decision Log.
 - **Action Log = `Log Melhoria Contínua`** (Seção 8 da página da operação), filtrado por
   `Operações` = Contas Médicas. O `Status` dele é `Em andamento`, não "Em curso".
 - **A gravação da daily não vive numa pasta única** — as anotações do Gemini nascem no Drive de

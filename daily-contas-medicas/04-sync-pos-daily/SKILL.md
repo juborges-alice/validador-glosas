@@ -108,7 +108,11 @@ Confirmem ou corrijam nesta thread.
 - Uma proposta por decisão/ação, na thread do desvio/tema. Campo sem valor = `A DEFINIR`.
 - **Dedup 14 dias:** se já há decisão aberta do mesmo KPI nos últimos 14 dias, **referencie-a**
   na proposta em vez de propor nova. Isso é o caso normal dos crônicos de Contas Médicas.
-- **Só 🔴 gera proposta.** 🟡 rebaixado por decisão vigente não gera nada.
+- **Só 🔴 gera proposta.** 🟡 não gera nada — nem proposta, nem Decision Log. Vale também para o 🟡 rebaixado por decisão vigente: a decisão que o rebaixou já existe e não é reaberta.
+- **KPI do tipo "alerta de trabalho"** (`00-identificadores.md`) **não gera proposta de decisão**,
+  mesmo 🔴. Se a thread trouxer tratativa por recurso, leve para a coluna `Tratativa` da página,
+  casando por `PEG`. Se a daily decidir algo estrutural sobre a fila — renegociar prazo com um
+  prestador, mudar a priorização — aí sim é decisão, e vale a proposta normal.
 - **Nunca proponha ação que contradiga decisão vigente.** Se o KPI está 🔴 por trade-off já
   decidido, a proposta correta é a **pergunta de horizonte** à OM:
 ```

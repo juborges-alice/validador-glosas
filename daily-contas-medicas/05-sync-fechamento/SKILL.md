@@ -93,6 +93,10 @@ dive** — é a etapa de **diagnóstico**, anterior a decisão/ação:
   thread de pendências aparece com o rótulo `[Deep dive]`, marcando o responsável.
 - **Some** quando o deep dive for feito (causa raiz + plano de ação ou decisão registrados).
 - **Dedup:** desvio que já tem Deep dive pendente aberto (mesmo KPI + data) não gera outro.
+- **KPI do tipo "alerta de trabalho" não vira Deep dive pendente.** Ele já tem a linha `[Fila]`
+  no Bloco 5, que rola todo dia com os números atualizados até zerar. Ao fechar o dia, reescreva
+  o contexto dessa linha com os números do dia e registre quantos recursos saíram da fila —
+  nunca abra uma segunda linha para o mesmo KPI.
 
 ## 3. Atualizar a tabela do Bloco 5 (Pendências)
 

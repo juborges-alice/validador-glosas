@@ -72,7 +72,7 @@ Para cada KPI capture: `Nome do KPI`, `Definição`, `Meta atual`, `Limiar de al
 
 Se nenhum KPI satisfizer o filtro, pare e avise a OM. Não invente KPIs.
 
-Ordem de exibição: a lista 1–16 de `00-identificadores.md`. Não reordene por farol.
+Ordem de exibição: a lista 1–17 de `00-identificadores.md`. Não reordene por farol.
 
 ## Passo 2 — Decisões vigentes (ANTES de calcular qualquer valor)
 
@@ -94,9 +94,14 @@ executado o card X.
 
 Conforme `01-regras-de-registro.md` §1. Confira, antes de publicar:
 
-- nenhum KPI 🟡 está fora do limiar sem decisão vigente citada;
-- `SLA de Análise de conta - HI` e `PEGs por Status de Análise no SLA - HI` abaixo de 90% estão
-  🔴, sem rebaixamento;
+- **todo KPI 🟡 que cruzou o limiar tem o link da decisão vigente que o rebaixou** (§1, Etapa 2).
+  Sem link citado, o KPI volta a ser 🔴. `SLA de Análise de conta - HI` e `PEGs por Status de
+  Análise no SLA - HI` abaixo de 90% são 🔴 sempre, sem rebaixamento;
+- **fato novo cancela o rebaixamento:** magnitude que mudou, achado novo em KPI de processo ou
+  prazo estourado devolvem o KPI para 🔴, com o fato novo como pergunta ao OM;
+- as condições escritas dentro do `Limiar de alerta` foram aplicadas — piso de materialidade
+  (`% Glosa Alice por Prestador`), piso de idade (`% Faturas por Status - HS`), regra de dois
+  estágios por dia do mês (`% Glosa por Tipo de HI`), janela de risco (`PEGs por Status no SLA`);
 - a contagem do farol considera só os KPIs efetivamente exibidos no dia, e KPI sem dado (⚪) não
   pontua.
 
@@ -152,8 +157,8 @@ Referência: {descrição do período e datas}
 - Hipóteses: {hipóteses ancoradas em evidência}
 - Plano de ação sugerido: {plano} → Decision Log: {link}
 ### 🟡 {KPI}
-- Resultado: {valor} vs meta {meta}
-- Decisão vigente que rebaixou o farol: {link}
+- Resultado: {valor} vs meta {meta} (limiar: {limiar})
+- Motivo do 🟡: {não cruzou o limiar} OU {rebaixado de 🔴 pela decisão vigente de DD/MM: link}
 - Hipóteses: {hipóteses}
 ## KPIs verdes
 {lista enxuta: nome + valor}
@@ -170,6 +175,10 @@ Use ⚪ para KPI sem dado. Público é OM/GM — objetivo, sem jargão.
 
 Uma entrada por KPI vermelho, como rascunho, com os campos de `01-regras-de-registro.md` §3.
 Aplique **dedup de 14 dias** e a regra de **vermelho persistente** antes de criar.
+
+**Exceção: KPIs do tipo "alerta de trabalho"** (tabela em `00-identificadores.md`) **não geram
+entrada no Decision Log**, nem quando 🔴. Fila de trabalho não é decisão. Eles viram linha de
+pendência na Mensagem 6, com o rótulo `[Fila]`.
 
 Depois de criar, volte na Execução de Rotina e preencha `Decisões geradas` com as URLs.
 
@@ -248,6 +257,45 @@ inclua no topo da mensagem a linha `*KPI sem responsável mapeado: {nome do KPI}
 
 Não escreva "possíveis impactos". Não inclua link de Metabase.
 
+#### Formato próprio dos KPIs "alerta de trabalho"
+
+Para os KPIs listados como **alerta de trabalho** em `00-identificadores.md`, a mensagem 🔴 é
+outra: é fila, não análise. **Sem hipótese, sem "ação sugerida", sem link de Decision Log.**
+
+Execute o card do KPI e separe o resultado em dois horizontes pela coluna `status_urgencia`:
+o que **ainda dá pra salvar** (`Vence em ate 3 dias`) e o que **já perdeu o prazo mas segue em
+aberto** (`Vencido (nao acionavel)` — escreva "vencido, ainda em aberto", nunca "não acionável").
+
+**Parte 1 — mensagem solta no canal.** Exatamente estes elementos, nesta ordem:
+
+```
+🔴 _{KPI}_ — fila de trabalho do dia
+Vencendo em até 3 dias: {N} recursos · R$ {valor}
+Já vencidos, ainda em aberto: {M} recursos · R$ {valor}
+Concentração dos vencidos: {grupo econômico} {n} recursos (R$ {valor}) · {grupo} {n} (R$ {valor})
+↩️ <@ID> lista completa na thread. Priorize hoje o que ainda dá pra salvar.
+```
+
+A linha de **Concentração** é obrigatória e traz os grupos econômicos em ordem decrescente de
+valor vencido, até cobrir 90% do valor. Ela é o que transforma uma pilha de recursos numa
+conversa acionável — hoje, por exemplo, um único grupo responde por quase todo o valor vencido.
+
+**Parte 2 — respostas na thread.** Duas listas, nesta ordem, cada uma numa resposta:
+
+1. **Vencendo em até 3 dias** — lista **completa**, ordenada por `dias_restantes_vencimento`
+   crescente (o mais urgente primeiro):
+   `{dias} d · PEG {peg_code} · {institution_name} · R$ {appeal_value}`
+2. **Vencidos, ainda em aberto** — **consolidado por grupo econômico**, ordenado por valor
+   decrescente, mais os 10 maiores recursos individuais por valor:
+   `{provider_economic_group}: {n} recursos · R$ {valor} · protocolados entre {data} e {data}`
+
+Por que a segunda lista é consolidada e não item a item: o estoque vencido costuma ter dezenas
+de recursos e a leitura útil é por prestador, não por PEG. **A lista completa item a item vai
+para a página do Notion**, que é canônica e não tem limite de densidade.
+
+Se um dos dois horizontes estiver vazio, escreva a linha mesmo assim com `0 recursos` — a
+ausência é informação, e sumir com a linha quebra a leitura da série.
+
 ### Mensagem 3 — não existe nesta operação
 
 Reservado. Contas Médicas não tem bloco de "outros indicadores" no Slack.
@@ -308,6 +356,10 @@ Levante o que está **em aberto** (não é só o vencido):
   aqui **uma vez** — a partir da migração é pendência e não volta a ser sinalização.
 - **KPI sem responsável mapeado:** KPI que desviou e não está no bloco de mapeamento. Dona: a
   OM. Cobrar: acrescentar o KPI → pessoa no bloco.
+- **Fila de trabalho em aberto:** KPI do tipo **alerta de trabalho** que ficou 🔴. Rótulo
+  `[Fila]`, responsável do bloco de mapeamento, contexto = `{N} vencendo em ≤3 dias · {M}
+  vencidos ainda em aberto`. **Rola todo dia até zerar**, e o contexto é reescrito com os
+  números do dia — nunca se abre uma segunda linha para o mesmo KPI.
 
 O que conta como pendência:
 - **Não iniciada** (`A iniciar`) ou **sem preenchimento completo** → falta info/preenchimento.
@@ -334,7 +386,7 @@ Detalhe e cobrança na thread.
 pessoa responder ("Pendência 1 - escalado, ..."). Formato, sem emojis:
 
 ```
-Pendência {N} - <@responsável> — [{Decisão|Ação|Deep dive}] {título} → {link}
+Pendência {N} - <@responsável> — [{Decisão|Ação|Deep dive|Fila}] {título} → {link}
 {estado} · {status} · {contexto / o que falta}
 ```
 

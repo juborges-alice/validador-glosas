@@ -18,7 +18,7 @@ Slack é o canal de acionamento. Consequências:
 **Regra base:** não recalcular Metabase para os valores de farol — use os valores já publicados
 no Slack às 06h30. **Exceções (é para isso que esta tarefa roda 2h45 depois):**
 1. os drills item-a-item dos 🔴 (a lista completa de prestadores/motivos que não cabe no Slack);
-2. o detalhamento dos 🟡 rebaixados por decisão vigente, que não vai para o Slack;
+2. o detalhamento dos 🟡 — os que não cruzaram o limiar e os rebaixados de 🔴 por decisão vigente — que não vai para o Slack;
 3. o **repuxe de ETL** (Passo 4).
 
 Leia antes de começar: `shared/00-identificadores.md`, `shared/01-regras-de-registro.md`,
@@ -107,7 +107,7 @@ no Slack. Não alternar entre linha corrida e lista — sempre o mesmo formato.
     qual.**
   - **Farol:** conforme a classificação
   - **Contexto:** uma frase. **Obrigatória** quando o farol é 🟡 ou 🔴.
-  - Ordem 1–16 de `00-identificadores.md`, sem seções. Semanais entram na sexta, na posição que
+  - Ordem 1–17 de `00-identificadores.md`, sem seções. Semanais entram na sexta, na posição que
     ocupam, com a coluna `Período`.
 - **Quando o farol de um KPI só é o que é por causa de decisão metodológica vigente**, diga isso
   na coluna Contexto, com o link da decisão. O leitor precisa saber qual régua foi usada.
@@ -159,28 +159,89 @@ Responsável = a pessoa do bloco de mapeamento (`00-identificadores.md`). Enquan
 - **Sem "Hipótese" e sem "Possíveis impactos"** como seções próprias — a hipótese já está no
   Slack e no Decision Log; aqui o que interessa é a evidência do drill.
 
-**Desvio 🟡 rebaixado por decisão vigente (só na página).** Não gera thread no Slack, existe
-apenas aqui. Entrada própria, **sem** pedido de plano de ação:
+**Desvio 🟡 (só na página).** Não gera thread no Slack, existe apenas aqui. São dois tipos, e o
+título diz qual é. Entrada própria, **sem** pedido de plano de ação.
+
+**🟡 que não cruzou o limiar:**
 
 ```
-🟡 **{KPI}** · fora do limiar, causa já decidida em {DD/MM} · sem acionamento
+🟡 **{KPI}** · fora da meta, dentro do limiar · sem acionamento
 
 | Indicador | Resultado | Meta | Limiar | Variação | Farol |
 |---|---|---|---|---|---|
 | … | … | … | … | … | 🟡 |
 
-Decisão vigente que explica o desvio: {link} — {o que ela determina}
+{tabela de drill com as colunas do card, quando o KPI tiver drill}
+
+Fora da meta, mas o limiar de acionamento não foi cruzado. Sem necessidade de deep dive humano com plano de ação.
+```
+
+**🟡 rebaixado de 🔴 por decisão vigente:**
+
+```
+🟡 **{KPI}** · cruzou o limiar, causa já decidida em {DD/MM} · sem acionamento
+
+| Indicador | Resultado | Meta | Limiar | Variação | Farol |
+|---|---|---|---|---|---|
+| … | … | … | … | … | 🟡 |
+
+Decisão vigente que rebaixou o farol: {link} — {o que ela determina}
 
 {tabela de drill com as colunas do card}
 
 O desvio está dentro do que a operação já decidiu. Sem necessidade de deep dive humano com plano de ação.
 ```
 
-Se o desvio for maior em magnitude do que quando a decisão foi tomada, troque a frase final por:
+O drill do rebaixado é puxado **aqui** — é a razão de a página existir: o Slack só mostra a cor,
+e é na página que se confere se o desvio continua sendo o mesmo que a decisão explicou.
+
+**Quando a magnitude mudou**, o KPI não deveria ter sido rebaixado. Troque a frase final por:
 
 ```
-O desvio já tem causa decidida, mas a magnitude mudou de {valor de então} para {valor de hoje}. Levar à OM como pergunta de horizonte, não como investigação nova.
+O desvio tem causa decidida, mas a magnitude mudou de {valor de então} para {valor de hoje}. Isto é fato novo: o KPI deveria estar 🔴. Levar à OM como pergunta de horizonte, não como investigação nova.
 ```
+
+e registre a divergência no rodapé de fechamento, para a OM conferir o farol do dia.
+
+**Tolerância zero.** `SLA de Análise de conta - HI` e `PEGs por Status de Análise no SLA - HI`
+nunca aparecem como 🟡 rebaixado. Abaixo de 90% eles são deep dive 🔴, com a decisão vigente na
+linha `Decisões vigentes que se aplicam`.
+
+**KPI do tipo "alerta de trabalho" (tabela em `00-identificadores.md`).** Não é deep dive: não
+tem hipótese, não tem plano de ação, não tem link de Decision Log. É sub-toggle próprio, e é
+**aqui que mora a lista completa item a item** — o Slack só leva o resumo e o consolidado.
+
+```
+📋 **{KPI}** · fila de trabalho · {responsável}
+
+| Horizonte | Recursos | Valor | Leitura |
+|---|---|---|---|
+| Vencendo em até 3 dias | {N} | R$ {valor} | ainda dá pra salvar |
+| Já vencidos, ainda em aberto | {M} | R$ {valor} | perderam o prazo de 15 dias, seguem abertos |
+| Dentro do prazo (>3 dias) | {K} | R$ {valor} | contexto, sem ação hoje |
+```
+
+Depois, **duas tabelas completas**, sem truncar, direto do card:
+
+- **Vencendo em até 3 dias**, ordenada por dias restantes crescente:
+  `Dias restantes | PEG | Prestador | Grupo econômico | Protocolado em | Valor | Tratativa`
+- **Vencidos, ainda em aberto**, ordenada por valor decrescente:
+  `Dias vencido | PEG | Prestador | Grupo econômico | Protocolado em | Valor | Tratativa`
+
+A coluna `Tratativa` nasce ⏳ e é preenchida pelos syncs com o que o time responder na thread,
+casando por `PEG`. É o equivalente da `Causa raiz` dos deep dives.
+
+Acrescente, abaixo das tabelas, a **consolidação por grupo econômico** do estoque vencido
+(`Grupo | Recursos | Valor | Protocolados entre`) — é a leitura que mostra se o problema está
+espalhado ou concentrado num prestador.
+
+Escreva "vencido, ainda em aberto" e nunca "não acionável", que é o rótulo do card: o recurso
+perdeu o prazo de 15 dias corridos, mas continua aberto e continua sendo trabalho.
+
+**Tendência que ainda não é alerta.** `% Glosa por Tipo de HI` entre os dias 1 e 19 do mês
+reporta a variação como tendência sem disparar 🔴 (regra de dois estágios do próprio limiar).
+Nesses dias o KPI aparece no Bloco 1 com o número e a nota `tendência — estágio 1 (até dia 19)`,
+e **não** abre entrada no Bloco 2.
 
 ### Bloco 3 · Cassi e faturamento — leitura de volume
 

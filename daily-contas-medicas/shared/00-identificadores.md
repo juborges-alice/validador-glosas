@@ -57,18 +57,25 @@ agrupamento** de exibição, nunca meta nem card.
 | 3 | Contas Médicas - % Glosa Alice por Prestador - HI | 65700 | diária |
 | 4 | Contas Médicas - R$ Recurso de Glosa acumulado | 65834 | diária |
 | 5 | Contas Médicas - SLA Recurso de Glosa - HI | 65858 | diária |
-| 6 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
-| 7 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
-| 8 | Contas Médicas - Qnt de guias analisadas por dia | 65840 | diária |
-| 9 | Contas Médicas - % PEGs sem NF | 65694 | diária |
-| 10 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
-| 11 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
-| 12 | Contas Médicas - % Resumos Criticados - HS | 30858 | diária |
-| 13 | Contas Médicas - Status das Críticas (por fatura) - HS | 66766 | diária |
-| 14 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária |
-| 15 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
-| 16 | Contas Médicas - SLA de Pagamento de HS | 35629 | diária |
-| 17 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
+| 6 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | diária |
+| 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
+| 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
+| 9 | Contas Médicas - Qnt de guias analisadas por dia | 65840 | diária |
+| 10 | Contas Médicas - % PEGs sem NF | 65694 | diária |
+| 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
+| 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
+| 13 | Contas Médicas - % Resumos Criticados - HS | 30858 | diária |
+| 14 | Contas Médicas - Status das Críticas (por fatura) - HS | 66766 | diária |
+| 15 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária |
+| 16 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
+| 17 | Contas Médicas - SLA de Pagamento de HS | 35629 | diária |
+| 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
+
+Conferido contra o catálogo em 16/09/2026. Desde a primeira versão (19/08) entrou o KPI
+`Recursos de Glosa Próximos do Vencimento (≤3 dias)` (card 73490, criado em 10/09) e foram
+recalibrados os limiares de `% Glosa por Tipo de HI` e `PEGs por Status de Análise no SLA - HI`
+(ambos em 09/09) — os limiares novos são lidos do Notion a cada execução, e as condições que
+eles carregam estão resumidas em `01-regras-de-registro.md` §1.
 
 Ao exibir no Slack e no Notion, **corte o prefixo `Contas Médicas - `**. Case pelo nome
 completo, exiba sem o prefixo.
@@ -87,7 +94,8 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | % Glosa por Tipo de HI | 52038 (Labs) · 52037 (Clínicas) · 31223 (Hospitais) · 66204 (Motivo Top 10 prestadores) |
 | % Glosa Alice por Prestador - HI | 50958 (R$ Glosado por Prestador Top 12) |
 | R$ Recurso de Glosa acumulado | 54662 (Valor Recursado por prestador) · 54677 (Valor Recursado por Motivo Geral) |
-| SLA Recurso de Glosa - HI | 65835 (Qnt acumulada Recurso de Glosa) |
+| SLA Recurso de Glosa - HI | 65835 (Qnt acumulada Recurso de Glosa) · 73490 (Recursos próximos do vencimento) |
+| Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | — sem drill próprio; o card 73490 já é a lista item-a-item |
 | SLA de Análise de conta - HI | 65837 (guias/dia Hospitais) · 65839 (guias/dia Labs+Clínicas) · 32465 (PEGs por Status no SLA) |
 | PEGs por Status de Análise no SLA - HI | 65837 · 65839 |
 | Qnt de guias analisadas por dia | 65837 (Hospitais) · 65839 (Labs+Clínicas) |
@@ -99,6 +107,36 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | Tempo para Resolução de Críticas - HS | — sem drill cadastrado |
 | % Faturas por Status - HS | — sem drill cadastrado |
 | SLA de Pagamento de HS | 35588 (Média de Dias Úteis Entre Etapas de Pagamento) |
+
+## KPIs do tipo "alerta de trabalho"
+
+A maioria dos KPIs é termômetro: quando desvia, a rotina levanta hipótese e propõe plano de
+ação. **Alerta de trabalho é outra coisa** — é fila. A causa é sempre a mesma (o prazo está
+correndo), não há o que investigar, e o que o time precisa é a **lista para agir hoje**.
+
+| KPI | Card | Classe |
+|---|---|---|
+| Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | **Alerta de trabalho** |
+
+Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
+
+1. **A mensagem no Slack traz a lista, não a análise.** Sem hipótese, sem "ação sugerida". O
+   formato está no Passo 8 de `01-report-slack/SKILL.md`.
+2. **Mostra sempre os dois horizontes**, porque a visão útil é do todo:
+   - **o que ainda dá pra salvar** — `status_urgencia` = `Vence em ate 3 dias`;
+   - **o que já perdeu o prazo mas segue em aberto** — `status_urgencia` =
+     `Vencido (nao acionavel)`. O rótulo "não acionável" é do card e se refere ao prazo de 15
+     dias corridos, não ao recurso: ele continua aberto e continua sendo trabalho. **No report,
+     escreva "vencido, ainda em aberto"** — nunca "não acionável", que faz o time ignorar.
+3. **Não abre entrada no Decision Log.** Fila de trabalho não é decisão. Vira **linha de
+   pendência** (Mensagem 6 e Bloco 5), com o rótulo `[Fila]`, e rola todo dia até zerar.
+4. **Não entra na análise de desvios** do Bloco 2 da página como deep dive. A lista completa
+   dos dois horizontes fica no Bloco 2 como sub-toggle próprio, sem pedido de plano de ação.
+5. **O farol continua saindo do `Limiar de alerta` do catálogo**, como qualquer KPI. Hoje o
+   limiar olha só a janela de ≤3 dias; se a OM quiser que o estoque vencido também dispare
+   sozinho, é editar o texto do limiar no Notion — a rotina obedece o que estiver escrito lá.
+
+Para incluir outro KPI nesta classe, acrescente-o à tabela acima. Nada mais precisa mudar.
 
 ## BLOCO DE MAPEAMENTO DE RESPONSÁVEIS — editar aqui quando o time mudar
 
@@ -116,6 +154,7 @@ Larissa Fukuda     <@U07BDH6D34M>   [cobrindo as férias da Fernanda — marcar 
   - % Glosa Alice por Prestador - HI
   - R$ Recurso de Glosa acumulado
   - SLA Recurso de Glosa - HI
+  - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI
 
 Alana Beckmann     <@U073Z4ENBNW>
   - SLA de Análise de conta - HI
