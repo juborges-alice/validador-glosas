@@ -225,8 +225,9 @@ Para não poluir o panorama, a legenda **não** fecha a Mensagem 1. String liter
 
 ### Mensagem 2 — uma mensagem solta por KPI 🔴 (condicional)
 
-Mensagens **separadas no canal**, não em thread. Não poste para KPIs das listas SEM
-RESPONSÁVEL. KPIs 🟡 **não** geram mensagem — o contexto deles fica na página.
+Mensagens **separadas no canal**, não em thread. **Todo 🔴 gera mensagem** — não existe mais
+categoria de KPI que só entra no farol. KPIs 🟡 **não** geram mensagem; o contexto deles fica na
+página.
 
 ```
 🔴 _{KPI}_ — {valor} (meta {meta} · limiar {limiar})
@@ -251,6 +252,18 @@ thread:
 ```
 ↩️ <@ID> responda nesta thread: causa raiz, plano de ação, responsável e prazo.
 ```
+
+**Nos nove KPIs roteados por tipo de instituição** (bloco de mapeamento), o responsável sai da
+concentração do desvio no drill — você só sabe quem marcar depois de executar o drill. Nesses
+casos, acrescente **antes** da linha `↩️` a linha que explica o roteamento:
+
+```
+Concentração: {tipo de instituição} ({%} do desvio) → <@ID>
+```
+
+Quando nenhum tipo passa de 70% do desvio, ou quando o drill não devolve o tipo, marque **as
+duas** e diga por quê: `Concentração: Hospitais 55% · Laboratórios 40% → <@ID> <@ID>` ou
+`Tipo de instituição não disponível no card — roteado para as duas: <@ID> <@ID>`.
 
 KPI 🔴 que não esteja em nenhuma seção do bloco de mapeamento: marque `<@U03A4SS2P1Q>` e
 inclua no topo da mensagem a linha `*KPI sem responsável mapeado: {nome do KPI}*`.

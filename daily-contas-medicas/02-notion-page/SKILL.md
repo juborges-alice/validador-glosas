@@ -127,8 +127,11 @@ Um sub-toggle por KPI com desvio.
 🔴 **{KPI}** · {contexto curto} · {responsável}
 ```
 
-Responsável = a pessoa do bloco de mapeamento (`00-identificadores.md`). Enquanto o KPI estiver
-`A DEFINIR`, escreva `A DEFINIR — alçada da OM`. Conteúdo:
+Responsável = a pessoa do bloco de mapeamento (`00-identificadores.md`). Para os nove KPIs
+roteados **por tipo de instituição**, o responsável sai da concentração do desvio no drill —
+siga o procedimento de roteamento daquele arquivo e registre a linha
+`Concentração: {tipo} ({%} do desvio) → {responsável}` logo abaixo do título. Enquanto um KPI
+estiver `A DEFINIR`, escreva `A DEFINIR — alçada da OM`. Conteúdo:
 
 - **Tabela resumo (horizontal):** `Indicador | Resultado | Meta | Limiar | Variação | Farol`.
 - **Decisões vigentes que se aplicam:** link + 1 linha do que a decisão determina, ou
@@ -245,8 +248,10 @@ e **não** abre entrada no Bloco 2.
 
 ### Bloco 3 · Cassi e faturamento — leitura de volume
 
-Os dois KPIs sem responsável (`Faturamento total acumulado`, `R$ Faturado Cassi`) não abrem
-deep dive, mas o número precisa aparecer com contexto porque é dinheiro. Uma tabela:
+Os dois KPIs de faturamento — `Faturamento total acumulado` e `R$ Faturado Cassi` — **têm
+responsável e abrem deep dive normalmente no Bloco 2** quando 🔴. Este bloco não substitui o
+deep dive: ele existe porque o número de faturamento só faz sentido com a leitura de volume ao
+lado, e é dinheiro. Uma tabela:
 `Indicador | Resultado | Média histórica | Variação | Dias sem movimento | Decisão vigente`.
 
 A coluna **`Dias sem movimento`** existe porque o padrão de falha do Cassi é **estagnação** —

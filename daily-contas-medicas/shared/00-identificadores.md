@@ -140,45 +140,65 @@ Para incluir outro KPI nesta classe, acrescente-o à tabela acima. Nada mais pre
 
 ## BLOCO DE MAPEAMENTO DE RESPONSÁVEIS — editar aqui quando o time mudar
 
-**Status: PROPOSTA INICIAL — a OM precisa confirmar.** Enquanto um KPI estiver em
-`A DEFINIR`, o deep dive marca a OM e acrescenta a linha `**KPI sem responsável mapeado:
-<nome>**`. Isso é de propósito: força o mapeamento a ser preenchido em vez de sumir.
+Confirmado pela OM em 16/09/2026. A Larissa saiu do bloco: a Fernanda voltou de férias.
 
 ```
-Fernanda Jerônimo  <@U044N26BETU>   [titular]
-Larissa Fukuda     <@U07BDH6D34M>   [cobrindo as férias da Fernanda — marcar as DUAS
-                                     enquanto a cobertura durar; quando a Fernanda voltar,
-                                     remover a Larissa daqui]
+Fernanda Jerônimo  <@U044N26BETU>
+  - % Resumos Criticados - HS
+  - Status das Críticas (por fatura) - HS
+  - Tempo para Resolução de Críticas - HS
+  - % Faturas por Status - HS
+  - SLA de Pagamento de HS
+  - R$ Faturado Cassi
+  - % PEGs sem NF
+
+POR TIPO DE INSTITUIÇÃO — Hospital → Alana <@U073Z4ENBNW>
+                          Laboratório ou Clínica → Fernanda <@U044N26BETU>
   - % Glosa Geral - HI
   - % Glosa por Tipo de HI
   - % Glosa Alice por Prestador - HI
   - R$ Recurso de Glosa acumulado
   - SLA Recurso de Glosa - HI
   - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI
-
-Alana Beckmann     <@U073Z4ENBNW>
   - SLA de Análise de conta - HI
   - PEGs por Status de Análise no SLA - HI
   - Qnt de guias analisadas por dia
-  - % PEGs sem NF
-
-A DEFINIR — marcar a OM <@U03A4SS2P1Q> até alguém assumir
-  - % Resumos Criticados - HS
-  - Status das Críticas (por fatura) - HS
-  - Tempo para Resolução de Críticas - HS
-  - % Faturas por Status - HS
-  - SLA de Pagamento de HS
-
-SEM RESPONSÁVEL — indicadores de monitoramento, nunca geram deep dive
   - Faturamento total acumulado
-  - R$ Faturado Cassi
 ```
 
-`R$ Faturado Cassi` e `Faturamento total acumulado` continuam no farol e na tabela, mas não
-abrem deep dive nem cobrança: são leitura de volume, e a causa do Cassi já tem decisão
-vigente registrada (11/08 e 13/08). Se virarem 🔴, o texto referencia a decisão vigente.
+**Todos os KPIs têm responsável.** Não existe mais a categoria "sem responsável": todo 🔴 abre
+deep dive e tem alguém marcado. Se um KPI novo entrar no catálogo e não estiver neste bloco, ele
+cai na regra de `KPI sem responsável mapeado` — marca a OM e pede o mapeamento.
 
 Marque sempre por ID (`<@U044N26BETU>`), nunca escreva o nome antes ou depois da menção.
+
+### Como rotear os KPIs "por tipo de instituição"
+
+Nesses nove KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
+só descobre isso **depois de executar o drill**, então o roteamento é a última coisa que se
+decide, não a primeira.
+
+1. Execute o drill do KPI (tabela de cards acima) e quebre o desvio **por tipo de instituição**.
+2. Roteie pela concentração:
+   - desvio concentrado em **Hospital** → marque **Alana** `<@U073Z4ENBNW>`;
+   - desvio concentrado em **Laboratório** ou **Clínica** → marque **Fernanda** `<@U044N26BETU>`;
+   - **Centro de Diagnósticos** → Fernanda (é o fluxo Cassi, que já é dela). Se essa leitura
+     estiver errada, corrija aqui.
+3. **Concentração** significa que um tipo responde por **mais de 70%** do desvio. Abaixo disso,
+   ou quando o desvio aparece em mais de um tipo de forma relevante, **marque as duas** e diga na
+   mensagem como o desvio se reparte, ex: `Hospitais 55% · Laboratórios 40%`.
+   O corte de 70% é calibrável: se a rotina passar a marcar as duas quase sempre, baixe; se
+   marcar uma quando o desvio claramente era das duas, suba. Mude aqui e vale na execução
+   seguinte.
+4. **Sempre diga por que marcou quem marcou.** Uma linha na mensagem:
+   `Concentração: Hospital (78% do desvio) → <@U073Z4ENBNW>`. Sem essa linha, a pessoa marcada
+   não sabe se é dela mesmo, e o roteamento vira loteria.
+5. **Se o drill não devolver o tipo de instituição, marque as duas** e escreva
+   `tipo de instituição não disponível no card — roteado para as duas`. Nunca chute.
+
+**Caso conhecido:** o card **73490** (`Recursos de Glosa Próximos do Vencimento`) devolve
+`institution_name` e `provider_economic_group`, mas **não** devolve o tipo de instituição. Até
+que o card passe a devolver, esse KPI marca **as duas**. Quando for ajustado, esta nota sai.
 
 ## OM
 
