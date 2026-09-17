@@ -67,6 +67,36 @@ você provavelmente filtrou a baseline junto. Re-execute **sem** o parâmetro de
 Nunca reporte variação calculada sobre baseline zerada — e nunca marque o KPI como "sem dado"
 sem ter tentado isso.
 
+### ARMADILHA CRÍTICA (2) — parâmetro opcional omitido devolve o histórico inteiro
+
+O card **65700** (`% Glosa Alice por Prestador - HI`) traz `invoice_date_filter` com
+`required: false`. Omitir **não** cai no mês corrente: cai em **todo o histórico**, sem erro e
+sem aviso. Verificado em 17/09/2026 — SIRIO apareceu com **R$7,6 milhões** de faturamento em vez
+de **~R$1 milhão**, e o percentual de glosa sai diluído na mesma proporção.
+
+Esta é a armadilha inversa da anterior, e por isso perigosa: no 65831/65834 o erro é **passar** o
+parâmetro de data; no 65700 o erro é **não passar**. Não existe regra única — vale a tabela:
+
+| Card | Parâmetro de data | Por quê |
+|---|---|---|
+| 65831 · 65834 | **NÃO passe** | zera a baseline de 3 meses |
+| 65700 | **PASSE** (`invoice_date_filter = "thismonth"`) | omitir devolve o histórico inteiro |
+
+**Teste de sanidade obrigatório, todo dia, em qualquer card de prestador:** olhe a ordem de
+grandeza do faturamento antes de calcular o percentual. Faturamento de um prestador grande num
+mês parcial é ordem de milhão, não de dezena de milhões. Número dez vezes maior que o esperado é
+janela errada, não crescimento.
+
+### O `Parâmetro metabase` do catálogo pode trazer a chave errada
+
+Caso verificado em 17/09/2026: para o card **65831**, o catálogo do Notion registra a chave
+`tipo_da_instituicao`, mas o slug real da API é **`institution_type`**. Passar a chave do
+catálogo devolve erro explícito de template tag inexistente.
+
+Quando isso acontecer: a fonte da verdade é o array `parameters` da resposta da API do card, não
+o catálogo. Use o slug da API, execute, e **não** reescreva o catálogo por conta própria —
+divergência de slug é correção da OM.
+
 ### Top N: avalie a lista inteira, todo dia
 
 Cards de prestador com Top N (**65700** com 15 posições, **50958**, **66204**, **56231**) trazem
@@ -93,6 +123,13 @@ Para esses, o `Parâmetro metabase` do Notion é decorativo — execute o card s
 aqui. Registrar todo dia vira ruído. Só reporte se a lista acima estiver desatualizada, isto é,
 se algum desses cards passar a aceitar parâmetro ou se um card fora da lista devolver
 `parameters: []`.
+
+**`parameters: []` não quer dizer "sem filtro de período".** O card **50958** devolve o array
+vazio e mesmo assim aplica um recorte de data fixo por dentro do SQL. Ou seja: o array vazio diz
+que **você** não tem o que passar, não que o card devolve tudo. Antes de comparar períodos,
+confira qual janela o card usou de fato — pelo resultado (as datas que voltam) ou pelo SQL do
+card. Comparar um card de janela fixa com outro de janela que você controlou é a receita de
+variação inventada.
 
 ### Cards que compartilham ID
 

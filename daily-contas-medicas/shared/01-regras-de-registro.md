@@ -4,6 +4,32 @@ Lido pelas 5 tarefas. As tarefas de sync não reimplementam nada disto.
 
 ---
 
+## 0. Regra dura de execução — vale para as 5 tarefas
+
+**Você tem UM único turno.** Quando ele termina, ninguém continua o trabalho por você: a sessão
+é headless, sem humano acompanhando, e vai para `idle` no estado em que estiver.
+
+- **Faça tudo em linha, você mesma.** Não delegue para subagentes (`Agent` / `Task`), nem em
+  background nem em paralelo.
+- **Não agende check-in para si mesma** (`ScheduleWakeup`, `send_later`), não inicie comando em
+  background, não fique esperando resultado de nada que rode fora deste turno.
+- **Não encerre o turno com a entrega por fazer.** Executar os cards do Metabase um a um, em
+  sequência, é mais lento e está certo.
+- Drill que falha ou demora: **siga sem ele** e escreva o motivo no Caveat do KPI. Entrega
+  incompleta com a lacuna declarada é entrega; entrega não escrita não é.
+- **Escreva primeiro, enriqueça depois.** Grave a versão mínima do que a tarefa produz assim que
+  tiver o essencial, e só então acrescente drills e detalhamento. Nunca o contrário.
+
+**Por que esta regra existe.** Em 17/09/2026, a tarefa 02 leu o report, achou a Execução de
+Rotina, puxou o Decision Log dos 9 vermelhos — e então delegou os drills do Metabase a dois
+subagentes em background, agendou um check-in e encerrou o turno. Os subagentes terminaram, mas
+já não havia turno para usar o resultado. Dez minutos de trabalho, US$ 2,83, e **nenhuma linha
+escrita** — nem a página, nem o aviso de falha que o SKILL manda postar quando algo dá errado.
+O modo de falha é traiçoeiro justamente porque a sessão parece bem-sucedida: termina `idle`, sem
+erro nenhum.
+
+---
+
 ## 1. Farol
 
 As cores respondem **"alguém precisa agir"**, não "está dentro da meta".
@@ -79,13 +105,33 @@ As duas classes de decisão agem de formas diferentes:
 - **Explicativa** — nomeia a causa ou registra trade-off deliberado. É esta que rebaixa na
   Etapa 2. Exemplos vigentes: `SLA Recurso de Glosa - HI` (trade-off de 17/08 para proteger o
   SLA de análise de contas), `R$ Recurso de Glosa acumulado` (capacidade realocada, 17/08),
-  `R$ Faturado Cassi` (atraso da própria Cassi, 11/08, veredito Recusada em 13/08).
+  `R$ Faturado Cassi` (atraso da própria Cassi).
+
+  **Não confie nas datas deste parágrafo — abra as páginas.** Ele já carregou a citação falsa de
+  "13/08, veredito Recusada" para o Cassi (ver guard-rail 1), que foi de onde ela se propagou.
+  Os exemplos aqui servem para você entender a **classe** da decisão, nunca para ser copiados
+  como referência num report.
 
 **Guard-rails do rebaixamento — sem eles a regra vira desculpa para esconder vermelho:**
 
-1. **Só rebaixa com decisão vigente citada por link.** Sem link, não rebaixa. Não existe
-   rebaixamento por "parece pequeno", "é começo de mês" (isso é a regra de dois estágios, e só
-   onde o limiar a define), "amostra baixa" ou hipótese sua.
+1. **Só rebaixa com decisão vigente citada por link — e o link tem que ter sido aberto.** Sem
+   link, não rebaixa. Não existe rebaixamento por "parece pequeno", "é começo de mês" (isso é a
+   regra de dois estágios, e só onde o limiar a define), "amostra baixa" ou hipótese sua.
+
+   **Antes de citar qualquer decisão, abra a página e confira três coisas:** que ela existe, que
+   a **data** que você vai escrever é a data dela, e que o `Status` dela não é `Revertida`,
+   `Superada` ou `Cancelada`. Só então cite.
+
+   **Isto não é formalidade.** Em 17/09/2026 descobriu-se que o report vinha citando, todos os
+   dias desde pelo menos 11/09, uma "decisão de 13/08/2026, Veredito Recusada" para justificar
+   não escalar o `R$ Faturado Cassi`. **Essa página não existe.** A entrada mais próxima é de
+   **06/08**, e seu `Status` é **Revertida** — nem a data confere, nem está vigente. Uma citação
+   inventada foi copiada de um dia para o outro por uma semana, com aparência perfeita de rigor:
+   data, veredito e autor, tudo plausível, tudo falso.
+
+   Uma referência que você não abriu é uma referência que você não tem. Se não achar a página,
+   escreva `NÃO ENCONTRADO NO TEXTO` e **não rebaixe** — vermelho com causa por confirmar é
+   honesto; amarelo apoiado em decisão inexistente não é.
 2. **A decisão precisa cobrir ESTE desvio**, não o KPI em geral. Decisão sobre o grupo Fleury
    não rebaixa um desvio concentrado no Einstein.
 3. **Fato novo cancela o rebaixamento.** Se a magnitude mudou materialmente em relação a quando
@@ -93,6 +139,21 @@ As duas classes de decisão agem de formas diferentes:
    estourou, o KPI **segue 🔴** e o report apresenta **apenas o fato novo**, formulado como
    pergunta ao OM. Foi assim que o Cassi virou pergunta de horizonte em 18/08: "eram 9 dias de
    estagnação, hoje são 14".
+
+   **Espera por terceiro vence em 3 dias úteis** (decisão da OM, 17/09/2026). Quando a decisão
+   vigente é do tipo "aguardando retorno de alguém de fora" — outro time, prestador, operadora —
+   o rebaixamento vale por **3 dias úteis** contados da data da decisão. No 4º dia útil sem
+   resolução, o **prazo da espera** é o fato novo: o KPI volta a 🔴 e a mensagem diz
+   `aguardando {quem} há {N} dias úteis — prazo de 3 du estourado`, formulada como pergunta à OM.
+
+   Isto existe porque o envelhecimento diário não disparava nada: em 17/09 o lote CARMINO passou
+   de 5 para 6 dias úteis aguardando precificação e seguiu rebaixado, e sem uma régua qualquer
+   incremento é sempre "pequeno demais" para reabrir. A contagem é da **decisão**, não do início
+   do caso — decisão nova sobre o mesmo assunto reinicia o relógio, que é o comportamento certo:
+   significa que alguém olhou de novo.
+
+   Não confunda com o guard-rail 4: lá o KPI nunca rebaixa; aqui ele rebaixa e o rebaixamento
+   expira.
 4. **Tolerância zero — dois KPIs nunca rebaixam.** `SLA de Análise de conta - HI` e
    `PEGs por Status de Análise no SLA - HI` são compromisso de serviço: cruzaram o limiar, são 🔴
    mesmo com causa decidida. A decisão entra no texto, a cor não muda. Se a operação passar a ter

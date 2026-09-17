@@ -143,6 +143,13 @@ Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
    limiar olha só a janela de ≤3 dias; se a OM quiser que o estoque vencido também dispare
    sozinho, é editar o texto do limiar no Notion — a rotina obedece o que estiver escrito lá.
 
+**A classe existe desde 16/09 e nunca foi aplicada.** Verificado em 17/09/2026: toda entrada do
+Decision Log para `Recursos de Glosa Próximos do Vencimento`, desde pelo menos 14/09, usa o
+formato normal de hipótese e causa-decidida, e abre página — violando as regras 1 e 3 acima. Se
+você está prestes a escrever "Hipótese:" ou a criar uma página do Decision Log para um KPI desta
+tabela, **pare**: é sinal de que você caiu no tratamento padrão sem perceber. Fila não tem
+hipótese; tem lista e dono.
+
 Para incluir outro KPI nesta classe, acrescente-o à tabela acima. Nada mais precisa mudar.
 
 ## BLOCO DE MAPEAMENTO DE RESPONSÁVEIS — editar aqui quando o time mudar
@@ -181,9 +188,16 @@ Marque sempre por ID (`<@U044N26BETU>`), nunca escreva o nome antes ou depois da
 
 ### Como rotear os KPIs "por tipo de instituição"
 
-Nesses nove KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
+Nesses **dez** KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
 só descobre isso **depois de executar o drill**, então o roteamento é a última coisa que se
 decide, não a primeira.
+
+**O drill de concentração não é opcional.** No teste de 17/09/2026 o `SLA Recurso de Glosa - HI`
+saiu 🔴 sem ninguém ter quebrado o número por tipo — e quando se quebra, o resultado é gritante:
+Hospital 34/35 dentro do SLA (97,1%), Laboratório 0/13 (0%). **13 das 14 fora do SLA são de
+Laboratório (92,9%)**, muito acima do corte de 70%. O KPI tinha dono claro — Fernanda — e passou
+dias sem ser roteado para ninguém. Um KPI roteável que sai sem a linha `Concentração:` é uma
+execução incompleta, mesmo que a cor esteja certa.
 
 1. Execute o drill do KPI (tabela de cards acima) e quebre o desvio **por tipo de instituição**.
 2. Roteie pela concentração:
@@ -203,9 +217,16 @@ decide, não a primeira.
 5. **Se o drill não devolver o tipo de instituição, marque as duas** e escreva
    `tipo de instituição não disponível no card — roteado para as duas`. Nunca chute.
 
-**Caso conhecido:** o card **73490** (`Recursos de Glosa Próximos do Vencimento`) devolve
-`institution_name` e `provider_economic_group`, mas **não** devolve o tipo de instituição. Até
-que o card passe a devolver, esse KPI marca **as duas**. Quando for ajustado, esta nota sai.
+**Casos conhecidos — cards que não devolvem tipo de instituição.** Enquanto forem estes, os KPIs
+que dependem deles marcam **as duas** e escrevem a frase do passo 5:
+
+| Card | KPI | O que devolve no lugar |
+|---|---|---|
+| **73490** | Recursos de Glosa Próximos do Vencimento | `institution_name`, `provider_economic_group` |
+| **32465** | PEGs por Status de Análise no SLA - HI | status e contagem, sem dimensão de prestador |
+| **73390** | PEGs Abertas por Dias Úteis (drill do 32465) | aging, sem dimensão de prestador |
+
+Verificado em 17/09/2026. Quando qualquer um passar a devolver o tipo, tire a linha da tabela.
 
 ## OM
 

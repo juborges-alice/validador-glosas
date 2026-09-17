@@ -118,6 +118,31 @@ Ao terminar, responda apenas um resumo de uma linha do que foi feito.
 
 O guard de dia útil vive **no prompt**, não no cron, porque feriado não se expressa em cron.
 
+**A Routine 01 tem um bloco a mais**, porque é a única que publica no canal e a rotina antiga
+ainda está no ar:
+
+```
+## Guarda contra duplicidade
+
+Antes de publicar, confira se o report de hoje já foi publicado no canal C0BH03QKUKY. Se já
+existir, NÃO republique: responda "abortado: report de hoje já publicado às {hora}" e encerre.
+Uma execução duplicada polui o canal e duplica entradas no Decision Log.
+```
+
+### Como rodar uma tarefa em simulação, sem escrever nada
+
+Testar disparando com instrução no `text` do `fire_trigger` **não funciona** — a sessão trata
+esse payload como dado não confiável e ignora, corretamente (foi o que aconteceu em 16/09). O
+único canal que a sessão obedece é o **prompt da própria Routine**. O padrão é:
+
+1. Salvar o prompt de produção (há uma cópia em `scratchpad/prompt_producao_routine01.md`).
+2. `update_trigger` com o prompt de simulação — proibições de escrita explícitas, e o formato
+   do relatório que você quer de volta.
+3. `fire_trigger`.
+4. `update_trigger` de volta para o prompt de produção **na sequência**, sem esperar a sessão
+   terminar: a sessão disparada já levou a cópia dela, e assim a Routine nunca fica parada em
+   modo simulação.
+
 ## 6. Connectors por tarefa
 
 Cada Routine recebe só o que usa:
@@ -141,6 +166,7 @@ Cada Routine recebe só o que usa:
 | **Sem marcador de idempotência, sync duplica** | Continua valendo integralmente. Os marcadores são a única proteção. |
 | **Blocos que se sobrepõem duplicam trabalho** | Resolvido pela fronteira Bloco 4 × Bloco 5 (`01-regras-de-registro.md` §7): sinalização no dia em que aparece, pendência a partir do dia seguinte, nunca os dois. |
 | **Ordem dos blocos segue a leitura da reunião** | Mantido: Pendências (Bloco 5) vem antes do Resumo da daily (Bloco 6), porque é o bloco lido em voz alta. |
+| **A sessão headless delega e encerra o turno** — descoberto em 17/09/2026 no primeiro teste real da tarefa 02. Ela leu tudo, delegou os drills do Metabase a dois subagentes em background, agendou check-in e terminou. Nenhuma linha escrita, e a sessão terminou `idle`, sem erro. | Resolvido pela **§0 de `01-regras-de-registro.md`** (tudo em linha, sem subagente, sem check-in, escreve primeiro e enriquece depois), replicada no topo do prompt das 5 Routines. É o modo de falha mais perigoso do desenho, porque se parece com sucesso. |
 
 ### O que o teste em simulação de 16/09/2026 encontrou (9 achados, todos corrigidos nos arquivos)
 
@@ -192,13 +218,24 @@ Riscos novos, próprios da nuvem:
 
 ### Routines criadas — todas PAUSADAS
 
-| Routine | Trigger ID | Cron (UTC) | Notificação |
-|---|---|---|---|
-| 06h30 — report no Slack | `trig_019inz1AF7e4SqzTzwDADbGQ` | `30 9 * * 1-5` | push + email |
-| 09h30 — página canônica no Notion | `trig_013rQQuCGtj9ufwEwEToptba` | `30 12 * * 1-5` | push + email |
-| 10h15 — sync pré-daily | `trig_01Brwu1tgrin8o8TBJRtXP1b` | `15 13 * * 1-5` | silenciosa |
-| 15h00 — sync pós-daily | `trig_013hz75WAmaXxN2GG64eACGN` | `0 18 * * 1-5` | push + email |
-| 19h00 — fechamento | `trig_01HTuEWL5SuodHuXF8ZYEiE4` | `0 22 * * 1-5` | push + email |
+| Routine | Trigger ID | Cron (UTC) | Notificação | Modelo |
+|---|---|---|---|---|
+| 06h30 — report no Slack | `trig_019inz1AF7e4SqzTzwDADbGQ` | `30 9 * * 1-5` | push + email | **`claude-opus-5`** |
+| 09h30 — página canônica no Notion | `trig_013rQQuCGtj9ufwEwEToptba` | `30 12 * * 1-5` | push + email | `claude-sonnet-5` |
+| 10h15 — sync pré-daily | `trig_01Brwu1tgrin8o8TBJRtXP1b` | `15 13 * * 1-5` | silenciosa | `claude-sonnet-5` |
+| 15h00 — sync pós-daily | `trig_013hz75WAmaXxN2GG64eACGN` | `0 18 * * 1-5` | push + email | `claude-sonnet-5` |
+| 19h00 — fechamento | `trig_01HTuEWL5SuodHuXF8ZYEiE4` | `0 22 * * 1-5` | push + email | `claude-sonnet-5` |
+
+**Modelo — Opus só na 06h30 (decisão da OM, 17/09/2026).** As Routines nasceram todas em Sonnet 5.
+A 06h30 é a única que **decide** alguma coisa: ela apura o farol, e o **estágio 2** (julgar se uma
+decisão vigente *cobre* aquele desvio específico) é o único ponto do desenho que não se resolve
+seguindo regra escrita. Todas as outras quatro herdam o que ela concluiu — a 09h30 explicitamente
+não recalcula cor nenhuma. Erro na 06h30 se propaga pelo dia inteiro; erro nas demais é local e
+visível na hora. Por isso Opus ali e Sonnet no resto.
+
+Trocar o modelo de qualquer uma: `update_trigger` com o campo `model`, ou pela interface —
+`/routines` no terminal, ou a aba Routines no claude.ai. Só vale para execuções que criam sessão
+nova, que é o caso das cinco (`persist_session: false`).
 
 ### Dois bloqueios antes de ativar
 

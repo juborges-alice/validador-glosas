@@ -253,7 +253,7 @@ thread:
 ↩️ <@ID> responda nesta thread: causa raiz, plano de ação, responsável e prazo.
 ```
 
-**Nos nove KPIs roteados por tipo de instituição** (bloco de mapeamento), o responsável sai da
+**Nos dez KPIs roteados por tipo de instituição** (bloco de mapeamento), o responsável sai da
 concentração do desvio no drill — você só sabe quem marcar depois de executar o drill. Nesses
 casos, acrescente **antes** da linha `↩️` a linha que explica o roteamento:
 
@@ -292,6 +292,15 @@ Concentração dos vencidos: {grupo econômico} {n} recursos (R$ {valor}) · {gr
 A linha de **Concentração** é obrigatória e traz os grupos econômicos em ordem decrescente de
 valor vencido, até cobrir 90% do valor. Ela é o que transforma uma pilha de recursos numa
 conversa acionável — hoje, por exemplo, um único grupo responde por quase todo o valor vencido.
+
+**O horizonte dos vencidos é a metade que ninguém está vendo.** Medido em 17/09/2026: a mensagem
+diária mostrava 22 recursos / R$71.229,91 vencendo em ≤3 dias. Atrás disso havia **87 recursos,
+R$658.981,21, já vencidos e ainda em aberto** — dos quais **83 (R$657.650,21, 99,8% do valor) do
+grupo FLEURY**. O backlog vencido é cerca de **nove vezes** o número que aparecia no canal, e
+nunca apareceu em nenhum report. Publicar só o horizonte de 3 dias faz a fila parecer pequena e
+sob controle, quando o que está fora do prazo é uma ordem de grandeza maior. **As duas linhas
+saem sempre, mesmo que uma delas esteja zerada** — `Já vencidos, ainda em aberto: 0` é
+informação, ausência da linha não é.
 
 **Parte 2 — respostas na thread.** Duas listas, nesta ordem, cada uma numa resposta:
 
@@ -458,6 +467,30 @@ Regras:
   `ts pendências: <ts>`), para os syncs re-cobrarem na mesma thread.
 
 ---
+
+## Conferência obrigatória antes de publicar
+
+Passe esta lista antes de postar qualquer coisa no canal. Cada item existe porque falhou de
+verdade — a auditoria de 17/09/2026 encontrou os seis em produção, todos publicados com
+aparência de report correto. Nenhum deles é detectável lendo o texto final: só se pega
+conferindo contra a fonte.
+
+| # | Confira | Se falhar |
+|---|---|---|
+| 1 | **Toda mensagem 🔴 termina com a linha `↩️ <@ID>`.** Em 17/09 **nenhuma das 9** tinha menção — ninguém estava sendo cobrado, e o report parecia completo. | Acrescente. Sem menção, a mensagem é aviso, não cobrança. |
+| 2 | **Todo KPI 🔴 roteável por tipo de instituição tem a linha `Concentração:`**, calculada no drill do dia. | Execute o drill. Se o card não devolve o tipo, escreva a frase de indisponibilidade e marque as duas. |
+| 3 | **Toda decisão citada foi aberta**, e a data e o `Status` que você escreveu são os da página. | Não citou porque não achou? `NÃO ENCONTRADO NO TEXTO`, e sem rebaixar. |
+| 4 | **KPI de "alerta de trabalho" traz os dois horizontes**, mesmo com um deles zerado. | Execute o card inteiro, não só a faixa de ≤3 dias. |
+| 5 | **Nenhum Top N foi avaliado só pelos nomes conhecidos** — todas as linhas passaram pelo limiar. | Reavalie a lista inteira. |
+| 6 | **Antes de abrir entrada nova no Decision Log**, o dedup de 14 dias foi rodado de fato (`01-regras-de-registro.md` §4). | Complemente a entrada existente em vez de criar outra. |
+
+**Sobre o item 6.** Está documentado desde 16/09 e continuou não sendo executado: em 17/09 havia
+uma página nova por dia, por KPI, praticamente sem falha desde 14/07 em `SLA Recurso de Glosa`,
+`% Faturas por Status - HS` e `% Glosa Alice por Prestador`. Documentar não fez efeito; por isso
+virou item de conferência com passo concreto. O dedup roda **antes** de criar, não depois.
+
+**Nenhum item desta lista é dispensável por falta de tempo.** Se o dia estiver ruim e alguma
+coisa tiver que cair, cai o enriquecimento (drill extra, detalhamento), nunca a conferência.
 
 ## Tratamento de status
 
