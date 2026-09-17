@@ -171,20 +171,50 @@ daily-contas-medicas-notion-page nesta mesma página.
 
 Use ⚪ para KPI sem dado. Público é OM/GM — objetivo, sem jargão.
 
-## Passo 7 — Decision Log (1 entrada por 🔴)
+## Passo 7 — Decision Log (só para achado NOVO)
 
-Uma entrada por KPI vermelho, como rascunho, com os campos de `01-regras-de-registro.md` §3.
-Aplique **dedup de 14 dias** e a regra de **vermelho persistente** antes de criar.
+**Não é uma entrada por 🔴.** Essa era a regra até 17/09/2026 e é a causa das 86 entradas
+`Em curso` acumuladas: ela criava uma decisão por KPI vermelho, todo dia, antes de qualquer
+humano ter concluído nada. Um KPI que está 🔴 há duas semanas pela mesma causa já decidida não
+produz decisão nova nenhuma — produz a mesma linha, catorze vezes.
 
-**Exceção: KPIs do tipo "alerta de trabalho"** (tabela em `00-identificadores.md`) **não geram
-entrada no Decision Log**, nem quando 🔴. Fila de trabalho não é decisão. Eles viram linha de
-pendência na Mensagem 6, com o rótulo `[Fila]`.
+**Crie entrada apenas quando o 🔴 for achado novo**, isto é: cruzou o limiar e **não existe
+decisão vigente que cubra este desvio**. Para cada 🔴, nesta ordem:
+
+1. **Existe decisão vigente que cobre?** (é a mesma checagem da Etapa 2 do farol). Se sim →
+   **não crie nada.** Cite o link da decisão existente na mensagem do Slack e siga.
+2. **Existe entrada dos últimos 14 dias para este KPI?** (dedup da §4). Se sim → **não crie
+   nada.** Acrescente `DD/MM: {valor} ({variação})` ao `Contexto / problema` da entrada
+   existente e atualize `Fonte / evidência`.
+3. **É KPI do tipo "alerta de trabalho"?** (tabela em `00-identificadores.md`) → **nunca cria
+   entrada**, nem quando 🔴. Fila de trabalho não é decisão; vira pendência `[Fila]` na
+   Mensagem 6.
+4. Passou pelos três → **aí sim crie**, como `Rascunho Claude`, com os campos da §3.
+
+Na prática isso significa que em muitos dias esta tarefa **não cria nenhuma entrada**, e está
+certo. Um dia com 9 vermelhos e 1 entrada nova é um dia normal; um dia com 9 vermelhos e 9
+entradas novas é sinal de que os três filtros não foram aplicados.
+
+### O título é o que aparece na pendência — escreva pensando nisso
+
+O `Título da decisão` vira a linha do Bloco 4 da página e da Mensagem 6. **Não comece pelo nome
+do KPI.** O título diz a **conclusão ou a pergunta em aberto**:
+
+| Não | Sim |
+|---|---|
+| `SLA Recurso de Glosa - HI` | `Investigar a concentração de recursos fora do SLA em Laboratório` |
+| `R$ Faturado Cassi` | `Não escalar o atraso da Cassi enquanto o envio de 15/09 estiver em processamento` |
+| `% Glosa Alice por Prestador - HI` | `Apurar o salto de glosa do INCOR de 1,94% para 35,15% em Set/26` |
+
+O KPI vai no campo `KPIs afetados` (relation), que é onde ele pertence e de onde o dedup o lê.
+Repetir o nome no título não acrescenta informação e destrói a legibilidade da pendência.
 
 Depois de criar, volte na Execução de Rotina e preencha `Decisões geradas` com as URLs.
 
 **Esta tarefa não cria ações no Action Log.** Às 06h30 ainda não existe conclusão validada —
 as threads acabaram de ser abertas. Ação é registrada no fechamento (tarefa 05), só com o que
-tiver OK humano.
+tiver OK humano. É por isso que o Action Log de Contas Médicas está vazio hoje: os syncs nunca
+rodaram. Quando entrarem no ar, é dali que as pendências do Bloco 4 passam a vir.
 
 ---
 

@@ -268,6 +268,23 @@ saindo o contrário, algo está sendo classificado errado.
 `Contexto / problema` da entrada vigente (`DD/MM: {valor} ({variação})`) e atualiza
 `Fonte / evidência` — é o procedimento de dedup da §4.
 
+### O título é o que vira a pendência
+
+Vale para os dois logs. O título do registro é o texto que aparece na linha do Bloco 4 da página
+e da Mensagem 6 — é por ele que alguém decide se aquilo é com ela. **Nunca comece pelo nome do
+KPI:** o KPI vai na relation `KPIs afetados`, que é de onde o dedup o lê; repetir no título não
+acrescenta informação e torna a pendência ilegível.
+
+- **Decisão** — o título diz a **conclusão ou a pergunta em aberto**:
+  `Não escalar o atraso da Cassi enquanto o envio de 15/09 estiver em processamento`,
+  `Apurar o salto de glosa do INCOR de 1,94% para 35,15% em Set/26`.
+- **Ação** — o título começa com **verbo no infinitivo** e descreve algo verificável:
+  `Obter do Fleury a recuperação do acesso ao drive`,
+  `Mapear os prestadores que concentram as PEGs a ≥5 dias úteis`.
+
+Teste rápido: se a linha, lida sozinha em voz alta na daily, não diz **o que precisa acontecer**,
+o título está errado.
+
 ### Campos ao registrar decisão (Decision Log)
 
 `Título da decisão` (title) · `Contexto / problema` · `Insight de origem` ·
