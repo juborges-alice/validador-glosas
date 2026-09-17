@@ -357,9 +357,12 @@ os mesmos números — nunca criam mensagem nova.
 
 Levante o que está **em aberto** (não é só o vencido):
 
-- **Decision Log:** entradas de Contas Médicas com `Status de execução` = `Em curso`, **ou**
-  incompletas (campos obrigatórios faltando), **ou** com `Estado de complemento` =
-  `Rascunho Claude` há mais de 1 dia útil (proposta que ninguém respondeu).
+- **Decision Log:** entradas de Contas Médicas com `Status de execução` = `Em curso`
+  **e sem `Prazo` preenchido**, **ou** incompletas (campos obrigatórios faltando), **ou** com
+  `Estado de complemento` = `Rascunho Claude` há mais de 1 dia útil (proposta que ninguém
+  respondeu) — nesse último caso, **apenas a ocorrência mais recente por KPI**.
+  Ver **"Dois filtros obrigatórios no Decision Log"** logo abaixo: sem eles a Mensagem 6 é
+  impraticável no primeiro dia.
 - **Action Log (Log Melhoria Contínua):** ações de Contas Médicas com `Status` ∈
   {`A iniciar`, `Em andamento`, `Atrasada`}, ou incompletas.
 - **Deep dives pendentes:** os `[Deep dive]` em aberto no Bloco 5 da página (`Fonte` =
@@ -374,9 +377,35 @@ Levante o que está **em aberto** (não é só o vencido):
   vencidos ainda em aberto`. **Rola todo dia até zerar**, e o contexto é reescrito com os
   números do dia — nunca se abre uma segunda linha para o mesmo KPI.
 
+#### Dois filtros obrigatórios no Decision Log
+
+Vieram do teste de 16/09/2026, que encontrou **dezenas** de entradas em aberto acumuladas desde
+julho. Sem eles a Mensagem 6 nasce com uma lista de trinta e poucos itens que ninguém lê, e o
+time desliga da mensagem no primeiro dia. Ambos são **reversíveis** — a OM manda.
+
+1. **`Rascunho Claude`: só a ocorrência mais recente por KPI conta.** O backlog é composto
+   majoritariamente de propostas repetidas para o mesmo KPI, dia após dia (o dedup da §
+   "Dedup do Decision Log" não vinha sendo aplicado). Ordene por `date:Data:start` desc, agrupe
+   por KPI e leve **uma** linha por KPI — a mais recente. As anteriores são a mesma pendência
+   escrita várias vezes, não pendências distintas.
+2. **`Em curso` só é pendência se `Prazo` estiver vazio.** Hoje **nenhuma** entrada de Contas
+   Médicas tem `Prazo` preenchido, então o filtro na prática pega todas — mas ele é o filtro
+   certo assim que a OM começar a datar as decisões: uma decisão em curso *com prazo à frente*
+   é um trade-off aceito, não um atraso, e cobrá-la é alarme falso.
+
+**Limpeza retroativa do backlog é decisão da OM** — a rotina não consolida nada por conta
+própria. Enquanto ele existir, a Mensagem 6 abre com a linha de contexto:
+`{X} entradas anteriores do mesmo KPI omitidas por dedup.`
+
+**`{V} vencidas` vale zero enquanto `Prazo` não for preenchido.** O campo é calculado por
+`Prazo < hoje`, e sem `Prazo` em lugar nenhum o número é sempre 0 — **por falta de dado, não
+por ausência de atraso**. Não escreva `0 vencidas` como se fosse boa notícia: enquanto nenhuma
+entrada tiver `Prazo`, troque a parte final do cabeçalho por
+`vencidas: n/d (sem Prazo cadastrado)`.
+
 O que conta como pendência:
 - **Não iniciada** (`A iniciar`) ou **sem preenchimento completo** → falta info/preenchimento.
-- **Em andamento**, mesmo dentro do prazo → cobrar update.
+- **Em andamento sem prazo** → cobrar update **e o prazo**. Com prazo à frente, não entra.
 - **Vencida** (prazo < hoje) → cobrar conclusão ou novo prazo.
 - **Risco/bug sinalizado sem tratativa** → cobrar dono e encaminhamento.
 - **RFC pendente** (decisão que exigiu mudança de processo, mas o RFC no Catálogo de Processos
@@ -395,6 +424,14 @@ Se não houver nenhuma, **não poste**.
 Detalhe e cobrança na thread.
 ```
 
+Com backlog omitido por dedup e/ou sem `Prazo` cadastrado, o cabeçalho vira:
+
+```
+*Pendências em aberto ({N})* — {D} decisões · {A} ações · vencidas: n/d (sem Prazo cadastrado)
+{X} entradas anteriores do mesmo KPI omitidas por dedup.
+Detalhe e cobrança na thread.
+```
+
 **Parte 2 — resposta na thread, UMA por item, ENUMERADA.** A numeração é a referência para a
 pessoa responder ("Pendência 1 - escalado, ..."). Formato, sem emojis:
 
@@ -406,7 +443,8 @@ Pendência {N} - <@responsável> — [{Decisão|Ação|Deep dive|Fila}] {título
 Estado por tipo:
 - **Não iniciada / incompleta** → `Não iniciada` ou `Incompleta: falta {campos}` · cobrar
   preenchimento e prazo.
-- **Em andamento (no prazo)** → `Em andamento · prazo {DD/MM}` · cobrar update/bloqueio.
+- **Em andamento sem prazo** → `Em andamento · sem prazo` · cobrar update **e a data de prazo**.
+- **Em andamento (no prazo)** → não entra na lista. Existe, está datada, está dentro do prazo.
 - **Vencida** → `Vencida (venceu {DD/MM})` · cobrar conclusão ou novo prazo.
 
 Regras:

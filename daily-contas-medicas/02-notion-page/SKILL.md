@@ -305,8 +305,13 @@ Vem **antes** do Resumo da daily de propósito: é o bloco lido em voz alta na d
 **Tabela** (não bullets), colunas fixas: `Pendência | Fonte | Responsável | Venceu | Status`.
 `Fonte` ∈ `Decision Log` · `Action Log` · `Deep dive` · `Bloco 4`. Varrer:
 
-- **Decision Log:** `Status de execução` = `Em curso`; entradas com `Estado de complemento` =
-  `Rascunho Claude` há mais de 1 dia útil; `Prazo` anterior a hoje.
+- **Decision Log:** `Status de execução` = `Em curso` **sem `Prazo` preenchido**; entradas com
+  `Estado de complemento` = `Rascunho Claude` há mais de 1 dia útil, **apenas a ocorrência mais
+  recente por KPI**; `Prazo` anterior a hoje. Os dois filtros são os mesmos da Mensagem 6 — ver
+  **"Dois filtros obrigatórios no Decision Log"** em `01-report-slack/SKILL.md`. Bloco 5 e
+  Mensagem 6 têm que listar **o mesmo conjunto**: se divergirem, a página e o canal contam
+  histórias diferentes no mesmo dia. Havendo entradas omitidas por dedup, escreva sob a tabela
+  `{X} entradas anteriores do mesmo KPI omitidas por dedup.`
 - **Action Log:** `Status` = `Atrasada`, ou `Prazo` anterior a hoje com `Status` diferente de
   `Concluída` e `Cancelada`, ou `Status` = `A iniciar` sem prazo.
 - **Deep dive:** 🔴 de dia anterior sem causa raiz / plano de ação / decisão (criado pela

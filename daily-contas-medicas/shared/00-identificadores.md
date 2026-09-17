@@ -66,10 +66,17 @@ agrupamento** de exibição, nunca meta nem card.
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
 | 13 | Contas Médicas - % Resumos Criticados - HS | 30858 | diária |
 | 14 | Contas Médicas - Status das Críticas (por fatura) - HS | 66766 | diária |
-| 15 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária |
+| 15 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária ⚠️ |
 | 16 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
 | 17 | Contas Médicas - SLA de Pagamento de HS | 35629 | diária |
 | 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
+
+**⚠️ `Tempo para Resolução de Críticas - HS`: metade do limiar é inverificável.** O limiar diz
+`Tempo médio de resolução > 3 dias; ou crítica específica > 10 dias sem resolução`. Sem drill
+cadastrado, **só a média mensal é apurável** — a segunda cláusula nunca pode ser checada. Reporte
+o KPI pela primeira cláusula e escreva no Caveat, todo dia:
+`segunda cláusula do limiar (crítica > 10 dias) não verificável — sem card de drill`.
+Quando um drill for cadastrado, esta nota sai.
 
 Conferido contra o catálogo em 16/09/2026. Desde a primeira versão (19/08) entrou o KPI
 `Recursos de Glosa Próximos do Vencimento (≤3 dias)` (card 73490, criado em 10/09) e foram
@@ -104,7 +111,7 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | R$ Faturado Cassi | — sem drill cadastrado |
 | % Resumos Criticados - HS | 66766 (Status das Críticas por fatura) · 38203 (% Críticas Acatadas) |
 | Status das Críticas (por fatura) - HS | 38203 |
-| Tempo para Resolução de Críticas - HS | — sem drill cadastrado |
+| Tempo para Resolução de Críticas - HS | — sem drill cadastrado ⚠️ |
 | % Faturas por Status - HS | — sem drill cadastrado |
 | SLA de Pagamento de HS | 35588 (Média de Dias Úteis Entre Etapas de Pagamento) |
 

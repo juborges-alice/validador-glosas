@@ -114,7 +114,9 @@ como `Bloco 4`.
 atualizar o `Status` da linha existente — nunca uma segunda linha.
 
 **Atualizar também o resumão de pendências no topo do Bloco 1** (contagem de decisões/ações em
-aberto e vencidas).
+aberto e vencidas). Enquanto nenhuma entrada do Decision Log tiver `Prazo` preenchido, a
+contagem de vencidas é `n/d (sem Prazo cadastrado)` — **nunca `0`**, que leria como "nada
+atrasado" quando é "não dá para saber".
 
 ## 4. Fechamento de pendências no Slack — na thread ÚNICA (D+1)
 

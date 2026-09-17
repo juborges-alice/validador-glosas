@@ -23,6 +23,14 @@ Casos de borda:
 - Sem `Limiar de alerta` mas com `Meta atual`: só 🟢 (bate) ou 🔴 (não bate); **sem 🟡**.
 - **Limiar de tendência** (`crescimento > 1 p.p. vs. mês anterior`, `desvio > 20% vs. média
   histórica`): avalie contra a **série/tendência**, não contra o ponto isolado.
+- **Meta e limiar medem grandezas diferentes**: acontece quando o limiar foi recalibrado e a meta
+  não. Nesse caso **o limiar manda**, e o KPI só pode ser 🟢 ou 🔴 — **sem 🟡**, porque não existe
+  "não atingiu a meta mas não cruzou o limiar" quando os dois não são comparáveis. Diga isso na
+  coluna Contexto: `meta de {X} e limiar medem grandezas diferentes; farol pelo limiar`.
+  **Caso vigente:** `PEGs por Status de Análise no SLA - HI` tem `Meta atual` = 90% (aderência ao
+  SLA) e limiar que mede **% de PEGs em aberto em risco de estourar o SLA** — grandezas distintas
+  desde a recalibração de 09/09. Se a meta for atualizada para a mesma grandeza do limiar, esta
+  exceção sai.
 
 **Regra de direção.** Variação na direção boa de um KPI "menor é melhor" nunca gera 🟡 nem 🔴 —
 confirma 🟢, qualquer que seja a magnitude.
@@ -86,9 +94,9 @@ As duas classes de decisão agem de formas diferentes:
    pergunta ao OM. Foi assim que o Cassi virou pergunta de horizonte em 18/08: "eram 9 dias de
    estagnação, hoje são 14".
 4. **Tolerância zero — dois KPIs nunca rebaixam.** `SLA de Análise de conta - HI` e
-   `PEGs por Status de Análise no SLA - HI` (ambos com meta explícita de 90%) são compromisso de
-   serviço: abaixo da meta é 🔴 mesmo com causa decidida. A decisão entra no texto, a cor não
-   muda. Se a operação passar a ter um KPI de prazo regulatório ou contratual, acrescente-o aqui.
+   `PEGs por Status de Análise no SLA - HI` são compromisso de serviço: cruzaram o limiar, são 🔴
+   mesmo com causa decidida. A decisão entra no texto, a cor não muda. Se a operação passar a ter
+   um KPI de prazo regulatório ou contratual, acrescente-o aqui.
 5. **Nunca sobe cor.** O rebaixamento só desce, e só de 🔴 para 🟡.
 
 **Vermelho previsível.** Rebaixar não resolve a causa: quando o mesmo KPI cai no limiar dia após
@@ -215,6 +223,23 @@ mesmo KPI nos últimos 14 dias. Se existir, anexe a ocorrência do dia na entrad
 (data + valor) em vez de criar linha nova. Isso importa principalmente para os crônicos de
 Contas Médicas: `% Faturas por Status - HS`, `SLA Recurso de Glosa - HI`, `% PEGs sem NF` e
 `R$ Faturado Cassi`, que disparam quase todo dia.
+
+**Como procurar, na prática** — esta regra existia mas nunca foi aplicada, e a auditoria de
+16/09/2026 encontrou dezenas de entradas duplicadas por KPI desde julho. O passo concreto:
+
+1. Consulte o Decision Log filtrando `Operação` = Contas Médicas e `date:Data:start` nos últimos
+   14 dias.
+2. Procure entrada cujo `KPIs afetados` contenha o KPI de hoje **ou** cujo `Título da decisão`
+   comece com o nome dele. O título segue o padrão `{Nome do KPI} — fora do limiar (DD/MM)`, então
+   o casamento por prefixo funciona.
+3. Achou → **não crie página nova**. Acrescente ao fim de `Contexto / problema` uma linha
+   `DD/MM: {valor} ({variação})` e atualize `Fonte / evidência` para a Execução de Rotina de hoje.
+   No Slack, a mensagem do 🔴 aponta para essa entrada existente.
+4. Não achou → aí sim crie.
+
+**Backlog herdado.** A tabela já tem dezenas de entradas duplicadas de antes desta regra passar a
+valer. A rotina **não** deve tentar consolidá-las por conta própria: limpeza retroativa é decisão
+da OM. Para efeito de dedup, considere apenas a **ocorrência mais recente** de cada KPI.
 
 **Vermelho persistente (5 dias).** Se um KPI ficar 🔴 por 5 dias consecutivos, o alerta
 diário parou de informar. Encerre as investigações diárias abertas do tema e abra **uma**

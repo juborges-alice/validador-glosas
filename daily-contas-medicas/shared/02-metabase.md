@@ -48,6 +48,52 @@ Regra dura do OOS: **nunca escreva SQL próprio.** Execute o card canônico por 
    impede comparação completa mesmo após rodar as duas janelas`). Nunca marque "sem dado"
    porque a primeira chamada trouxe um snapshot de um único período.
 
+### ARMADILHA CRÍTICA — o parâmetro de data zera a baseline em 3 cards
+
+Nos cards **65831** (`Faturamento total acumulado` e `R$ Faturado Cassi`) e **65834**
+(`R$ Recurso de Glosa acumulado`), o `Parâmetro metabase` cadastrado no Notion manda passar
+`invoice_date` / `appeal_date_filter` = `"thismonth"`. **Não passe.**
+
+Motivo: o filtro é aplicado globalmente na CTE que alimenta **tanto o mês atual quanto os 3
+meses anteriores**. Passá-lo zera a coluna `media_3m_anteriores`, e a variação percentual vira
+divisão por zero. O card **já calcula os dois períodos sozinho**, a partir de `CURRENT_DATE`.
+
+**A chamada correta é omitir o parâmetro de data nesses três KPIs.** Verificado em 16/09/2026
+batendo o resultado contra o valor publicado no canal (Cassi: −28,81%, idêntico).
+
+**Regra geral que vale para qualquer card com baseline embutida:** depois de executar, olhe a
+coluna de comparação histórica. Se ela vier **zero ou nula** enquanto o período atual tem valor,
+você provavelmente filtrou a baseline junto. Re-execute **sem** o parâmetro de data e compare.
+Nunca reporte variação calculada sobre baseline zerada — e nunca marque o KPI como "sem dado"
+sem ter tentado isso.
+
+### Top N: avalie a lista inteira, todo dia
+
+Cards de prestador com Top N (**65700** com 15 posições, **50958**, **66204**, **56231**) trazem
+a lista completa do dia. **Avalie TODAS as linhas contra o limiar, todo dia** — não só os
+prestadores que apareceram em leituras anteriores.
+
+Isso não é detalhe: em 16/09/2026 o prestador **INCOR** cruzou o limiar de `% Glosa Alice por
+Prestador` (35,15% contra baseline de ~2%, desvio de +33 p.p.) e **não entrou no report**, porque
+a leitura revalidou apenas os nomes já conhecidos (SIRIO, SAHA). Prestador novo acima do piso de
+materialidade é exatamente o que esse KPI existe para pegar.
+
+Procedimento: para cada linha do Top N, aplique o limiar do KPI (incluindo o piso de
+materialidade de R$50.000 de faturamento no mês). Todo prestador que cruzar entra no report,
+tenha aparecido antes ou não. Se um prestador citado ontem sumiu do Top N, diga isso
+explicitamente — sumiu da lista não é o mesmo que voltou ao normal.
+
+### Cards que não aceitam parâmetro nenhum
+
+Verificado em 16/09/2026 pela API (`parameters: []` no nível superior da resposta):
+**30863 · 35629 · 32465 · 65694 · 30858 · 66766 · 48840 · 73490**.
+
+Para esses, o `Parâmetro metabase` do Notion é decorativo — execute o card sem parâmetros e siga.
+**Não registre isso como observação de qualidade de dados no report do dia**: já é sabido e está
+aqui. Registrar todo dia vira ruído. Só reporte se a lista acima estiver desatualizada, isto é,
+se algum desses cards passar a aceitar parâmetro ou se um card fora da lista devolver
+`parameters: []`.
+
 ### Cards que compartilham ID
 
 `Faturamento total acumulado` e `R$ Faturado Cassi` usam **o mesmo card 65831**, diferenciados

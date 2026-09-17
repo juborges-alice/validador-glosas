@@ -142,6 +142,24 @@ Cada Routine recebe só o que usa:
 | **Blocos que se sobrepõem duplicam trabalho** | Resolvido pela fronteira Bloco 4 × Bloco 5 (`01-regras-de-registro.md` §7): sinalização no dia em que aparece, pendência a partir do dia seguinte, nunca os dois. |
 | **Ordem dos blocos segue a leitura da reunião** | Mantido: Pendências (Bloco 5) vem antes do Resumo da daily (Bloco 6), porque é o bloco lido em voz alta. |
 
+### O que o teste em simulação de 16/09/2026 encontrou (9 achados, todos corrigidos nos arquivos)
+
+| # | Achado | Onde foi corrigido |
+|---|---|---|
+| 1 | O `Parâmetro metabase` cadastrado no Notion (`thismonth`) **zera a baseline de 3 meses** nos cards 65831 e 65834 — o filtro é aplicado na CTE inteira. | `shared/02-metabase.md`, seção "ARMADILHA CRÍTICA". A correção durável seria editar o catálogo no Notion — **decisão da OM**, não mexi. |
+| 2 | Cards Top N: a leitura revalidava só os prestadores já conhecidos. **INCOR cruzou o limiar em 16/09 (35,15% contra baseline ~2%, +33 p.p.) e não entrou no report.** | `shared/02-metabase.md`, "Top N: avalie a lista inteira, todo dia". |
+| 3 | O dedup do Decision Log existia como regra mas nunca foi aplicado — **dezenas de entradas duplicadas por KPI desde julho**. | `shared/01-regras-de-registro.md`, procedimento de 4 passos + cláusula "Backlog herdado". |
+| 4 | A Mensagem 6 herdaria esse backlog inteiro no dia 1, e **nenhuma entrada do Decision Log tem `Prazo`** — `{V} vencidas` daria sempre 0 por falta de dado. | `01-report-slack/SKILL.md`, "Dois filtros obrigatórios no Decision Log"; espelhado no Bloco 5 (tarefa 02) e no rodapé (tarefa 05). |
+| 7 | `PEGs por Status de Análise no SLA - HI`: meta (90% de aderência) e limiar (% em aberto em risco) medem **grandezas diferentes** desde a recalibração de 09/09. | `shared/01-regras-de-registro.md`, edge case "Meta e limiar medem grandezas diferentes" — nesse caso só 🟢/🔴, sem 🟡. |
+| 8 | `Tempo para Resolução de Críticas - HS`: a segunda cláusula do limiar (crítica > 10 dias) é **inverificável** sem card de drill. | `shared/00-identificadores.md`, nota ⚠️ + Caveat obrigatório todo dia. |
+| 9 | 8 cards não aceitam parâmetro nenhum (`parameters: []`) — estava sendo reportado como problema de qualidade de dado. | `shared/02-metabase.md`, "Cards que não aceitam parâmetro nenhum". |
+
+Os achados 5 e 6 eram consequência do 1 e do 3 e caíram junto.
+
+**Diferença de farol no teste:** simulado **🟢9 · 🟡4 · 🔴4** contra publicado **🟢9 · 🟡0 · 🔴8**.
+A diferença inteira vem do rebaixamento 🔴→🟡 do estágio 2 (regra nova, pedida pela OM), mais o
+INCOR que o report publicado deixou passar.
+
 Riscos novos, próprios da nuvem:
 
 - **Duplo report.** A rotina que roda hoje é a Routine `Daily-contas-medicas`
