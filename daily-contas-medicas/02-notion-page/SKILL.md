@@ -72,6 +72,29 @@ falhou ao criá-la), crie com as properties do Passo 6 da tarefa 01 e siga.
 Ao atualizar, confirme/complete as properties: `Status da execução`, `Resumo`,
 `Insights gerados (count)`, `Executor`, `Página da execução`, `Decisões geradas`.
 
+### A página já existir e parecer completa NÃO é motivo para pular
+
+**Reescreva o corpo sempre**, mesmo que a página de hoje já tenha os blocos preenchidos por uma
+execução anterior. A especificação desta tarefa muda ao longo do tempo — número de blocos,
+colunas, formato das pendências — e uma página montada por uma versão antiga do SKILL está
+desatualizada mesmo parecendo pronta. Quem define a estrutura correta é **o arquivo que você
+acabou de ler**, nunca o que está no Notion.
+
+Em 17/09/2026 uma execução olhou a página já publicada, concluiu "não há nada pendente" e
+encerrou sem alterar nada — enquanto a página estava no formato de 6 blocos e a especificação
+já pedia 5. Ela protegeu a coisa errada.
+
+**São duas idempotências diferentes, e só uma delas existe:**
+
+| O que | Regra |
+|---|---|
+| **Corpo da página no Notion** | reescrito **toda execução**, a partir da spec atual. Sobrescrever é o comportamento correto — a página é derivada, não acumulada. |
+| **Efeitos colaterais no Slack** (link na thread, repuxe de ETL) | **uma vez por dia**. Confira antes de postar; se já existe, não reposte e siga. |
+
+Nunca deixe de reescrever a página por causa do segundo. Eles são independentes: dá para
+reescrever o corpo inteiro e não postar nada no Slack, e é exatamente isso que acontece numa
+segunda execução do mesmo dia.
+
 ## Passo 3 — Reescrever o corpo nos 5 blocos
 
 Substitua o corpo enxuto pela estrutura abaixo: **5 blocos (toggles) + Fechamento do dia
@@ -382,6 +405,10 @@ nas colunas por data do Bloco 1.
 ---
 
 ## Passo 4 — Link no Slack + repuxe de ETL
+
+**Antes de postar, confira se o link já foi postado hoje nessa thread.** Se já estiver lá, não
+reposte — mas isso **não** impede nada do Passo 3: o corpo da página já foi reescrito, e é assim
+que tem que ser.
 
 Postar o link da página como **resposta na thread da Mensagem 1**:
 
