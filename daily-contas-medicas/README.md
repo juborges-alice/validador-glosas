@@ -12,7 +12,7 @@ Adaptada do desenho da Operação Autorização (`rotinadailyopsprompts`, ago/20
 | Hora (BRT) | Cron (UTC) | Tarefa | O que faz | Publica no Slack? |
 |---|---|---|---|---|
 | 06h30 | `30 9 * * 1-5` | `01-report-slack` | Lê os KPIs, aplica o farol, posta o report e os vermelhos, cria a Execução de Rotina enxuta e as entradas de Decision Log | Sim — é o report |
-| 09h30 | `30 12 * * 1-5` | `02-notion-page` | Transforma a Execução de Rotina na página canônica de 6 blocos, puxa os drills completos, repuxa o que o ETL não tinha às 06h30 | Só o link da página |
+| 09h30 | `30 12 * * 1-5` | `02-notion-page` | Transforma a Execução de Rotina na página canônica de 5 blocos, puxa os drills completos, repuxa o que o ETL não tinha às 06h30 | Só o link da página |
 | 10h15 | `15 13 * * 1-5` | `03-sync-pre-daily` | Pré-daily: captura o que o time respondeu nas threads e leva pra página | Não (silenciosa) |
 | 15h00 | `0 18 * * 1-5` | `04-sync-pos-daily` | Pós-daily: processa a transcrição, **propõe** decisões/ações nas threads, re-cobra pendências | Sim |
 | 19h00 | `0 22 * * 1-5` | `05-sync-fechamento` | Fechamento: **registra** só o que foi validado, abre Deep dives pendentes, fecha o rodapé | Só pendências D+1 |
@@ -70,7 +70,27 @@ explicitamente **pré**-daily. Se o horário da reunião mudar, mova a Routine.
 - **Cards que compartilham ID:** `Faturamento total acumulado` e `R$ Faturado Cassi` são o
   mesmo card 65831 com filtros diferentes.
 - **Padrão de falha do Cassi é estagnação**, não queda: valor idêntico por dias consecutivos.
-  A página tem coluna `Dias sem movimento` por isso.
+  Por isso os dois KPIs de faturamento levam a coluna `Dias sem movimento` na tabela resumo do
+  deep dive (Bloco 2).
+
+### Ajustes pedidos pela OM em 17/09/2026, alinhando a Autorização
+
+1. **A página tem 5 blocos, não 6.** O antigo Bloco 3 (Cassi e faturamento) saiu: não faz
+   sentido um bloco dedicado a dois indicadores quando já existe a visão geral no Bloco 1 e um
+   deep dive para todo 🔴 no Bloco 2. O que ele tinha de próprio — a leitura de estagnação —
+   virou coluna no deep dive. Numeração nova: 1 Resumo · 2 Deep dives · 3 Sinalizações ·
+   4 Pendências · 5 Resumo da daily.
+2. **Pendência é a ação, nunca o nome do KPI.** O Bloco 4 e a Mensagem 6 listam o **título do
+   registro, como link**, com dono, prazo e o que mudou — no formato de Autorização, com
+   cabeçalho de contagem e três seções (Vencidas · Aguardando definição da OM · Em andamento no
+   prazo). Uma linha escrita `SLA Recurso de Glosa - HI` não diz o que precisa ser feito nem por
+   quem; `Alinhar com o Fleury a recuperação do acesso ao drive` diz.
+3. **O Decision Log não é diário de bordo.** Em 17/09 Contas Médicas tinha 86 entradas
+   `Em curso` e zero ações no Action Log; Autorização, com o mesmo desenho, opera com 1 decisão
+   e 14 ações. A regra nova (`01-regras-de-registro.md` §3) só abre entrada quando há **decisão
+   nova** — repetir causa já decidida atualiza a entrada vigente. Tarefa vai para o Action Log,
+   que é de onde o Bloco 4 tira as pendências. **A base não mudou:** o `Log de Desvios e
+   Decisões` sempre foi a certa; o que mudava era o que escrevíamos nela.
 
 ## 4. Estrutura dos arquivos
 
@@ -164,8 +184,8 @@ Cada Routine recebe só o que usa:
 | **Mac dormindo = tarefa perdida.** 06h45 era o horário de risco. | Não se aplica. |
 | **Catch-up à mão atropela o tick automático** | Não se aplica do mesmo jeito, mas continua valendo: se você disparar o report à mão perto de 09h30, os dois se atropelam. Pause a Routine antes (`/routines`) e religue depois. |
 | **Sem marcador de idempotência, sync duplica** | Continua valendo integralmente. Os marcadores são a única proteção. |
-| **Blocos que se sobrepõem duplicam trabalho** | Resolvido pela fronteira Bloco 4 × Bloco 5 (`01-regras-de-registro.md` §7): sinalização no dia em que aparece, pendência a partir do dia seguinte, nunca os dois. |
-| **Ordem dos blocos segue a leitura da reunião** | Mantido: Pendências (Bloco 5) vem antes do Resumo da daily (Bloco 6), porque é o bloco lido em voz alta. |
+| **Blocos que se sobrepõem duplicam trabalho** | Resolvido pela fronteira Bloco 3 × Bloco 4 (`01-regras-de-registro.md` §7): sinalização no dia em que aparece, pendência a partir do dia seguinte, nunca os dois. |
+| **Ordem dos blocos segue a leitura da reunião** | Mantido: Pendências (Bloco 4) vem antes do Resumo da daily (Bloco 5), porque é o bloco lido em voz alta. |
 | **O comando de decodificar a API key do Metabase é bloqueado** — descoberto em 17/09/2026, quando a tarefa 02 montou a página inteira mas com os 9 drills em ⏳. A forma sugerida pela descrição da tool (`echo "$api_key_b64" \| base64 -d`) imprime a chave na saída padrão e o classificador de segurança da sessão barra, com razão. | Resolvido no passo 2 de `02-metabase.md`: `MB_KEY=$(printf '%s' "$MB_B64" \| base64 -d)`, resposta gravada em arquivo com `-o`, e nunca rodar o `base64 -d` sozinho. Verificado funcionando (card 73490, HTTP 200, 189 linhas). |
 | **A sessão headless delega e encerra o turno** — descoberto em 17/09/2026 no primeiro teste real da tarefa 02. Ela leu tudo, delegou os drills do Metabase a dois subagentes em background, agendou check-in e terminou. Nenhuma linha escrita, e a sessão terminou `idle`, sem erro. | Resolvido pela **§0 de `01-regras-de-registro.md`** (tudo em linha, sem subagente, sem check-in, escreve primeiro e enriquece depois), replicada no topo do prompt das 5 Routines. É o modo de falha mais perigoso do desenho, porque se parece com sucesso. |
 
@@ -176,7 +196,7 @@ Cada Routine recebe só o que usa:
 | 1 | O `Parâmetro metabase` cadastrado no Notion (`thismonth`) **zera a baseline de 3 meses** nos cards 65831 e 65834 — o filtro é aplicado na CTE inteira. | `shared/02-metabase.md`, seção "ARMADILHA CRÍTICA". A correção durável seria editar o catálogo no Notion — **decisão da OM**, não mexi. |
 | 2 | Cards Top N: a leitura revalidava só os prestadores já conhecidos. **INCOR cruzou o limiar em 16/09 (35,15% contra baseline ~2%, +33 p.p.) e não entrou no report.** | `shared/02-metabase.md`, "Top N: avalie a lista inteira, todo dia". |
 | 3 | O dedup do Decision Log existia como regra mas nunca foi aplicado — **dezenas de entradas duplicadas por KPI desde julho**. | `shared/01-regras-de-registro.md`, procedimento de 4 passos + cláusula "Backlog herdado". |
-| 4 | A Mensagem 6 herdaria esse backlog inteiro no dia 1, e **nenhuma entrada do Decision Log tem `Prazo`** — `{V} vencidas` daria sempre 0 por falta de dado. | `01-report-slack/SKILL.md`, "Dois filtros obrigatórios no Decision Log"; espelhado no Bloco 5 (tarefa 02) e no rodapé (tarefa 05). |
+| 4 | A Mensagem 6 herdaria esse backlog inteiro no dia 1, e **nenhuma entrada do Decision Log tem `Prazo`** — `{V} vencidas` daria sempre 0 por falta de dado. | `01-report-slack/SKILL.md`, "Dois filtros obrigatórios no Decision Log"; espelhado no Bloco 4 (tarefa 02) e no rodapé (tarefa 05). |
 | 7 | `PEGs por Status de Análise no SLA - HI`: meta (90% de aderência) e limiar (% em aberto em risco) medem **grandezas diferentes** desde a recalibração de 09/09. | `shared/01-regras-de-registro.md`, edge case "Meta e limiar medem grandezas diferentes" — nesse caso só 🟢/🔴, sem 🟡. |
 | 8 | `Tempo para Resolução de Críticas - HS`: a segunda cláusula do limiar (crítica > 10 dias) é **inverificável** sem card de drill. | `shared/00-identificadores.md`, nota ⚠️ + Caveat obrigatório todo dia. |
 | 9 | 8 cards não aceitam parâmetro nenhum (`parameters: []`) — estava sendo reportado como problema de qualidade de dado. | `shared/02-metabase.md`, "Cards que não aceitam parâmetro nenhum". |

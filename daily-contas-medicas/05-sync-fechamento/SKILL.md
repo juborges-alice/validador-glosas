@@ -25,7 +25,7 @@ Inputs fixos — não pergunte:
 Capturar as últimas respostas humanas novas desde o marcador **Resumo da daily ·
 `[meet-sync DD/MM]`** (ou a última varredura). Atualizar a página igual aos syncs anteriores:
 `Causa raiz` das linhas ⏳, `💬 Resposta do responsável`, Blocos 4 e 5. Se a transcrição ainda não
-tiver sido processada (sem `[meet-sync DD/MM]` no Bloco 6), buscá-la no Drive e distribuir nos
+tiver sido processada (sem `[meet-sync DD/MM]` no Bloco 5), buscá-la no Drive e distribuir nos
 blocos como a tarefa 04.
 
 ## 2. Registro — SÓ o que foi validado
@@ -70,7 +70,7 @@ Ao registrar:
   sujeita ao OK; se ninguém validou, vai como pendência D+1.
 - Ligue cada decisão criada no campo `Decisões geradas` da Execução de Rotina, e cada ação à sua
   decisão via `Decisão de origem`. Preencha o **link do registro** nos blocos da página (Bloco 2
-  `💬`, Bloco 4, Bloco 5, Bloco 6).
+  `💬`, Bloco 3, Bloco 4, Bloco 5).
 - Marque cada proposta processada com `[dl-sync]` na thread para não reprocessar:
 ```
 [dl-sync] ✓ Registrado — {Decisão|Ação}, {veredito}: {resumo em 1 linha}
@@ -86,7 +86,7 @@ dive** (sem causa raiz, sem plano de ação, sem decisão), registre-o como **pe
 dive** — é a etapa de **diagnóstico**, anterior a decisão/ação:
 
 - **Não** crie entrada no Decision Log nem no Action Log — não é ação nem decisão.
-- Registre na tabela do **Bloco 5** uma linha com `Fonte` = `Deep dive`, `Pendência` =
+- Registre na tabela do **Bloco 4** uma linha com `Fonte` = `Deep dive`, `Pendência` =
   `Deep dive: {KPI} (desvio de DD/MM)`, `Responsável` = a pessoa do bloco de mapeamento,
   `Status` = `Pendente`.
 - **Rola todo dia:** o report e os syncs re-incluem os Deep dives pendentes até serem feitos. Na
@@ -94,21 +94,21 @@ dive** — é a etapa de **diagnóstico**, anterior a decisão/ação:
 - **Some** quando o deep dive for feito (causa raiz + plano de ação ou decisão registrados).
 - **Dedup:** desvio que já tem Deep dive pendente aberto (mesmo KPI + data) não gera outro.
 - **KPI do tipo "alerta de trabalho" não vira Deep dive pendente.** Ele já tem a linha `[Fila]`
-  no Bloco 5, que rola todo dia com os números atualizados até zerar. Ao fechar o dia, reescreva
+  no Bloco 4, que rola todo dia com os números atualizados até zerar. Ao fechar o dia, reescreva
   o contexto dessa linha com os números do dia e registre quantos recursos saíram da fila —
   nunca abra uma segunda linha para o mesmo KPI.
 
-## 3. Atualizar a tabela do Bloco 5 (Pendências)
+## 3. Atualizar a tabela do Bloco 4 (Pendências)
 
 Deixar a tabela (`Pendência | Fonte | Responsável | Venceu | Status`) com o estado final do dia:
 itens registrados com seu link e fonte, itens fechados como ✅, e os que viram D+1.
 
-**Migração do Bloco 4 → Bloco 5 (é aqui que acontece).** Sinalizações de hoje com `Leitura` =
+**Migração do Bloco 3 → Bloco 4 (é aqui que acontece).** Sinalizações de hoje com `Leitura` =
 `→ Decisão`, `→ Ação` ou `→ Escalar` que seguem abertas viram linha de pendência: `Fonte` =
-`Bloco 4`, `Venceu` = data em que foram sinalizadas, `Responsável` = quem ficou (ou `A DEFINIR`).
-A partir de agora o item é **pendência** e não volta a aparecer no Bloco 4 nos próximos dias.
+`Bloco 3`, `Venceu` = data em que foram sinalizadas, `Responsável` = quem ficou (ou `A DEFINIR`).
+A partir de agora o item é **pendência** e não volta a aparecer no Bloco 3 nos próximos dias.
 `→ Monitorar` não migra. Sinalização que já virou registro entra com a `Fonte` do registro, não
-como `Bloco 4`.
+como `Bloco 3`.
 
 **Dedup:** antes de criar qualquer linha, conferir se o assunto já tem pendência aberta. Se tiver,
 atualizar o `Status` da linha existente — nunca uma segunda linha.

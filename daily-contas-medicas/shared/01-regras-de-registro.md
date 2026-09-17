@@ -239,6 +239,35 @@ Uma decisão pode gerar zero, uma ou várias ações. **Nunca registre tarefa ex
 decisão.** Quando a conclusão exigir mudar o processo em si, registre a decisão e sinalize a
 necessidade de RFC no Catálogo de Processos Humanos, sem criar ação.
 
+### O Decision Log não é diário de bordo (decisão da OM, 17/09/2026)
+
+O erro que Contas Médicas vinha cometendo é o oposto do descrito acima: **uma entrada nova de
+Decision Log por KPI vermelho, todo dia**, inclusive quando não havia decisão nenhuma — só a
+constatação de que a causa já decidida seguia valendo. Em 17/09 isso somava **86 entradas
+"Em curso"** contra **zero ações** no Action Log. A operação de Autorização, com o mesmo desenho,
+opera com **1 decisão em aberto e 14 ações**.
+
+A consequência não é estética. Um Decision Log com 86 linhas abertas não responde mais "o que
+está pendente", que é a única pergunta que ele existe para responder — e as pendências reais
+ficam invisíveis no meio da repetição.
+
+**Regra:** só abra entrada no Decision Log quando houver **decisão nova** — conclusão que antes
+não existia, ou mudança de uma que existia. Não abra entrada para:
+
+- **repetir causa já decidida.** KPI 🔴 cuja decisão vigente segue válida e sem fato novo:
+  cite o link da decisão existente no deep dive e **não crie nada**.
+- **registrar que o número continua igual.** Isso é o report do dia, não uma decisão.
+- **KPI do tipo "alerta de trabalho"** — nunca, conforme `00-identificadores.md`.
+
+E o inverso, que é a outra metade da correção: **o que é tarefa vai para o Action Log**, com
+título no infinitivo, dono e prazo. É de lá que o Bloco 3 da página tira as pendências. Um dia
+de daily bem registrado normalmente produz **poucas decisões e várias ações** — se estiver
+saindo o contrário, algo está sendo classificado errado.
+
+**Fato novo sobre decisão existente:** não abre entrada. Acrescenta uma linha ao
+`Contexto / problema` da entrada vigente (`DD/MM: {valor} ({variação})`) e atualiza
+`Fonte / evidência` — é o procedimento de dedup da §4.
+
 ### Campos ao registrar decisão (Decision Log)
 
 `Título da decisão` (title) · `Contexto / problema` · `Insight de origem` ·
@@ -346,7 +375,7 @@ Não há tool de reação emoji. O ponto de corte é sempre um **marcador em tex
 |---|---|---|---|
 | `[dl-sync]` | thread do Slack · Bloco de rastreabilidade da página | tarefas 03/04/05 | thread já processada |
 | `Varredura da manhã · [dl-sync]` | rodapé da página | tarefa 03 | corte da pré-daily |
-| `Resumo da daily · [meet-sync DD/MM]` | Bloco 6 da página | tarefa 04 | ata já distribuída |
+| `Resumo da daily · [meet-sync DD/MM]` | Bloco 5 da página | tarefa 04 | ata já distribuída |
 | `Fechamento do dia · [eod-sync DD/MM]` | callout de rodapé | tarefa 05 | dia fechado |
 | `[sync 15h DD/MM]` | thread da Msg de pendências | tarefa 04 | cobrança das 17h feita |
 | `[eod-sync DD/MM]` | thread da Msg de pendências | tarefa 05 | pendências D+1 postadas |
@@ -373,14 +402,14 @@ divergiu, o quê). Respostas que só comentam sem decidir não contam como confl
 
 O mesmo item **nunca** aparece nos dois lugares:
 
-- **D0 (dia em que foi sinalizado):** vive só no Bloco 4 da página. Ainda não é pendência.
+- **D0 (dia em que foi sinalizado):** vive só no Bloco 3 da página. Ainda não é pendência.
 - **No fechamento (tarefa 05):** item com `Leitura` = `→ Decisão`, `→ Ação` ou `→ Escalar`
-  que continua aberto **migra** para o Bloco 5 como pendência (`Fonte` = `Bloco 4`,
+  que continua aberto **migra** para o Bloco 4 como pendência (`Fonte` = `Bloco 3`,
   `Venceu` = data em que foi sinalizado). `→ Monitorar` não migra.
-- **D+1 em diante:** aparece **apenas** no Bloco 5. Não recriar linha no Bloco 4 mesmo que
+- **D+1 em diante:** aparece **apenas** no Bloco 4. Não recriar linha no Bloco 3 mesmo que
   alguém volte a falar do assunto.
 - **Item já em pendência que volta a ser comentado:** atualize o `Status` da linha existente
-  no Bloco 5. Nunca abra sinalização nova nem segunda pendência. Vale para qualquer sync.
+  no Bloco 4. Nunca abra sinalização nova nem segunda pendência. Vale para qualquer sync.
 
 ---
 

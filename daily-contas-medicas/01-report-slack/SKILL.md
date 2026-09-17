@@ -6,7 +6,7 @@ description: Contas Médicas · 06h30 — Report de KPIs no Slack (farol + verme
 Execute o report diário de KPIs da Operação Contas Médicas seguindo o padrão OOS.
 
 **Esta tarefa faz o Slack + a Execução de Rotina enxuta no Notion.** A **página canônica**
-da daily (6 blocos, drills completos, tabelas item-a-item) é responsabilidade da tarefa
+da daily (5 blocos, drills completos, tabelas item-a-item) é responsabilidade da tarefa
 `daily-contas-medicas-notion-page`, que roda às 09h15, lê estas mensagens do Slack e
 **enriquece a mesma página** — não cria outra.
 
@@ -141,7 +141,7 @@ Properties:
 
 Ícone da página: **📋** (fixo, sempre — nunca 📊).
 
-Corpo da página nesta etapa (enxuto; a tarefa das 09h15 reescreve nos 6 blocos):
+Corpo da página nesta etapa (enxuto; a tarefa das 09h15 reescreve nos 5 blocos):
 
 ```
 # Daily Contas Médicas — DD/MM/AAAA
@@ -165,7 +165,7 @@ Referência: {descrição do período e datas}
 ## KPIs sem dado
 {nome + o que foi tentado e por que falhou}, se houver.
 ## ⏳ Página canônica
-Os 6 blocos, os drills completos e as tabelas item-a-item são montados às 09h15 pela tarefa
+Os 5 blocos, os drills completos e as tabelas item-a-item são montados às 09h15 pela tarefa
 daily-contas-medicas-notion-page nesta mesma página.
 ```
 
@@ -338,7 +338,7 @@ O que não aparece nos KPIs e o time precisa saber hoje. Responda nesta thread, 
 Sem resposta = nada a sinalizar.
 ```
 
-O que vier aqui é distribuído nas três sub-seções do **Bloco 4** da página e recebe a coluna
+O que vier aqui é distribuído nas três sub-seções do **Bloco 3** da página e recebe a coluna
 `Leitura` (`→ Decisão` / `→ Ação` / `→ Escalar` / `→ Monitorar` / `→ Sem dono`).
 
 **Guarde o `ts` desta mensagem.**
@@ -364,6 +364,15 @@ Ajuste o status ou a fonte no catálogo e eles entram automaticamente no próxim
 cada responsável e **cobrando** o que falta. Os syncs re-cobram **nesta mesma thread**, citando
 os mesmos números — nunca criam mensagem nova.
 
+**A pendência é a AÇÃO, nunca o nome do KPI** (decisão da OM, 17/09/2026). `SLA Recurso de
+Glosa - HI` não é pendência: é um indicador repetido, e quem lê não sabe o que fazer.
+`Alinhar com o Fleury a recuperação do acesso ao drive` é. Se a linha não descreve **uma coisa
+que alguém faz**, ela não entra. As fontes são quatro — `Action Log` (a principal), `Decision
+Log` (só as decisões ainda em aberto), `Deep dive` (🔴 de ontem sem análise) e `Bloco 3`
+(sinalização de dia anterior que segue aberta) — e **o que muda entre elas é de onde o item veio,
+nunca o fato de a linha descrever uma ação**. Mesma regra do Bloco 4 da página: os dois listam o
+mesmo conjunto.
+
 Levante o que está **em aberto** (não é só o vencido):
 
 - **Decision Log:** entradas de Contas Médicas com `Status de execução` = `Em curso`
@@ -374,10 +383,10 @@ Levante o que está **em aberto** (não é só o vencido):
   impraticável no primeiro dia.
 - **Action Log (Log Melhoria Contínua):** ações de Contas Médicas com `Status` ∈
   {`A iniciar`, `Em andamento`, `Atrasada`}, ou incompletas.
-- **Deep dives pendentes:** os `[Deep dive]` em aberto no Bloco 5 da página (`Fonte` =
+- **Deep dives pendentes:** os `[Deep dive]` em aberto no Bloco 4 da página (`Fonte` =
   `Deep dive`), carregados dos dias anteriores até serem feitos.
-- **Sinalizações de dias anteriores:** o que foi sinalizado no Bloco 4 em dias passados, tem
-  `Leitura` = `→ Decisão`, `→ Ação` ou `→ Escalar` e segue aberto (`Fonte` = `Bloco 4`). Entra
+- **Sinalizações de dias anteriores:** o que foi sinalizado no Bloco 3 em dias passados, tem
+  `Leitura` = `→ Decisão`, `→ Ação` ou `→ Escalar` e segue aberto (`Fonte` = `Bloco 3`). Entra
   aqui **uma vez** — a partir da migração é pendência e não volta a ser sinalização.
 - **KPI sem responsável mapeado:** KPI que desviou e não está no bloco de mapeamento. Dona: a
   OM. Cobrar: acrescentar o KPI → pessoa no bloco.

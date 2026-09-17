@@ -44,15 +44,15 @@ Busque no Drive por título:
 `title contains 'Daily Contas Médicas' and title contains '{AAAA/MM/DD de hoje}'`.
 Padrão do nome: `Daily Contas Médicas - AAAA/MM/DD HH:MM GMT-03:00 - Anotações do Gemini` (ou
 `- Notes by Gemini`). Se houver mais de um, use o mais recente. Se não encontrar: registre a nota
-no Bloco 6 (`transcrição não encontrada no Drive`) e continue — não trave.
+no Bloco 5 (`transcrição não encontrada no Drive`) e continue — não trave.
 
 Separe o conteúdo por **bloco de destino**:
 - Sobre um desvio que tem sub-bloco no Bloco 2 → campo `🗣️ Da daily síncrona` daquele desvio.
-- Sobre risco, bug, caso em andamento ou problema da operação → Bloco 4, na sub-seção certa
+- Sobre risco, bug, caso em andamento ou problema da operação → Bloco 3, na sub-seção certa
   (4.1 / 4.2 / 4.3), sempre com a coluna `Leitura` — **só se for novo hoje**. Se a daily falou de
-  algo que já é pendência, atualize a linha do Bloco 5, sem criar item no Bloco 4 nem pendência
+  algo que já é pendência, atualize a linha do Bloco 4, sem criar item no Bloco 3 nem pendência
   duplicada.
-- Decisões/ações gerais, não ligadas a um desvio → Bloco 6.
+- Decisões/ações gerais, não ligadas a um desvio → Bloco 5.
 - Em aberto, sem definição → sinalizar no item; **não** vira registro ainda.
 
 ## 3. Distribuir a ata nos blocos (não criar seção separada)
@@ -61,11 +61,11 @@ Separe o conteúdo por **bloco de destino**:
 - **Blocos 4/5:** inserir o que a daily falou. A daily costuma ser a hora em que a `Leitura` de
   um item muda (de `→ Monitorar` para `→ Ação`, de `→ Sem dono` para dono definido) — atualize a
   coluna.
-- **Bloco 6 · Resumo da daily (último bloco):** resumo **breve** que referencia os outros blocos
+- **Bloco 5 · Resumo da daily (último bloco):** resumo **breve** que referencia os outros blocos
   e registra o que **não encaixa** em nenhum outro (decisões gerais, mudanças de fluxo), cada
   item com responsável · prazo. O link do registro entra no fechamento. No topo: participantes +
   link da transcrição.
-- **Idempotência:** marcar o Bloco 6 com **Resumo da daily · `[meet-sync DD/MM]`**. Se já
+- **Idempotência:** marcar o Bloco 5 com **Resumo da daily · `[meet-sync DD/MM]`**. Se já
   existir e não houver conteúdo humano novo, não reprocessar.
 
 ## 4. Estruturar e PROPOR o registro nas threads — não registrar ainda
@@ -75,7 +75,7 @@ que a daily decidiu, monte o item **já estruturado com todos os campos** e post
 relacionada (o vermelho do desvio, ou o tema) para **confirmação**. **Não** escreva no Decision
 Log nem no Action Log agora.
 
-**Antes de propor, checar se o assunto já é pendência** (Bloco 5, incluindo as vindas do Bloco
+**Antes de propor, checar se o assunto já é pendência** (Bloco 4, incluindo as vindas do Bloco
 4). Se já for, **não** proponha item novo: poste a **atualização** na thread da pendência e
 atualize o `Status` da linha. Proposta nova só existe para assunto que ainda não tem pendência
 aberta.
@@ -128,7 +128,7 @@ O **registro efetivo** (só o validado, já ajustado) é feito no fechamento.
 ## 5. Re-cobrança de pendências no Slack — na thread ÚNICA (17h)
 
 **Não crie mensagem nova de pendência.** Re-cobre **na thread da Mensagem 6 de pendências** (o
-`ts` guardado no Bloco 5 da página), prefixo `[sync 15h DD/MM]`, cobrando o que ainda precisa
+`ts` guardado no Bloco 4 da página), prefixo `[sync 15h DD/MM]`, cobrando o que ainda precisa
 fechar até 17h, marcando o responsável.
 
 Cubra, na **mesma thread**, uma cobrança por item:
@@ -151,7 +151,7 @@ Se não houver nada em aberto: `[sync 15h DD/MM] Sem pendências para as 17h.` n
 - Se a thread de pendências **não existir** hoje (não houve Msg 6 de manhã porque não havia
   pendência, ou porque o report ainda é a versão local sem Msg 6) e agora surgiram itens, aí sim
   **abra** a mensagem de pendências top-level no formato da Mensagem 6 da tarefa 01, guarde o
-  `ts` e registre-o no Bloco 5.
+  `ts` e registre-o no Bloco 4.
 
 ## Ao terminar
 

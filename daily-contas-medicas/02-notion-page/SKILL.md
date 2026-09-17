@@ -1,6 +1,6 @@
 ---
 name: daily-contas-medicas-notion-page
-description: Contas Médicas · 09h15 — Transforma a Execução de Rotina do dia na página canônica da daily (6 blocos), puxando os drills completos, e posta o link na thread da Mensagem 1. O horário fica no agendamento, não no texto.
+description: Contas Médicas · 09h15 — Transforma a Execução de Rotina do dia na página canônica da daily (5 blocos), puxando os drills completos, e posta o link na thread da Mensagem 1. O horário fica no agendamento, não no texto.
 ---
 
 Transforma a **Execução de Rotina de hoje** na **página canônica** da daily de Contas Médicas,
@@ -72,9 +72,9 @@ falhou ao criá-la), crie com as properties do Passo 6 da tarefa 01 e siga.
 Ao atualizar, confirme/complete as properties: `Status da execução`, `Resumo`,
 `Insights gerados (count)`, `Executor`, `Página da execução`, `Decisões geradas`.
 
-## Passo 3 — Reescrever o corpo nos 6 blocos
+## Passo 3 — Reescrever o corpo nos 5 blocos
 
-Substitua o corpo enxuto pela estrutura abaixo: **6 blocos (toggles) + Fechamento do dia
+Substitua o corpo enxuto pela estrutura abaixo: **5 blocos (toggles) + Fechamento do dia
 (callout no rodapé)**.
 
 **Introdução (padronizada — o mesmo cabeçalho do Slack).** Sem parágrafo de objetivo variável:
@@ -89,10 +89,10 @@ no Slack. Não alternar entre linha corrida e lista — sempre o mesmo formato.
 - Rótulo do placar, string fixa: **`Farol do dia`** (nunca "Placar de farol").
   Ex: `Farol do dia: 6 🔴 · 0 🟡 · 10 🟢 · 0 ⚪`.
 - **Resumão de pendências**, logo abaixo do farol — uma linha de contagem, para decidir na
-  daily se vale abrir o Bloco 5. Formato:
+  daily se vale abrir o Bloco 4. Formato:
   `Pendências: {N} decisões · {M} ações em aberto ({V} vencidas)`. Se tudo zero:
-  `✅ Sem pendências em aberto`. Vem do mesmo levantamento do Bloco 5; os syncs mantêm
-  atualizada. O **detalhe** fica no Bloco 5 — aqui é só o número.
+  `✅ Sem pendências em aberto`. Vem do mesmo levantamento do Bloco 4; os syncs mantêm
+  atualizada. O **detalhe** fica no Bloco 4 — aqui é só o número.
 - A **tabela completa** de KPIs — todos os exibidos no dia, nada parcial. Colunas fixas:
   `KPI | Resultado | MTD | Meta | Limiar | Variação | Farol | Contexto`
   - **KPI:** nome do Notion sem o prefixo `Contas Médicas - `
@@ -127,7 +127,7 @@ Um sub-toggle por KPI com desvio.
 🔴 **{KPI}** · {contexto curto} · {responsável}
 ```
 
-Responsável = a pessoa do bloco de mapeamento (`00-identificadores.md`). Para os nove KPIs
+Responsável = a pessoa do bloco de mapeamento (`00-identificadores.md`). Para os dez KPIs
 roteados **por tipo de instituição**, o responsável sai da concentração do desvio no drill —
 siga o procedimento de roteamento daquele arquivo e registre a linha
 `Concentração: {tipo} ({%} do desvio) → {responsável}` logo abaixo do título. Enquanto um KPI
@@ -152,6 +152,14 @@ estiver `A DEFINIR`, escreva `A DEFINIR — alçada da OM`. Conteúdo:
   Ao agrupar por prestador, **consolide por grupo econômico** (Fleury/Delboni, rede Oswaldo
   Cruz, Einstein e unidades) e mostre as duas leituras: por unidade e por grupo.
   Onde o card não devolver uma coluna, deixe `—`. **Não invente coluna.**
+
+- **Nos dois KPIs de faturamento** (`Faturamento total acumulado` e `R$ Faturado Cassi`),
+  acrescente à tabela resumo a coluna **`Dias sem movimento`**. O padrão de falha do Cassi não é
+  o valor estar baixo, é ele estar **parado**: total idêntico por dias consecutivos, o que é
+  incompatível com operação normal e foi a evidência que abriu a discussão em 13/08. Calcule
+  pela série do card 65831, em dias corridos com o mesmo total. Um valor congelado há dias com
+  causa decidida continua 🔴 se o prazo da espera estourou — ver guard-rail 3 em
+  `01-regras-de-registro.md`.
 - **Preenchimento da `Causa raiz`:** ⏳ em todas as linhas. Os syncs preenchem com o que o
   responsável responder na thread, casando pela entidade (prestador, motivo, fatura).
 - **Linha final fixa:** `Decision Log: {link}`. Quando a entrada ainda não existir:
@@ -246,21 +254,7 @@ reporta a variação como tendência sem disparar 🔴 (regra de dois estágios 
 Nesses dias o KPI aparece no Bloco 1 com o número e a nota `tendência — estágio 1 (até dia 19)`,
 e **não** abre entrada no Bloco 2.
 
-### Bloco 3 · Cassi e faturamento — leitura de volume
-
-Os dois KPIs de faturamento — `Faturamento total acumulado` e `R$ Faturado Cassi` — **têm
-responsável e abrem deep dive normalmente no Bloco 2** quando 🔴. Este bloco não substitui o
-deep dive: ele existe porque o número de faturamento só faz sentido com a leitura de volume ao
-lado, e é dinheiro. Uma tabela:
-`Indicador | Resultado | Média histórica | Variação | Dias sem movimento | Decisão vigente`.
-
-A coluna **`Dias sem movimento`** existe porque o padrão de falha do Cassi é **estagnação** —
-valor idêntico por dias consecutivos, que é incompatível com operação normal e já foi a
-evidência que abriu a discussão em 13/08. Calcule pela série do card 65831 e reporte o número
-de dias corridos com o mesmo total. Referencie a decisão vigente (11/08: atraso no envio pela
-própria Cassi; 13/08: veredito Recusada) em vez de reabrir a causa.
-
-### Bloco 4 · Sinalizações de risco e bugs
+### Bloco 3 · Sinalizações de risco e bugs
 
 ⏳ aguardando respostas na thread da Mensagem 4 e a daily síncrona — os syncs preenchem.
 
@@ -268,61 +262,98 @@ própria Cassi; 13/08: veredito Recusada) em vez de reabrir a causa.
 ação. Todo item entra com uma **leitura**.
 
 **Só sinalizações NOVAS do dia.** O que foi sinalizado antes e continua aberto já virou
-pendência e vive no Bloco 5 (ver `01-regras-de-registro.md` §7).
+pendência e vive no Bloco 4 (ver `01-regras-de-registro.md` §7).
 
 Três sub-seções **fixas** (sempre presentes; se vazia, `⚪ Nada sinalizado hoje`). Cada uma é
 uma tabela, e a **última coluna de todas é `Leitura`**.
 
-**4.1 · Casos e discussões em andamento**
+**3.1 · Casos e discussões em andamento**
 Conta, prestador ou glosa que alguém está tratando com discussão paralela não centralizada
 neste canal. O valor é trazer à superfície o que está sendo resolvido fora do canal oficial.
-`Caso / prestador | Onde está a discussão | Quem está tratando | Situação | O que falta | Leitura`
+`Caso / tema | Onde está a discussão | Quem está tratando | Situação | O que falta | Leitura`
 
-**4.2 · Bugs abertos com tech ou dados**
-Só os abertos **hoje**; os de dias anteriores estão no Bloco 5.
-`Bug | Sistema (n8n / TOTVS / PLS / pertinência / Metabase) | Do que trata | Impacto na operação | Status | Aberto desde | Responsável | Leitura`
+**3.2 · Bugs abertos com tech ou dados**
+Só os abertos **hoje**; os de dias anteriores estão no Bloco 4.
+`Bug | Do que trata | Impacto na operação | Status com tech | Aberto desde | Responsável | Leitura`
 
-**4.3 · Problemas identificados na operação**
+**3.3 · Problemas identificados na operação**
 Pessoas off, absenteísmo, erro de execução, fluxo desalinhado, gargalo novo, fila acumulada.
 `Problema | Tipo | Impacto | Desde | Responsável | Leitura`
 
 **Coluna `Leitura` — valores fixos:**
 - `→ Decisão` — precisa de alçada. Vira proposta de Decisão na thread (sync das 15h) e entra no
-  Bloco 5.
+  Bloco 4.
 - `→ Ação` — o caminho já está claro, falta executar. Vira proposta de Ação **com dono e
-  prazo** e entra no Bloco 5.
+  prazo** e entra no Bloco 4.
 - `→ Escalar` — passa da alçada da operação (tech, dados, jurídico, outra área). Nomear a quem.
 - `→ Monitorar` — sem acionamento hoje. Não vira pendência; fica só na página do dia.
 - `→ Sem dono` — ninguém assumiu. Dona por padrão: a OM. Nunca deixe item sem uma das cinco.
 
-**Dedup antes de escrever:** confira se o assunto já está aberto no Bloco 5. Se estiver, é
+**Dedup antes de escrever:** confira se o assunto já está aberto no Bloco 4. Se estiver, é
 atualização da pendência, não sinalização nova.
 
-### Bloco 5 · Pendências
+### Bloco 4 · Pendências
 
 Vem **antes** do Resumo da daily de propósito: é o bloco lido em voz alta na daily síncrona.
 
-**Tabela** (não bullets), colunas fixas: `Pendência | Fonte | Responsável | Venceu | Status`.
-`Fonte` ∈ `Decision Log` · `Action Log` · `Deep dive` · `Bloco 4`. Varrer:
+**A pendência é a AÇÃO, nunca o nome do KPI.** Esta é a regra que define o bloco inteiro, e foi
+a correção pedida pela OM em 17/09/2026. Uma linha dizendo `SLA Recurso de Glosa - HI` não é
+pendência: é um indicador repetido, e quem lê não sabe o que precisa ser feito nem por quem. A
+pendência é `Alinhar com o Fleury a recuperação do acesso ao drive`, com dono, prazo e link. Se
+você não consegue escrever a linha como **uma coisa que alguém faz**, ela não pertence a este
+bloco.
 
-- **Decision Log:** `Status de execução` = `Em curso` **sem `Prazo` preenchido**; entradas com
-  `Estado de complemento` = `Rascunho Claude` há mais de 1 dia útil, **apenas a ocorrência mais
-  recente por KPI**; `Prazo` anterior a hoje. Os dois filtros são os mesmos da Mensagem 6 — ver
-  **"Dois filtros obrigatórios no Decision Log"** em `01-report-slack/SKILL.md`. Bloco 5 e
-  Mensagem 6 têm que listar **o mesmo conjunto**: se divergirem, a página e o canal contam
-  histórias diferentes no mesmo dia. Havendo entradas omitidas por dedup, escreva sob a tabela
-  `{X} entradas anteriores do mesmo KPI omitidas por dedup.`
-- **Action Log:** `Status` = `Atrasada`, ou `Prazo` anterior a hoje com `Status` diferente de
-  `Concluída` e `Cancelada`, ou `Status` = `A iniciar` sem prazo.
-- **Deep dive:** 🔴 de dia anterior sem causa raiz / plano de ação / decisão (criado pela
-  tarefa 05).
-- **Bloco 4:** sinalizações de **dias anteriores** com `Leitura` = `→ Decisão` / `→ Ação` /
-  `→ Escalar` que seguem abertas. `Venceu` = data em que foram sinalizadas. As de **hoje** não
-  entram aqui — ficam no Bloco 4 até o fechamento.
+**Cabeçalho do bloco** — duas linhas de contagem, antes de qualquer tabela:
 
-Responsável vazio: escrever exatamente `A DEFINIR` (nenhuma outra variação).
+```
+**Melhoria contínua — {N} ações em aberto** · 🔴 {a} atrasadas · 🟠 {b} sem prazo ou sem dono · 🟡 {c} vencem em até 3 DU · 🟢 {d} no prazo
+**Decisões — {M} em aberto** · {R} rascunhos aguardando complemento
+```
 
-**Uma linha por assunto.** Item que já está aqui não gera segunda linha nem volta ao Bloco 4 —
+**Três seções, nesta ordem** (a ordem é a da urgência de leitura em voz alta). Seção vazia
+aparece assim mesmo, com `✅ Nenhuma pendência vencida` ou equivalente — a ausência é informação:
+
+1. **Vencidas** — `Prazo` anterior a hoje e não concluída.
+2. **Aguardando definição da OM** — sem dono, sem prazo, ou `Status` = `Em discussão`.
+3. **Em andamento no prazo** — o resto, ordenado por `Prazo` crescente.
+
+**Tabela de cada seção**, colunas fixas:
+`Pendência | Fonte | Responsável | Venceu | Status`
+
+- **`Pendência`** = o **título do registro, como link** para a página dele. Não o KPI.
+- **`Fonte`** ∈ `Action Log` · `Decision Log` · `Deep dive` · `Bloco 3`.
+- **`Responsável`** = pessoa nomeada. Vazio → exatamente `A DEFINIR`.
+- **`Venceu`** = a data de prazo, ou `sem prazo`.
+- **`Status`** = o estado **mais o que mudou**, em texto corrido: `A iniciar — escopo detalhado
+  pela OM em 16/09; falta definir prazo`. Status sem novidade é status inútil.
+
+**O que varrer:**
+
+- **Action Log (Log Melhoria Contínua)** — é a fonte principal deste bloco. Toda ação com
+  `Status` ∈ {`A iniciar`, `Em andamento`, `Atrasada`}.
+- **Decision Log** — só as decisões **em aberto**: `Status` = `Em discussão`, ou `Status de
+  execução` = `Em curso` **sem `Prazo`**, ou `Estado de complemento` = `Rascunho Claude` há mais
+  de 1 dia útil (nesse caso, **apenas a ocorrência mais recente por KPI**). Os filtros são os
+  mesmos da Mensagem 6 — ver **"Dois filtros obrigatórios no Decision Log"** em
+  `01-report-slack/SKILL.md`. Bloco 4 e Mensagem 6 listam **o mesmo conjunto**: se divergirem, a
+  página e o canal contam histórias diferentes no mesmo dia.
+- **Deep dive** — 🔴 de dia anterior que ainda não teve causa raiz, plano de ação nem decisão
+  (linha criada pela tarefa 05). `Venceu` = o dia em que ficou 🔴.
+- **Bloco 3** — sinalizações de **dias anteriores** com `Leitura` = `→ Decisão`, `→ Ação` ou
+  `→ Escalar` que seguem abertas, migradas no fechamento. `Venceu` = data em que foram
+  sinalizadas. As de **hoje** não entram: ficam no Bloco 3 até o fechamento (fronteira da
+  `01-regras-de-registro.md` §7).
+
+**Estas duas fontes não são exceção à regra da ação — são a regra aplicada.** Um 🔴 de ontem sem
+análise não vira a linha `SLA Recurso de Glosa - HI`; vira `Analisar o desvio de SLA Recurso de
+Glosa de 16/09 — causa raiz pendente`, com o responsável do KPI. Uma sinalização migrada não
+vira `Zendesk`; vira `Obter da Renata o prazo do ajuste de busca por número de guia`. **O que
+muda entre as quatro fontes é de onde o item veio, nunca o fato de a linha descrever uma ação.**
+
+Havendo entradas omitidas por dedup, escreva sob a tabela:
+`{X} entradas anteriores do mesmo KPI omitidas por dedup.`
+
+**Uma linha por assunto.** Item que já está aqui não gera segunda linha nem volta ao Bloco 3 —
 novidade sobre ele atualiza o `Status` desta linha. Vale também quando o assunto chega por outra
 fonte (a sinalização virou ação no Action Log): mantenha **uma** linha, com a `Fonte` mais
 específica e o link do registro.
@@ -330,7 +361,7 @@ específica e o link do registro.
 Registre também, ao final do bloco, a linha `ts da thread de pendências no Slack: {ts}` — é
 como os syncs acham a thread.
 
-### Bloco 6 · Resumo da daily
+### Bloco 5 · Resumo da daily
 
 **Último bloco da página** — fecha tudo, depois de todos os outros já terem sido lidos.
 

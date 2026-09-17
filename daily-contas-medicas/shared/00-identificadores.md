@@ -42,7 +42,7 @@ title contains 'Daily Contas Médicas' and title contains '<AAAA/MM/DD de hoje>'
 
 Padrão do nome: `Daily Contas Médicas - AAAA/MM/DD HH:MM GMT-03:00 - Anotações do Gemini`
 (também aparece como `- Notes by Gemini`). Se houver mais de um, use o mais recente.
-Se não achar, registre a ausência no Bloco 6 e siga — não trave a execução.
+Se não achar, registre a ausência no Bloco 5 e siga — não trave a execução.
 
 ## KPIs de operação (ordem fixa da tabela do report)
 
@@ -136,7 +136,7 @@ Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
      dias corridos, não ao recurso: ele continua aberto e continua sendo trabalho. **No report,
      escreva "vencido, ainda em aberto"** — nunca "não acionável", que faz o time ignorar.
 3. **Não abre entrada no Decision Log.** Fila de trabalho não é decisão. Vira **linha de
-   pendência** (Mensagem 6 e Bloco 5), com o rótulo `[Fila]`, e rola todo dia até zerar.
+   pendência** (Mensagem 6 e Bloco 4), com o rótulo `[Fila]`, e rola todo dia até zerar.
 4. **Não entra na análise de desvios** do Bloco 2 da página como deep dive. A lista completa
    dos dois horizontes fica no Bloco 2 como sub-toggle próprio, sem pedido de plano de ação.
 5. **O farol continua saindo do `Limiar de alerta` do catálogo**, como qualquer KPI. Hoje o

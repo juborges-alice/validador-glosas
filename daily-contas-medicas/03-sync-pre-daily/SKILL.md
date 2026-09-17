@@ -39,7 +39,7 @@ página aqui.
 
 Se a página existir mas ainda estiver no formato enxuto (a tarefa das 09h15 não rodou), capture
 o que der nos campos que existem e registre no marcador que a página não estava canônica. Não
-tente montar os 6 blocos aqui.
+tente montar os 5 blocos aqui.
 
 ### 2. Ler as threads do report no Slack (só leitura)
 
@@ -63,7 +63,7 @@ bloco correspondente, pule. Não reprocesse.
   Owner vazio → escrever exatamente `A DEFINIR`.
 - Não criar seção separada — tudo vive no sub-bloco do desvio.
 
-### 5. Atualizar o Bloco 4 (Sinalizações)
+### 5. Atualizar o Bloco 3 (Sinalizações)
 
 Substituir o ⏳ pelo conteúdo das respostas da thread da Mensagem 4; manter ⏳ se ainda não veio.
 Encaixar cada resposta na sub-seção certa (4.1 casos · 4.2 bugs com tech/dados · 4.3 problemas
@@ -71,11 +71,11 @@ na operação) e **sempre preencher a coluna `Leitura`** (`→ Decisão` / `→ 
 `→ Monitorar` / `→ Sem dono`). Se a pessoa não disse o que precisa, inferir pela descrição e
 marcar; se não der, `→ Sem dono`.
 
-**Antes de criar item no Bloco 4, checar o Bloco 5.** Se a resposta é sobre assunto que **já é
+**Antes de criar item no Bloco 3, checar o Bloco 4.** Se a resposta é sobre assunto que **já é
 pendência** (mesmo prestador, mesmo bug, mesmo problema), não crie sinalização nova: atualize o
-`Status` daquela linha do Bloco 5. O Bloco 4 só recebe o que é **novo hoje**.
+`Status` daquela linha do Bloco 4. O Bloco 3 só recebe o que é **novo hoje**.
 
-### 6. Atualizar o Bloco 5 (Pendências)
+### 6. Atualizar o Bloco 4 (Pendências)
 
 Se alguém respondeu numa thread de pendência, **anotar a resposta na coluna `Status`** da tabela
 da página (ex: `✅ concluído`, `🔄 novo prazo DD/MM`, `❌ bloqueado: {motivo}`,
