@@ -9,8 +9,41 @@ Regra dura do OOS: **nunca escreva SQL próprio.** Execute o card canônico por 
 1. `get_metabase_credentials` — **uma vez por sessão**. Se a tool não existir ou falhar auth,
    pare o Metabase e avise a OM para reconectar o connector (Settings → Connectors → Metabase
    MCP Server). Não tente `curl` sem credencial nem browser.
-2. Decodifique a key para `$MB_KEY` e use `$MB_URL="https://metabase.datalake.alice.tools"`.
-   **Nunca exiba a key.**
+2. **Decodifique a key SEM nunca imprimi-la.** Este passo é o que mais quebra na prática — leia
+   inteiro antes de escrever o comando.
+
+   A descrição da tool sugere `echo "$api_key_b64" | base64 -d`. **Não use essa forma.** Ela
+   escreve a chave decodificada na saída padrão, que é a definição literal de materializar uma
+   credencial: o classificador de segurança da sessão bloqueia, a chamada nunca sai, e a tarefa
+   fica sem nenhum drill. Foi exatamente o que aconteceu em 17/09/2026 na tarefa 02 — a página
+   saiu com os 9 drills em ⏳.
+
+   Use substituição de comando, atribuindo direto a uma variável que só aparece como header:
+
+   ```sh
+   MB_B64='<valor api_key_b64 da tool>'
+   MB_KEY=$(printf '%s' "$MB_B64" | base64 -d)
+   MB_URL='https://metabase.datalake.alice.tools'
+
+   curl -sS -X POST "$MB_URL/api/card/{ID}/query/json" \
+     -H "x-api-key: $MB_KEY" \
+     -H 'Content-Type: application/json' \
+     -d '{"parameters":[]}' \
+     -o resultado.json -w 'HTTP %{http_code}\n'
+   ```
+
+   Verificado funcionando em 17/09/2026 (card 73490, HTTP 200, 189 linhas).
+
+   As três regras que fazem a diferença:
+   - **`printf` em vez de `echo`**, e sempre dentro de `$( )`. A chave vai para a variável, não
+     para a tela.
+   - **Nunca rode o `base64 -d` sozinho** só para "ver se deu certo". Esse é o comando bloqueado.
+   - **Grave a resposta em arquivo** (`-o`) e leia o arquivo depois. Assim a saída do comando é
+     só o código HTTP, e nenhum header com a chave aparece em log nenhum.
+
+   Se ainda assim vier bloqueio: **não tente contornar** e **não escreva SQL no lugar do card**.
+   Siga sem o drill, marque ⏳ e descreva o bloqueio no caveat — é o comportamento correto, e foi
+   o que a tarefa 02 fez em 17/09.
 3. Recupere o card: `GET /api/card/{ID}`. **Não confie apenas em
    `dataset_query.native.template_tags`** — costuma vir vazio. Os parâmetros que o card
    realmente aceita estão no array `parameters` de nível superior da resposta (cada um com
