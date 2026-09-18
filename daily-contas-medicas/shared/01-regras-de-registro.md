@@ -239,51 +239,104 @@ Uma decisão pode gerar zero, uma ou várias ações. **Nunca registre tarefa ex
 decisão.** Quando a conclusão exigir mudar o processo em si, registre a decisão e sinalize a
 necessidade de RFC no Catálogo de Processos Humanos, sem criar ação.
 
-### O Decision Log não é diário de bordo (decisão da OM, 17/09/2026)
+### O registro é o EPISÓDIO de desvio, não o dia (decisão da OM, 18/09/2026)
 
-O erro que Contas Médicas vinha cometendo é o oposto do descrito acima: **uma entrada nova de
-Decision Log por KPI vermelho, todo dia**, inclusive quando não havia decisão nenhuma — só a
-constatação de que a causa já decidida seguia valendo. Em 17/09 isso somava **86 entradas
-"Em curso"** contra **zero ações** no Action Log. A operação de Autorização, com o mesmo desenho,
-opera com **1 decisão em aberto e 14 ações**.
+Duas exigências legítimas se chocaram e a solução é distinguir o objeto registrado:
 
-A consequência não é estética. Um Decision Log com 86 linhas abertas não responde mais "o que
-está pendente", que é a única pergunta que ele existe para responder — e as pendências reais
-ficam invisíveis no meio da repetição.
+- **Todo KPI 🔴 gera log de desvio**, inclusive quando a conclusão é não fazer nada. É o
+  requisito de rastreabilidade da operação: nenhum vermelho pode passar sem registro.
+- **A lista tem que ser acionável.** Uma entrada por KPI por dia produziu 86 registros abertos
+  em dois meses e tornou o log inútil para responder "o que está pendente".
 
-**Regra:** só abra entrada no Decision Log quando houver **decisão nova** — conclusão que antes
-não existia, ou mudança de uma que existia. Não abra entrada para:
+**O que resolve:** um KPI vermelho por 8 dias pela mesma causa não é 8 desvios — é **um desvio
+com 8 dias de história**.
 
-- **repetir causa já decidida.** KPI 🔴 cuja decisão vigente segue válida e sem fato novo:
-  cite o link da decisão existente no deep dive e **não crie nada**.
-- **registrar que o número continua igual.** Isso é o report do dia, não uma decisão.
-- **KPI do tipo "alerta de trabalho"** — nunca, conforme `00-identificadores.md`.
+**Episódio de desvio** = sequência contínua de dias em que o mesmo KPI está 🔴 pela mesma causa.
+Um episódio = **uma página** no Decision Log, que acumula o histórico dentro de si.
 
-E o inverso, que é a outra metade da correção: **o que é tarefa vai para o Action Log**, com
-título no infinitivo, dono e prazo. É de lá que o Bloco 3 da página tira as pendências. Um dia
-de daily bem registrado normalmente produz **poucas decisões e várias ações** — se estiver
-saindo o contrário, algo está sendo classificado errado.
+| Situação | O que fazer |
+|---|---|
+| KPI fica 🔴 e **não há episódio aberto** para ele | **Criar** a página do desvio |
+| KPI segue 🔴, **mesma causa** | **Acrescentar uma linha de histórico** ao `Contexto / problema`. Não criar página. |
+| KPI segue 🔴 e a **causa mudou** | **Fechar** o episódio atual (`Status de execução` = `Concluída`, nota do motivo) e **abrir** outro |
+| KPI volta a 🟢 ou 🟡 | **Fechar** o episódio |
 
-**Fato novo sobre decisão existente:** não abre entrada. Acrescenta uma linha ao
-`Contexto / problema` da entrada vigente (`DD/MM: {valor} ({variação})`) e atualiza
-`Fonte / evidência` — é o procedimento de dedup da §4.
+**Linha de histórico** é uma frase dentro do campo, não uma página nova:
 
-### O título é o que vira a pendência
+```
+Desvio aberto em 15/09. SLA em 63,89% (limiar <80%).
+Causa: time perdeu acesso ao drive do Fleury. E-mail enviado ao parceiro em 16/09.
 
-Vale para os dois logs. O título do registro é o texto que aparece na linha do Bloco 4 da página
-e da Mensagem 6 — é por ele que alguém decide se aquilo é com ela. **Nunca comece pelo nome do
-KPI:** o KPI vai na relation `KPIs afetados`, que é de onde o dedup o lê; repetir no título não
-acrescenta informação e torna a pendência ilegível.
+16/09: 71,43% — sem retorno do Fleury
+17/09: 72,92% — sem retorno do Fleury
+18/09: 70,83% — 3º dia útil de espera
+```
 
-- **Decisão** — o título diz a **conclusão ou a pergunta em aberto**:
-  `Não escalar o atraso da Cassi enquanto o envio de 15/09 estiver em processamento`,
-  `Apurar o salto de glosa do INCOR de 1,94% para 35,15% em Set/26`.
-- **Ação** — o título começa com **verbo no infinitivo** e descreve algo verificável:
-  `Obter do Fleury a recuperação do acesso ao drive`,
-  `Mapear os prestadores que concentram as PEGs a ≥5 dias úteis`.
+Quatro dias vermelhos, quatro linhas de texto, **uma página**. Nada deixou de ser registrado; o
+que deixou de existir foi a repetição de páginas.
 
-Teste rápido: se a linha, lida sozinha em voz alta na daily, não diz **o que precisa acontecer**,
-o título está errado.
+**Como saber se há episódio aberto:** consulte o Decision Log filtrando `Operação` = Contas
+Médicas, `Status de execução` = `Em curso`, e o KPI na relation `KPIs afetados`. Achou → é
+append. Não achou → é página nova.
+
+**Teto de 14 dias — episódio não vive para sempre (decisão da OM, 18/09/2026).** Se o episódio
+aberto tiver **mais de 14 dias corridos** desde a data de abertura, **não dê append**: feche e
+abra um novo.
+
+- Fecha o atual: `Status de execução` = `Concluída`, e última linha de histórico
+  `DD/MM: {valor} — episódio encerrado por tempo (14 dias); desvio persiste e vai para nova
+  análise`.
+- Abre o novo com título `{KPI} · desvio desde DD/MM (continuação)` e, na primeira linha do
+  `Contexto / problema`, o link do episódio anterior e um resumo de uma linha do que já se
+  tentou. **A história não se perde — ela é referenciada, não recopiada.**
+- O episódio de continuação nasce **sem causa confirmada**, mesmo que o anterior tivesse uma.
+  Isso é o ponto da regra: ele entra em **Aguardando definição da OM** no Bloco 3 e obriga a
+  operação a olhar de novo.
+
+Por que o teto existe: um KPI vermelho há 15 dias pela "mesma causa" provavelmente **já não tem
+a mesma causa** — ou a causa original deixou de explicar sozinha o tamanho do desvio. O append
+indefinido esconderia isso atrás de um registro que ninguém reabre. Quinze dias é um número
+arbitrário e assumido como tal: serve para forçar reanálise em intervalo previsível, não porque
+14 seja diferente de 13.
+
+**`Data de efeito` é o campo que separa vermelho esperado de vermelho que virou problema.**
+Quando uma ação é definida, preencha ali **quando se espera ver o efeito no indicador**. Enquanto
+essa data não chegar, o KPI continuar vermelho é o comportamento previsto — não é fato novo e
+não vira cobrança. Passou a data e o KPI segue 🔴: **isso** é fato novo, e a pergunta certa é
+"a ação de {DD/MM} deveria ter surtido efeito em {DD/MM} e não surtiu".
+
+**Exceção:** KPI do tipo "alerta de trabalho" (`00-identificadores.md`) **nunca** abre episódio.
+É fila de trabalho, não desvio a explicar.
+
+### Títulos: o Decision Log indexa por indicador, a daily mostra a ação
+
+Os dois logs têm convenções **diferentes**, de propósito, porque servem a leituras diferentes.
+
+**Decision Log — o título é o indicador.** Ele é um log de desvios por KPI, e é assim que fica
+navegável: quem abre a base quer achar "o que já aconteceu com o SLA Recurso de Glosa".
+
+```
+{Nome do KPI sem o prefixo} · desvio desde DD/MM
+```
+
+Ex.: `SLA Recurso de Glosa - HI · desvio desde 15/09`. O sufixo de data distingue episódios do
+mesmo KPI ao longo do tempo — sem ele, dois desvios separados por meses ficam indistinguíveis.
+
+**Action Log — o título é a ação**, começando por **verbo no infinitivo** e descrevendo algo
+verificável: `Obter do Fleury a recuperação do acesso ao drive`.
+
+**Na daily, a pendência é sempre a ação** — nunca o título do registro de desvio. O Bloco 3 da
+página e a Mensagem 6 têm coluna própria de `Indicador`, então repetir o KPI no texto da
+pendência é redundância que rouba a linha do que importa. De onde sai o texto:
+
+1. Existe ação no Action Log ligada ao episódio → use o **título da ação**.
+2. Não existe ação, mas o episódio tem `Decisão tomada` → componha a partir dela, começando por
+   verbo (ex.: decisão "aguardar retorno do Fleury" → `Aguardar retorno do Fleury sobre o acesso
+   ao drive`).
+3. **Não existe ação nem decisão** → a pendência é a ausência delas:
+   `Definir a ação para {KPI} — desvio sem causa nem ação definida`. Esta é a linha mais
+   importante do bloco: um vermelho que ninguém assumiu é mais urgente que qualquer ação em
+   andamento, e por isso entra em **Aguardando definição da OM**, no topo.
 
 ### Campos ao registrar decisão (Decision Log)
 

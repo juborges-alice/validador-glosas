@@ -171,43 +171,37 @@ daily-contas-medicas-notion-page nesta mesma página.
 
 Use ⚪ para KPI sem dado. Público é OM/GM — objetivo, sem jargão.
 
-## Passo 7 — Decision Log (só para achado NOVO)
+## Passo 7 — Decision Log (log de desvio, um por episódio)
 
-**Não é uma entrada por 🔴.** Essa era a regra até 17/09/2026 e é a causa das 86 entradas
-`Em curso` acumuladas: ela criava uma decisão por KPI vermelho, todo dia, antes de qualquer
-humano ter concluído nada. Um KPI que está 🔴 há duas semanas pela mesma causa já decidida não
-produz decisão nova nenhuma — produz a mesma linha, catorze vezes.
+**Todo KPI 🔴 tem registro de desvio** — inclusive quando a conclusão é não fazer nada. O que
+**não** acontece é abrir página nova a cada dia: o registro é o **episódio**, e cada dia
+vermelho acrescenta uma linha de histórico dentro dele (regra completa em
+`01-regras-de-registro.md` §3).
 
-**Crie entrada apenas quando o 🔴 for achado novo**, isto é: cruzou o limiar e **não existe
-decisão vigente que cubra este desvio**. Para cada 🔴, nesta ordem:
+Para cada KPI 🔴, nesta ordem:
 
-1. **Existe decisão vigente que cobre?** (é a mesma checagem da Etapa 2 do farol). Se sim →
-   **não crie nada.** Cite o link da decisão existente na mensagem do Slack e siga.
-2. **Existe entrada dos últimos 14 dias para este KPI?** (dedup da §4). Se sim → **não crie
-   nada.** Acrescente `DD/MM: {valor} ({variação})` ao `Contexto / problema` da entrada
-   existente e atualize `Fonte / evidência`.
-3. **É KPI do tipo "alerta de trabalho"?** (tabela em `00-identificadores.md`) → **nunca cria
-   entrada**, nem quando 🔴. Fila de trabalho não é decisão; vira pendência `[Fila]` na
-   Mensagem 6.
-4. Passou pelos três → **aí sim crie**, como `Rascunho Claude`, com os campos da §3.
+1. **É KPI do tipo "alerta de trabalho"?** (`00-identificadores.md`) → **não abre episódio**.
+   Vira pendência `[Fila]` na Mensagem 6 e acabou.
+2. **Existe episódio aberto para este KPI?** Consulte o Decision Log: `Operação` = Contas
+   Médicas, `Status de execução` = `Em curso`, KPI na relation `KPIs afetados`.
+   - **Achou, e a causa é a mesma** → **append**. Acrescente ao fim do `Contexto / problema`:
+     `DD/MM: {valor} ({variação}) — {nota de uma linha}`, e atualize `Fonte / evidência` com a
+     URL da Execução de hoje. **Não crie página.**
+   - **Achou, mas a causa mudou** → feche o episódio (`Status de execução` = `Concluída`, com
+     nota do motivo) e crie um novo.
+   - **Achou, mas o episódio tem mais de 14 dias corridos** → feche por tempo e abra um de
+     **continuação**, sem causa confirmada, que entra em Aguardando definição da OM. Regra
+     completa em `01-regras-de-registro.md` §3.
+   - **Não achou** → crie.
+3. Ao **criar**, use os campos da §3 e o título
+   `{KPI sem prefixo} · desvio desde DD/MM`, com `Estado de complemento` = `Rascunho Claude`.
 
-Na prática isso significa que em muitos dias esta tarefa **não cria nenhuma entrada**, e está
-certo. Um dia com 9 vermelhos e 1 entrada nova é um dia normal; um dia com 9 vermelhos e 9
-entradas novas é sinal de que os três filtros não foram aplicados.
+**Feche os episódios dos KPIs que voltaram a 🟢/🟡 hoje.** Isso é parte do passo, não um extra:
+episódio que não fecha vira pendência fantasma. Ponha `Status de execução` = `Concluída` e uma
+linha final `DD/MM: {valor} — desvio encerrado`.
 
-### O título é o que aparece na pendência — escreva pensando nisso
-
-O `Título da decisão` vira a linha do Bloco 4 da página e da Mensagem 6. **Não comece pelo nome
-do KPI.** O título diz a **conclusão ou a pergunta em aberto**:
-
-| Não | Sim |
-|---|---|
-| `SLA Recurso de Glosa - HI` | `Investigar a concentração de recursos fora do SLA em Laboratório` |
-| `R$ Faturado Cassi` | `Não escalar o atraso da Cassi enquanto o envio de 15/09 estiver em processamento` |
-| `% Glosa Alice por Prestador - HI` | `Apurar o salto de glosa do INCOR de 1,94% para 35,15% em Set/26` |
-
-O KPI vai no campo `KPIs afetados` (relation), que é onde ele pertence e de onde o dedup o lê.
-Repetir o nome no título não acrescenta informação e destrói a legibilidade da pendência.
+Em regime, um dia normal tem **poucas páginas novas e vários appends**. Muitas páginas novas num
+dia só significa que a consulta do passo 2 não foi feita.
 
 Depois de criar, volte na Execução de Rotina e preencha `Decisões geradas` com as URLs.
 
@@ -403,6 +397,11 @@ Log` (só as decisões ainda em aberto), `Deep dive` (🔴 de ontem sem análise
 nunca o fato de a linha descrever uma ação**. Mesma regra do Bloco 4 da página: os dois listam o
 mesmo conjunto.
 
+**A pendência é a ação; o indicador vai na linha de baixo.** O título do registro de desvio é o
+nome do KPI de propósito (§3) — ele indexa o log, não descreve trabalho. O texto da pendência sai
+do título da ação no Action Log, ou é composto da `Decisão tomada` do episódio, ou, quando não há
+nem uma nem outra, vira `Definir a ação para {KPI} — desvio sem causa nem ação definida`.
+
 Levante o que está **em aberto** (não é só o vencido):
 
 - **Decision Log:** entradas de Contas Médicas com `Status de execução` = `Em curso`
@@ -484,8 +483,8 @@ Detalhe e cobrança na thread.
 pessoa responder ("Pendência 1 - escalado, ..."). Formato, sem emojis:
 
 ```
-Pendência {N} - <@responsável> — [{Decisão|Ação|Deep dive|Fila}] {título} → {link}
-{estado} · {status} · {contexto / o que falta}
+Pendência {N} - <@responsável> — [{Decisão|Ação|Deep dive|Fila}] {ação} → {link}
+Indicador: {KPI} · {estado} · {status} · {contexto / o que falta}
 ```
 
 Estado por tipo:

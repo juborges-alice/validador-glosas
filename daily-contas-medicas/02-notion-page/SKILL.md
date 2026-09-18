@@ -336,14 +336,26 @@ bloco.
 **Três seções, nesta ordem** (a ordem é a da urgência de leitura em voz alta). Seção vazia
 aparece assim mesmo, com `✅ Nenhuma pendência vencida` ou equivalente — a ausência é informação:
 
-1. **Vencidas** — `Prazo` anterior a hoje e não concluída.
-2. **Aguardando definição da OM** — sem dono, sem prazo, ou `Status` = `Em discussão`.
-3. **Em andamento no prazo** — o resto, ordenado por `Prazo` crescente.
+1. **Vencidas** — `Prazo` **ou `Data de efeito`** anterior a hoje, e o KPI ainda 🔴. Inclui o
+   caso mais importante: a ação existiu, a data em que ela deveria ter surtido efeito passou, e
+   o indicador não melhorou. A linha diz isso: `ação de {DD/MM} deveria ter surtido efeito em
+   {DD/MM} e não surtiu`.
+2. **Aguardando definição da OM** — sem dono, sem prazo, `Status` = `Em discussão`, **ou
+   episódio de desvio sem ação nem decisão definida**. Este último é o topo do bloco: um 🔴 que
+   ninguém assumiu é mais urgente que qualquer ação em andamento.
+3. **Em andamento no prazo** — ação definida com `Data de efeito` no futuro. O KPI continuar 🔴
+   aqui é o **comportamento previsto**, não pendência de verdade: a ação foi tomada e o efeito
+   ainda não chegou. Listar sim, cobrar não.
 
 **Tabela de cada seção**, colunas fixas:
-`Pendência | Fonte | Responsável | Venceu | Status`
+`Pendência | Indicador | Fonte | Responsável | Venceu | Status`
 
-- **`Pendência`** = o **título do registro, como link** para a página dele. Não o KPI.
+- **`Pendência`** = **a ação**, como link para o registro. Nunca o nome do KPI — ele tem coluna
+  própria. De onde sai o texto (regra completa em `01-regras-de-registro.md` §3): título da ação
+  no Action Log → ou composto a partir da `Decisão tomada` do episódio → ou, quando não há ação
+  nem decisão, `Definir a ação para {KPI} — desvio sem causa nem ação definida`.
+- **`Indicador`** = o KPI do episódio, sem o prefixo `Contas Médicas - `. Vazio quando a
+  pendência não vem de desvio (ex.: bug de tech sinalizado no Bloco 2).
 - **`Fonte`** ∈ `Action Log` · `Decision Log` · `Deep dive` · `Bloco 3`.
 - **`Responsável`** = pessoa nomeada. Vazio → exatamente `A DEFINIR`.
 - **`Venceu`** = a data de prazo, ou `sem prazo`.
