@@ -376,36 +376,40 @@ properties preenchidas.
 
 ---
 
-## 4. Dedup e vermelho persistente
+## 4. Não-duplicação e vermelho persistente
 
-**Dedup 14 dias.** Antes de criar entrada nova no Decision Log, procure decisão **aberta** do
-mesmo KPI nos últimos 14 dias. Se existir, anexe a ocorrência do dia na entrada existente
-(data + valor) em vez de criar linha nova. Isso importa principalmente para os crônicos de
-Contas Médicas: `% Faturas por Status - HS`, `SLA Recurso de Glosa - HI`, `% PEGs sem NF` e
-`R$ Faturado Cassi`, que disparam quase todo dia.
+**A regra de não-duplicação é o modelo de episódio da §3.** Não existe outra. Um KPI 🔴 tem no
+máximo **um** episódio aberto por vez; enquanto ele estiver aberto e a causa for a mesma, o dia de
+hoje vira uma **linha de histórico** dentro dele, nunca uma página nova. Releia a §3 antes de
+criar qualquer entrada — esta seção só trata do que ela não cobre.
 
-**Como procurar, na prática** — esta regra existia mas nunca foi aplicada, e a auditoria de
-16/09/2026 encontrou dezenas de entradas duplicadas por KPI desde julho. O passo concreto:
+O que decide é a **causa**, não a idade do registro. Episódio velho com a mesma causa continua
+sendo o mesmo episódio; episódio de ontem com causa nova já é outro. O teto de 14 dias corridos
+existe só como salvaguarda: força uma **continuação** para que um desvio crônico volte à mesa da
+OM, e está descrito na §3.
 
-1. Consulte o Decision Log filtrando `Operação` = Contas Médicas e `date:Data:start` nos últimos
-   14 dias.
-2. Procure entrada cujo `KPIs afetados` contenha o KPI de hoje **ou** cujo `Título da decisão`
-   comece com o nome dele. O título segue o padrão `{Nome do KPI} — fora do limiar (DD/MM)`, então
-   o casamento por prefixo funciona.
-3. Achou → **não crie página nova**. Acrescente ao fim de `Contexto / problema` uma linha
-   `DD/MM: {valor} ({variação})` e atualize `Fonte / evidência` para a Execução de Rotina de hoje.
-   No Slack, a mensagem do 🔴 aponta para essa entrada existente.
-4. Não achou → aí sim crie.
+Isso importa principalmente para os crônicos de Contas Médicas — `% Faturas por Status - HS`,
+`SLA Recurso de Glosa - HI`, `% PEGs sem NF` e `R$ Faturado Cassi` —, que disparam quase todo dia
+e, sob o modelo antigo de um registro por dia, produziram dezenas de páginas por KPI desde julho.
 
-**Backlog herdado.** A tabela já tem dezenas de entradas duplicadas de antes desta regra passar a
-valer. A rotina **não** deve tentar consolidá-las por conta própria: limpeza retroativa é decisão
-da OM. Para efeito de dedup, considere apenas a **ocorrência mais recente** de cada KPI.
+**Histórico — por que esta seção mudou.** Até 17/09/2026 a regra era um "dedup de 14 dias" que
+casava entradas pelo prefixo do título `{Nome do KPI} — fora do limiar (DD/MM)`. Ela nunca foi
+aplicada de fato, e a auditoria de 16/09/2026 encontrou 88 páginas abertas para 15 KPIs. Em
+18/09/2026 a OM substituiu o modelo: o registro passou a ser o episódio (§3), o título passou a
+ser `{KPI sem prefixo} · desvio desde DD/MM`, e o log foi consolidado em um episódio aberto por
+KPI. **O padrão antigo de título não vale mais** — não o use para casar nem para criar.
 
-**Vermelho persistente (5 dias).** Se um KPI ficar 🔴 por 5 dias consecutivos, o alerta
-diário parou de informar. Encerre as investigações diárias abertas do tema e abra **uma**
-decisão estrutural (`Classe` = `Mudança de processo` ou `Escalonamento`, `Tipo` = `Decisão
-estrutural`), com a ação correspondente no Action Log. Sinalize a mudança de tratamento no
-report. A decisão estrutural também depende de validação humana (ver tarefa 05).
+**Backlog herdado.** Entradas anteriores a 18/09/2026 seguem no banco com `Status de execução`
+= `Concluída`. A rotina **não** deve reabri-las nem tentar consolidá-las por conta própria:
+limpeza retroativa é decisão da OM. Para efeito de busca de episódio, só conta o que está
+`Em curso`.
+
+**Vermelho persistente (5 dias).** Se um KPI ficar 🔴 por 5 dias consecutivos, o alerta diário
+parou de informar. **Não abra outro episódio** — o episódio em curso continua sendo o registro do
+desvio. Proponha, dentro dele, uma decisão estrutural (`Classe` = `Mudança de processo` ou
+`Escalonamento`, `Tipo` = `Decisão estrutural`), com a ação correspondente no Action Log.
+Sinalize a mudança de tratamento no report. A decisão estrutural também depende de validação
+humana (ver tarefa 05).
 
 **Dedup de pendência.** Antes de criar qualquer linha de pendência, confira se o assunto já
 tem pendência aberta (mesmo KPI, mesmo prestador, mesmo bug). Se tiver, **atualize o

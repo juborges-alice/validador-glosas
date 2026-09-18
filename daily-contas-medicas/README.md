@@ -99,7 +99,7 @@ daily-contas-medicas/
 ├── README.md                        ← este arquivo
 ├── shared/
 │   ├── 00-identificadores.md        ← operação, datatables, KPIs, drills, mapeamento de responsáveis
-│   ├── 01-regras-de-registro.md     ← farol, decisões vigentes, decisão × ação, dedup, idempotência
+│   ├── 01-regras-de-registro.md     ← farol, decisões vigentes, decisão × ação, episódio, idempotência
 │   └── 02-metabase.md               ← como executar card, comparação histórica, Top N, ETL
 ├── 01-report-slack/SKILL.md
 ├── 02-notion-page/SKILL.md
@@ -195,7 +195,7 @@ Cada Routine recebe só o que usa:
 |---|---|---|
 | 1 | O `Parâmetro metabase` cadastrado no Notion (`thismonth`) **zera a baseline de 3 meses** nos cards 65831 e 65834 — o filtro é aplicado na CTE inteira. | `shared/02-metabase.md`, seção "ARMADILHA CRÍTICA". A correção durável seria editar o catálogo no Notion — **decisão da OM**, não mexi. |
 | 2 | Cards Top N: a leitura revalidava só os prestadores já conhecidos. **INCOR cruzou o limiar em 16/09 (35,15% contra baseline ~2%, +33 p.p.) e não entrou no report.** | `shared/02-metabase.md`, "Top N: avalie a lista inteira, todo dia". |
-| 3 | O dedup do Decision Log existia como regra mas nunca foi aplicado — **dezenas de entradas duplicadas por KPI desde julho**. | `shared/01-regras-de-registro.md`, procedimento de 4 passos + cláusula "Backlog herdado". |
+| 3 | O dedup do Decision Log existia como regra mas nunca foi aplicado — **dezenas de entradas duplicadas por KPI desde julho**. | Corrigido em 16/09 com um procedimento de 4 passos; **substituído em 18/09/2026 pelo modelo de episódio** (`shared/01-regras-de-registro.md` §3), que é a regra em vigor. A §4 virou a salvaguarda de teto de 14 dias + vermelho persistente. |
 | 4 | A Mensagem 6 herdaria esse backlog inteiro no dia 1, e **nenhuma entrada do Decision Log tem `Prazo`** — `{V} vencidas` daria sempre 0 por falta de dado. | `01-report-slack/SKILL.md`, "Dois filtros obrigatórios no Decision Log"; espelhado no Bloco 4 (tarefa 02) e no rodapé (tarefa 05). |
 | 7 | `PEGs por Status de Análise no SLA - HI`: meta (90% de aderência) e limiar (% em aberto em risco) medem **grandezas diferentes** desde a recalibração de 09/09. | `shared/01-regras-de-registro.md`, edge case "Meta e limiar medem grandezas diferentes" — nesse caso só 🟢/🔴, sem 🟡. |
 | 8 | `Tempo para Resolução de Críticas - HS`: a segunda cláusula do limiar (crítica > 10 dias) é **inverificável** sem card de drill. | `shared/00-identificadores.md`, nota ⚠️ + Caveat obrigatório todo dia. |

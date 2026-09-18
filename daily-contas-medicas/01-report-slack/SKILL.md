@@ -431,10 +431,11 @@ julho. Sem eles a Mensagem 6 nasce com uma lista de trinta e poucos itens que ni
 time desliga da mensagem no primeiro dia. Ambos são **reversíveis** — a OM manda.
 
 1. **`Rascunho Claude`: só a ocorrência mais recente por KPI conta.** O backlog é composto
-   majoritariamente de propostas repetidas para o mesmo KPI, dia após dia (o dedup da §
-   "Dedup do Decision Log" não vinha sendo aplicado). Ordene por `date:Data:start` desc, agrupe
+   majoritariamente de propostas repetidas para o mesmo KPI, dia após dia (o modelo de um
+   registro por dia, aposentado em 18/09/2026 pela §3). Ordene por `date:Data:start` desc, agrupe
    por KPI e leve **uma** linha por KPI — a mais recente. As anteriores são a mesma pendência
-   escrita várias vezes, não pendências distintas.
+   escrita várias vezes, não pendências distintas. Sob o modelo de episódio este filtro tende a
+   virar inócuo, porque já existe no máximo um episódio aberto por KPI — mantenha-o como rede.
 2. **`Em curso` só é pendência se `Prazo` estiver vazio.** Hoje **nenhuma** entrada de Contas
    Médicas tem `Prazo` preenchido, então o filtro na prática pega todas — mas ele é o filtro
    certo assim que a OM começar a datar as decisões: uma decisão em curso *com prazo à frente*
@@ -520,12 +521,14 @@ conferindo contra a fonte.
 | 3 | **Toda decisão citada foi aberta**, e a data e o `Status` que você escreveu são os da página. | Não citou porque não achou? `NÃO ENCONTRADO NO TEXTO`, e sem rebaixar. |
 | 4 | **KPI de "alerta de trabalho" traz os dois horizontes**, mesmo com um deles zerado. | Execute o card inteiro, não só a faixa de ≤3 dias. |
 | 5 | **Nenhum Top N foi avaliado só pelos nomes conhecidos** — todas as linhas passaram pelo limiar. | Reavalie a lista inteira. |
-| 6 | **Antes de abrir entrada nova no Decision Log**, o dedup de 14 dias foi rodado de fato (`01-regras-de-registro.md` §4). | Complemente a entrada existente em vez de criar outra. |
+| 6 | **Antes de abrir entrada nova no Decision Log**, a busca por episódio aberto daquele KPI foi feita de fato (`01-regras-de-registro.md` §3). | Acrescente a linha de histórico ao episódio existente em vez de criar outra página. |
 
 **Sobre o item 6.** Está documentado desde 16/09 e continuou não sendo executado: em 17/09 havia
 uma página nova por dia, por KPI, praticamente sem falha desde 14/07 em `SLA Recurso de Glosa`,
 `% Faturas por Status - HS` e `% Glosa Alice por Prestador`. Documentar não fez efeito; por isso
-virou item de conferência com passo concreto. O dedup roda **antes** de criar, não depois.
+virou item de conferência com passo concreto. A busca roda **antes** de criar, não depois. Se a
+busca devolver **mais de um** episódio aberto para o mesmo KPI, isso é sintoma de log sujo:
+use o mais recente, e reporte o fato no resumo final para a OM limpar.
 
 **Nenhum item desta lista é dispensável por falta de tempo.** Se o dia estiver ruim e alguma
 coisa tiver que cair, cai o enriquecimento (drill extra, detalhamento), nunca a conferência.

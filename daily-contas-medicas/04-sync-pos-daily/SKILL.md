@@ -106,8 +106,20 @@ Confirmem ou corrijam nesta thread.
 ```
 
 - Uma proposta por decisão/ação, na thread do desvio/tema. Campo sem valor = `A DEFINIR`.
-- **Dedup 14 dias:** se já há decisão aberta do mesmo KPI nos últimos 14 dias, **referencie-a**
-  na proposta em vez de propor nova. Isso é o caso normal dos crônicos de Contas Médicas.
+- **Episódio aberto → referencie, não proponha nova** (§3 de `01-regras-de-registro.md`). Antes de
+  propor qualquer decisão, procure no Decision Log o **episódio aberto** daquele KPI
+  (`Operação` = Contas Médicas, `Status de execução` = `Em curso`, KPI na relation `KPIs afetados`).
+  - **Achou e a causa é a mesma** → **referencie o episódio** na proposta, com o link. O que a daily
+    trouxer de novo vira uma **linha de histórico** naquele episódio no fechamento das 19h, não
+    uma decisão nova. Este é o caso normal dos crônicos de Contas Médicas.
+  - **Achou mas a causa mudou** → proponha decisão nova e **diga na proposta que o episódio
+    anterior será encerrado**, citando o link e a causa que caiu.
+  - **Não achou** → proposta normal, é um episódio novo.
+
+  O que decide não é a idade do registro, é a **causa**. Um episódio velho com a mesma causa segue
+  sendo o mesmo episódio; um episódio de ontem com causa nova já é outro. O teto de 14 dias
+  corridos existe e força uma continuação, mas quem aplica é o fechamento das 19h — aqui você só
+  referencia o que está aberto.
 - **Só 🔴 gera proposta.** 🟡 não gera nada — nem proposta, nem Decision Log. Vale também para o 🟡 rebaixado por decisão vigente: a decisão que o rebaixou já existe e não é reaberta.
 - **KPI do tipo "alerta de trabalho"** (`00-identificadores.md`) **não gera proposta de decisão**,
   mesmo 🔴. Se a thread trouxer tratativa por recurso, leve para a coluna `Tratativa` da página,

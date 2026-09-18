@@ -63,11 +63,29 @@ Ao registrar:
 - **Ação** → **Action Log (Log Melhoria Contínua)**, campos obrigatórios de
   `01-regras-de-registro.md` §3. Atenção: `Status` = `A iniciar` (os valores válidos são
   `A iniciar` / `Em andamento` / `Atrasada` / `Concluída` / `Cancelada`).
-- **Dedup 14d:** se já há decisão aberta do mesmo KPI nos últimos 14 dias, **anexe** a ocorrência
-  em vez de criar nova.
-- **Vermelho persistente:** KPI 🔴 por 5 dias seguidos → encerre as diárias e abra **uma** decisão
-  estrutural (`Mudança de processo` ou `Escalonamento`) + a ação correspondente — **também**
-  sujeita ao OK; se ninguém validou, vai como pendência D+1.
+  **O título da ação é a ação**, começando por verbo no infinitivo e descrevendo trabalho que
+  alguém faz — nunca o nome do KPI (o nome do KPI é o título do episódio no Decision Log, não da
+  ação). Ligue toda ação ao seu episódio por `Decisão de origem`: é esse link que faz a pendência
+  aparecer na daily com o indicador correto na coluna `Indicador`. Ação sem `Decisão de origem`
+  vira pendência órfã.
+- **O registro é o EPISÓDIO, não o dia** (§3 de `01-regras-de-registro.md` — leia a seção inteira
+  antes de criar qualquer entrada). Antes de criar decisão, procure o episódio aberto do KPI
+  (`Operação` = Contas Médicas, `Status de execução` = `Em curso`, KPI na relation `KPIs afetados`):
+
+  | Situação | O que fazer |
+  |---|---|
+  | Não há episódio aberto | **Criar** a página do desvio, título `{KPI sem prefixo} · desvio desde DD/MM` |
+  | Episódio aberto, **mesma causa** | **Acrescentar linha de histórico** ao `Contexto / problema`: `DD/MM: {valor} — {nota}`. **Não criar página.** Se a daily trouxe conclusão nova, ela vai em `Decisão tomada` do próprio episódio |
+  | Episódio aberto, **causa mudou** | **Fechar** (`Status de execução` = `Concluída`, última linha dizendo qual causa caiu) e **abrir** outro |
+  | Episódio aberto há **mais de 14 dias corridos** | Fechar por tempo e abrir **continuação** (`· desvio desde DD/MM (continuação)`), com o link do anterior. A continuação nasce **sem causa confirmada** e vai para Aguardando definição da OM |
+  | KPI voltou a 🟢 ou 🟡 hoje | **Fechar** o episódio |
+
+  **Feche os episódios dos KPIs que saíram do vermelho hoje.** Episódio que não fecha vira
+  pendência fantasma na daily de amanhã.
+- **Vermelho persistente:** KPI 🔴 por 5 dias seguidos **dentro do mesmo episódio** → mantenha o
+  episódio (não abra outro) e proponha **uma** decisão estrutural (`Mudança de processo` ou
+  `Escalonamento`) + a ação correspondente — **também** sujeita ao OK; se ninguém validou, vai
+  como pendência D+1.
 - Ligue cada decisão criada no campo `Decisões geradas` da Execução de Rotina, e cada ação à sua
   decisão via `Decisão de origem`. Preencha o **link do registro** nos blocos da página (Bloco 2
   `💬`, Bloco 3, Bloco 4, Bloco 5).
@@ -148,7 +166,8 @@ Preencher o callout **Fechamento do dia · `[eod-sync DD/MM]`** que a tarefa 02 
 (substituir o ⏳):
 
 - Threads processadas no dia: N
-- Decisões registradas (Decision Log): N · Ações registradas (Action Log): N
+- Episódios abertos hoje: N · Episódios atualizados (linha de histórico): N · Episódios fechados: N
+- Ações registradas (Action Log): N
 - Propostas recusadas: N · Sem validação (→ D+1): N
 - Conflitos não resolvidos (não registrados): lista, ou "nenhum"
 - Deep dives pendentes abertos hoje: lista, ou "nenhum"
@@ -165,5 +184,5 @@ pendências D+1 (pendência-primeiro).
 
 ## Ao terminar
 
-Responda apenas um resumo de uma linha: decisões registradas, ações registradas, recusadas,
-conflitos, e pendências D+1.
+Responda apenas um resumo de uma linha: episódios abertos / atualizados / fechados, ações
+registradas, recusadas, conflitos, e pendências D+1.
