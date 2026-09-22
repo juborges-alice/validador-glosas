@@ -83,7 +83,9 @@ Conferido contra o catálogo em 16/09/2026. Desde a primeira versão (19/08) ent
 `Recursos de Glosa Próximos do Vencimento (≤3 dias)` (card 73490, criado em 10/09) e foram
 recalibrados os limiares de `% Glosa por Tipo de HI` e `PEGs por Status de Análise no SLA - HI`
 (ambos em 09/09). O `PEGs por Status de Análise no SLA - HI` foi recalibrado de novo em 22/09,
-saindo da proporção sobre o total em aberto para dois degraus absolutos de prazo (≥7 du e ≥13 du).
+saindo da proporção sobre o total em aberto para duas contagens absolutas de prazo: 7 du exatos na
+meta (🟡) e ≥13 du no limiar (🔴). A meta de 90% de aderência que ele carregava passou a viver só
+no `SLA de Análise de conta - HI`.
 Os limiares novos são lidos do Notion a cada execução, e as condições que eles carregam estão
 resumidas em `01-regras-de-registro.md` §1.
 

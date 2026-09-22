@@ -57,11 +57,11 @@ Casos de borda:
   não. Nesse caso **o limiar manda**, e o KPI só pode ser 🟢 ou 🔴 — **sem 🟡**, porque não existe
   "não atingiu a meta mas não cruzou o limiar" quando os dois não são comparáveis. Diga isso na
   coluna Contexto: `meta de {X} e limiar medem grandezas diferentes; farol pelo limiar`.
-  **Caso vigente:** `PEGs por Status de Análise no SLA - HI` tem `Meta atual` = 90% (aderência ao
-  SLA) e limiar que mede **quantas PEGs em aberto já chegaram aos degraus de prazo de 7 e 13 dias
-  úteis** — grandezas distintas desde a recalibração de 09/09, e que seguem distintas depois da
-  recalibração de 22/09. Se a meta for atualizada para a mesma grandeza do limiar, esta exceção
-  sai.
+  **Nenhum caso vigente hoje.** `PEGs por Status de Análise no SLA - HI` era o caso desde 09/09,
+  com `Meta atual` = 90% de aderência contra um limiar de risco de prazo. Em 22/09 a OM passou a
+  meta para a mesma grandeza do limiar (contagem de PEGs em aberto por dias úteis), então a
+  exceção saiu e o KPI voltou a ter 🟡 normal. A meta de 90% de aderência não se perdeu: ela vive
+  em `SLA de Análise de conta - HI`, que é quem mede % de PEGs finalizadas dentro do SLA.
 
 **Regra de direção.** Variação na direção boa de um KPI "menor é melhor" nunca gera 🟡 nem 🔴 —
 confirma 🟢, qualquer que seja a magnitude.
@@ -81,15 +81,21 @@ no catálogo, e que precisam ser respeitadas:
   mês corrente, o critério de >1 p.p. é **tendência/informativo e NÃO dispara 🔴 sozinho** (o
   volume do mês ainda está em maturação); a partir do **dia 20**, o mesmo critério vale como
   alerta pleno e dispara 🔴. Reporte sempre o número; o que muda é a cor.
-- **Degraus de prazo, não proporção** — `PEGs por Status de Análise no SLA - HI`: o limiar é
-  qualquer PEG em aberto com **≥13 dias úteis** desde o `invoice_date` (2 du antes de estourar o
-  SLA externo contratual de 15 du), **ou** qualquer PEG em aberto com **≥7 dias úteis** (prazo
-  final para fechar sem perder o SLA interno). São contagens absolutas: o total em aberto do dia
-  não entra mais no cálculo. Recalibrado em 22/09/2026 — a régua anterior (≥5 du acima de 10% do
-  total em aberto) acendia com a fila normal de análise, e em 22/09 disparou com 85 de 252 PEGs
-  (33,73%) sem nenhuma PEG vencida, com o time analisando a 722% da capacidade esperada. Antes
-  dela, o critério de ">40% do total em aberto" já havia sido descartado por disparar com volume
-  normal de início de mês.
+- **Degraus de prazo, não proporção** — `PEGs por Status de Análise no SLA - HI`: recalibrado em
+  22/09/2026 (decisão da OM). O farol sai de **duas contagens absolutas** de PEGs ainda em aberto,
+  pela idade em dias úteis desde o `invoice_date`, e o total em aberto do dia **não entra mais**
+  no cálculo:
+  - `Meta atual` = **0 PEGs em exatamente 7 du**. Havendo alguma, o KPI é 🟡 — é o último dia para
+    fechar dentro do SLA interno, ainda dá para salvar, então é aviso e não acionamento.
+  - `Limiar de alerta` = **qualquer PEG com ≥13 du**, 2 du antes do SLA externo contratual de 15
+    du. Havendo alguma, o KPI é 🔴.
+  - **PEGs entre 8 e 12 du já perderam o SLA interno** e não são mais salváveis por ação do dia:
+    entram no report como contexto do bloco de 13 du, e **não mexem na cor** até chegarem lá.
+
+  Duas réguas anteriores foram descartadas por acender com fila normal: a de 09/09 (≥5 du acima de
+  10% do total em aberto, ou qualquer PEG >7 du), que em 22/09 disparou com 85 de 252 PEGs (33,73%)
+  sem nenhuma PEG vencida e com o time analisando a 722% da capacidade esperada; e, antes dela, a
+  de ">40% do total em aberto", que disparava com volume normal de início de mês.
 
 Quando um limiar for recalibrado no Notion, a mudança vale automaticamente: o catálogo é a
 fonte, este arquivo é só o resumo do que existe hoje.
@@ -168,6 +174,11 @@ As duas classes de decisão agem de formas diferentes:
    `PEGs por Status de Análise no SLA - HI` são compromisso de serviço: cruzaram o limiar, são 🔴
    mesmo com causa decidida. A decisão entra no texto, a cor não muda. Se a operação passar a ter
    um KPI de prazo regulatório ou contratual, acrescente-o aqui.
+
+   **Não confunda com o 🟡 de 7 du do `PEGs por Status de Análise no SLA - HI`.** Aquele amarelo
+   nasce na **Etapa 1**, da meta do próprio KPI (0 PEGs em 7 du exatos), e é o comportamento
+   correto — não é rebaixamento. A tolerância zero aqui proíbe outra coisa: transformar em 🟡, por
+   causa já decidida, um 🔴 que a Etapa 1 produziu. PEG com ≥13 du é 🔴 e continua 🔴.
 5. **Nunca sobe cor.** O rebaixamento só desce, e só de 🔴 para 🟡.
 
 **Vermelho previsível.** Rebaixar não resolve a causa: quando o mesmo KPI cai no limiar dia após
