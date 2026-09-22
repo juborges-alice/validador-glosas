@@ -82,8 +82,10 @@ Quando um drill for cadastrado, esta nota sai.
 Conferido contra o catálogo em 16/09/2026. Desde a primeira versão (19/08) entrou o KPI
 `Recursos de Glosa Próximos do Vencimento (≤3 dias)` (card 73490, criado em 10/09) e foram
 recalibrados os limiares de `% Glosa por Tipo de HI` e `PEGs por Status de Análise no SLA - HI`
-(ambos em 09/09) — os limiares novos são lidos do Notion a cada execução, e as condições que
-eles carregam estão resumidas em `01-regras-de-registro.md` §1.
+(ambos em 09/09). O `PEGs por Status de Análise no SLA - HI` foi recalibrado de novo em 22/09,
+saindo da proporção sobre o total em aberto para dois degraus absolutos de prazo (≥7 du e ≥13 du).
+Os limiares novos são lidos do Notion a cada execução, e as condições que eles carregam estão
+resumidas em `01-regras-de-registro.md` §1.
 
 Ao exibir no Slack e no Notion, **corte o prefixo `Contas Médicas - `**. Case pelo nome
 completo, exiba sem o prefixo.

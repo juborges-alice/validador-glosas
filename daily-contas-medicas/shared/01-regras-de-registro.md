@@ -58,9 +58,10 @@ Casos de borda:
   "não atingiu a meta mas não cruzou o limiar" quando os dois não são comparáveis. Diga isso na
   coluna Contexto: `meta de {X} e limiar medem grandezas diferentes; farol pelo limiar`.
   **Caso vigente:** `PEGs por Status de Análise no SLA - HI` tem `Meta atual` = 90% (aderência ao
-  SLA) e limiar que mede **% de PEGs em aberto em risco de estourar o SLA** — grandezas distintas
-  desde a recalibração de 09/09. Se a meta for atualizada para a mesma grandeza do limiar, esta
-  exceção sai.
+  SLA) e limiar que mede **quantas PEGs em aberto já chegaram aos degraus de prazo de 7 e 13 dias
+  úteis** — grandezas distintas desde a recalibração de 09/09, e que seguem distintas depois da
+  recalibração de 22/09. Se a meta for atualizada para a mesma grandeza do limiar, esta exceção
+  sai.
 
 **Regra de direção.** Variação na direção boa de um KPI "menor é melhor" nunca gera 🟡 nem 🔴 —
 confirma 🟢, qualquer que seja a magnitude.
@@ -80,10 +81,15 @@ no catálogo, e que precisam ser respeitadas:
   mês corrente, o critério de >1 p.p. é **tendência/informativo e NÃO dispara 🔴 sozinho** (o
   volume do mês ainda está em maturação); a partir do **dia 20**, o mesmo critério vale como
   alerta pleno e dispara 🔴. Reporte sempre o número; o que muda é a cor.
-- **Janela de risco, não de volume** — `PEGs por Status de Análise no SLA - HI`: o limiar é
-  PEGs em aberto com ≥5 dias úteis desde o `invoice_date` acima de 10% do total em aberto, **ou**
-  qualquer PEG em aberto com >7 dias úteis (já vencida). O critério antigo de ">40% do total em
-  aberto" foi descartado por disparar com volume normal de início de mês.
+- **Degraus de prazo, não proporção** — `PEGs por Status de Análise no SLA - HI`: o limiar é
+  qualquer PEG em aberto com **≥13 dias úteis** desde o `invoice_date` (2 du antes de estourar o
+  SLA externo contratual de 15 du), **ou** qualquer PEG em aberto com **≥7 dias úteis** (prazo
+  final para fechar sem perder o SLA interno). São contagens absolutas: o total em aberto do dia
+  não entra mais no cálculo. Recalibrado em 22/09/2026 — a régua anterior (≥5 du acima de 10% do
+  total em aberto) acendia com a fila normal de análise, e em 22/09 disparou com 85 de 252 PEGs
+  (33,73%) sem nenhuma PEG vencida, com o time analisando a 722% da capacidade esperada. Antes
+  dela, o critério de ">40% do total em aberto" já havia sido descartado por disparar com volume
+  normal de início de mês.
 
 Quando um limiar for recalibrado no Notion, a mudança vale automaticamente: o catálogo é a
 fonte, este arquivo é só o resumo do que existe hoje.
