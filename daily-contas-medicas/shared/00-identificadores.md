@@ -56,7 +56,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 2 | Contas Médicas - % Glosa por Tipo de HI | 50815 | diária |
 | 3 | Contas Médicas - % Glosa Alice por Prestador - HI | 65700 | diária |
 | 4 | Contas Médicas - R$ Recurso de Glosa acumulado | 65834 | diária |
-| 5 | Contas Médicas - SLA Recurso de Glosa - HI | 65858 | diária |
+| 5 | Contas Médicas - SLA Recurso de Glosa - HI | 60527 | diária |
 | 6 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | diária |
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
@@ -79,7 +79,12 @@ o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 `segunda cláusula do limiar (crítica > 10 dias) não verificável — sem card de drill`.
 Quando um drill for cadastrado, esta nota sai.
 
-Conferido contra o catálogo em 16/09/2026. Desde a primeira versão (19/08) entrou o KPI
+Conferido contra o catálogo em 22/09/2026 (as 19 linhas da tabela acima batem com o `ID Card
+metabase` do Notion). A única divergência encontrada era o card do `SLA Recurso de Glosa - HI`,
+corrigido aqui de 65858 para **60527** — a troca de fonte foi decidida em 18/09 para o KPI bater
+com o que o dashboard mostra, e o catálogo já estava certo.
+
+Conferido antes disso em 16/09/2026. Desde a primeira versão (19/08) entrou o KPI
 `Recursos de Glosa Próximos do Vencimento (≤3 dias)` (card 73490, criado em 10/09) e foram
 recalibrados os limiares de `% Glosa por Tipo de HI` e `PEGs por Status de Análise no SLA - HI`
 (ambos em 09/09). O `PEGs por Status de Análise no SLA - HI` foi recalibrado de novo em 22/09,
