@@ -118,6 +118,31 @@ KPI de processo).
 
 Sem base para hipótese → escreva "hipótese a investigar". Não invente causa.
 
+### Ciclo Cassi — o que fazer em cada dia da semana
+
+O `R$ Faturado Cassi` é da classe **monitoramento** e nunca entra aqui como 🔴. O acionável dele
+é o **ciclo semanal** (regra completa em `00-identificadores.md`). Nesta tarefa:
+
+- **Toda terça**, poste na thread do Cassi a pergunta de abertura de ciclo, marcando a Fernanda
+  (`<@U044N26BETU>`):
+```
+*Ciclo Cassi — abertura da semana* (<@U044N26BETU>)
+Chegaram contas da Cassi desde a última terça? Se sim: valor e data de chegada.
+Se não chegou, responda "não chegou" — o prazo de cobrança começa a contar.
+Leitura de hoje do R$ Faturado Cassi (acumulado no mês): {valor}
+```
+  A leitura de hoje vai na mensagem porque é o `V0` que a tarefa das 19h vai gravar como âncora.
+  **Não crie a ação aqui** — quem registra é o fechamento das 19h, e só com a resposta humana.
+- **Todo dia com ciclo aberto**, calcule o processado acumulado pela fórmula de
+  `00-identificadores.md` e escreva o resultado na página da ação. No **7º dia**, aplique o
+  critério duplo (≥98% **e** lacuna < R$50.000) e proponha o fechamento ou exponha a lacuna em
+  reais.
+- **No último dia útil do mês**, se houver ciclo aberto, grave a âncora `Vf` na página da ação
+  **antes** de qualquer outra coisa — ela não é recuperável depois, porque o card só devolve o
+  mês corrente.
+- **Nos dias 15 e último dia útil do mês**, avalie o Δ contra a média de 3 meses. Se passar de
+  10%, poste a pergunta à OM na thread. Nos demais dias, o KPI sai sem farol de alerta.
+
 ## Passo 6 — Execução de Rotina enxuta no Notion
 
 Crie a página em `collection://00d00405-31e2-4670-abd1-168e986e55e9`. Guardrail de `parent` e

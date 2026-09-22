@@ -68,6 +68,16 @@ Ao registrar:
   ação). Ligue toda ação ao seu episódio por `Decisão de origem`: é esse link que faz a pendência
   aparecer na daily com o indicador correto na coluna `Indicador`. Ação sem `Decisão de origem`
   vira pendência órfã.
+- **Ciclo Cassi (terça).** Se a Fernanda respondeu à pergunta de abertura postada às 06h30:
+  - **`Chegou R$X em DD/MM`** → crie a ação `Processar as contas da Cassi recebidas em DD/MM
+    (R$X)`, `Responsável` = Fernanda Jerônimo, `date:Prazo:start` = **DD/MM + 7 dias corridos**
+    (conta da chegada, não da terça). No `Descrição`, grave a âncora: `V0 = {valor do R$ Faturado
+    Cassi lido em DD/MM} · declarado = R$X · fecha com ≥98% e lacuna < R$50.000`.
+  - **`Não chegou`** → **não é ação nossa e não é 🔴.** Registre como sinalização no Bloco 3 com
+    `Responsável` = Fernanda (é ela quem cobra a Cassi) e conte os dias de espera pela guarda de
+    3 dias úteis. Duas semanas seguidas sem remessa → escale à OM.
+  - **Sem resposta até o fechamento** → pendência D+1, como qualquer proposta não validada.
+  Regra completa (fórmula, virada do mês, critério duplo) em `00-identificadores.md`.
 - **O registro é o EPISÓDIO, não o dia** (§3 de `01-regras-de-registro.md` — leia a seção inteira
   antes de criar qualquer entrada). Antes de criar decisão, procure o episódio aberto do KPI
   (`Operação` = Contas Médicas, `Status de execução` = `Em curso`, KPI na relation `KPIs afetados`):

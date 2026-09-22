@@ -42,6 +42,10 @@ a partir da `Definição` / `Meta atual` / `Tipo de métrica`. Depois aplique:
 - **🔴 Vermelho** — cruzou o `Limiar de alerta`.
 - **⚪** — KPI **sem dado** no dia. Não pontua no farol; registrar para correção da fonte.
   Também ⚪ o KPI que não tenha nem meta nem limiar — acompanhar tendência.
+  Também ⚪ o KPI da classe **monitoramento** (`00-identificadores.md`), que por decisão da OM
+  nunca acende 🔴 — hoje só o `R$ Faturado Cassi`. Ele sai com número, série e tendência, e o
+  limiar dele só vale nos dois checkpoints do mês (dia 15 e último dia útil), onde vira
+  **pergunta à OM**, não vermelho.
 
 Casos de borda:
 

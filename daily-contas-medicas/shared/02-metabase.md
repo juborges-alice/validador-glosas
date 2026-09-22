@@ -94,6 +94,13 @@ divisão por zero. O card **já calcula os dois períodos sozinho**, a partir de
 **A chamada correta é omitir o parâmetro de data nesses três KPIs.** Verificado em 16/09/2026
 batendo o resultado contra o valor publicado no canal (Cassi: −28,81%, idêntico).
 
+**Consequência para o ciclo Cassi:** como o 65831 calcula tudo a partir de `CURRENT_DATE`, ele
+**só devolve o mês corrente** — não existe série diária nem acumulado desde sempre, e no dia 1º o
+valor zera. Não tente resolver isso com parâmetro: a correção é aritmética, com as âncoras `V0` e
+`Vf` gravadas na página da ação do ciclo. Fórmula e exemplo em `00-identificadores.md`, seção
+"Ciclo de processamento Cassi". **A âncora `Vf` tem que ser gravada no último dia útil do mês** —
+depois da virada ela é irrecuperável, porque o card não devolve mês fechado.
+
 **Regra geral que vale para qualquer card com baseline embutida:** depois de executar, olhe a
 coluna de comparação histórica. Se ela vier **zero ou nula** enquanto o período atual tem valor,
 você provavelmente filtrou a baseline junto. Re-execute **sem** o parâmetro de data e compare.

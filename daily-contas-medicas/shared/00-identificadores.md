@@ -152,6 +152,88 @@ hipótese; tem lista e dono.
 
 Para incluir outro KPI nesta classe, acrescente-o à tabela acima. Nada mais precisa mudar.
 
+## KPIs do tipo "monitoramento" — leem, publicam, não acendem 🔴
+
+| KPI | Card | Classe |
+|---|---|---|
+| Contas Médicas - R$ Faturado Cassi | 65831 | **Monitoramento** (decisão da OM, 22/09/2026) |
+
+**Por que esta classe existe.** O valor faturado da Cassi soma três coisas: a Cassi enviar as
+contas (dependência externa), o uso da rede no período (ninguém controla) e nós subirmos as
+contas no sistema (o único pedaço nosso). Alertar no valor acende vermelho pelos três, e em dois
+deles não existe ação — o KPI vira ruído.
+
+Havia ainda um defeito aritmético: o valor é **acumulado no mês** e fica parado entre uma remessa
+semanal e outra, enquanto a média de 3 meses do card **cresce a cada dia do mês**. Em 18–21/09 a
+variação foi de −0,82% → −8,34% → −16,89% → −21,29% **sem nada ter mudado na operação**. Num KPI
+de cadência semanal lido todo dia, o vermelho era garantido por construção.
+
+Regras desta classe:
+
+1. **Nunca acende 🔴 e nunca abre episódio no Decision Log.** Sai no report com número, série e
+   tendência, farol ⚪ (monitoramento), sem hipótese e sem plano de ação.
+2. **Dois checkpoints por mês, e só neles o limiar vale:** **dia 15** e **último dia útil do
+   mês**. Nesses dias, Δ>10% contra a média de 3 meses abre uma **pergunta à OM** na thread —
+   não um vermelho na daily. A comparação é válida em qualquer dia porque o card casa a média
+   pelo **dia do mês** (em 16/09 usou "média do dia 16").
+3. **O acionável não está aqui, está no ciclo semanal** — seção abaixo.
+
+## Ciclo de processamento Cassi — o indicador acionável (decisão da OM, 22/09/2026)
+
+A Cassi envia as contas **semanalmente** e a operação tem **a semana** para subir. O único desvio
+que é nosso é: chegou a conta e não subimos. É isso, e só isso, que este indicador mede.
+
+Não precisa de tabela nova: o ciclo **é uma ação no Action Log**, com dono e prazo, e a
+governança sai de graça do bloco de pendências que já existe.
+
+| Quando | O que acontece | Quem |
+|---|---|---|
+| **Terça**, no report das 06h30 | Pergunta na thread: *"Chegaram contas da Cassi? Valor e data de chegada."*, marcando a Fernanda | rotina pergunta |
+| Terça | Resposta: `Chegou R$X em DD/MM` ou `Não chegou` | **Fernanda Jerônimo** |
+| Terça, fechamento das 19h | Cria a ação `Processar as contas da Cassi recebidas em DD/MM (R$X)`, `Responsável` = Fernanda, `date:Prazo:start` = **data de chegada + 7 dias corridos** | rotina registra |
+| Todo dia | A ação aparece no bloco de pendências como qualquer outra | rotina |
+| Todo dia | Calcula o **processado acumulado** (fórmula abaixo) e escreve na página da ação | rotina |
+| No 7º dia | `processado ≥ 98% do declarado` **e** lacuna `< R$50.000` → fecha 🟢 sozinha. Caso contrário → expõe a lacuna em reais e marca 🔴 **nosso** | rotina |
+
+**O relógio conta da data de chegada, não da terça.** Se a remessa chegou quinta, a terça
+seguinte já queimou 5 dos 7 dias. A terça é o dia da pergunta; o prazo nasce da data informada.
+
+**Semana sem remessa não é vermelho nosso.** É cobrança externa: vira sinalização com
+`Responsável` = Fernanda (é ela quem cobra a Cassi), contando os dias de espera pela guarda de 3
+dias úteis. **Duas ou mais semanas seguidas sem remessa** é o sinal estrutural — escale à OM.
+
+**Critério duplo de fechamento, e por quê.** A série tem revisão retroativa: em 21/09 um
+incremento de R$350.351,33 apareceu na série no dia 16, depois do fato. Por isso o corte é 98%,
+não 100% exato — arredondamento não pode virar alarme falso. Mas 2% de uma remessa grande é
+dinheiro: 2% de R$3 milhões são R$60 mil. Daí a segunda trava, o piso de materialidade de
+R$50.000 que a operação já usa desde 11/08. Acima dele, mesmo com 98%, quem fecha é a Fernanda.
+
+### A fórmula do processado acumulado — e a virada do mês
+
+O card 65831 calcula o mês corrente e a baseline de 3 meses sozinho, a partir de `CURRENT_DATE`:
+ele **só devolve o mês atual**, e no dia 1º o acumulado zera. Um ciclo que atravesse a virada
+leria delta negativo. A correção é aritmética, com duas âncoras gravadas na página da ação:
+
+- **`V0`** — valor do `R$ Faturado Cassi` no dia da declaração. Gravado quando a ação é criada.
+- **`Vf`** — valor lido no **último dia útil do mês**. Gravado **só** quando há ciclo aberto na
+  virada.
+
+```
+Ciclo não cruza a virada:   processado = V_hoje − V0
+Ciclo cruza a virada:       processado = (Vf − V0) + V_hoje
+```
+
+Exemplo: declaração em 26/09 de R$1.200.000, `V0` = R$2.800.000. Em 30/09 a leitura é
+R$3.500.000 (grava `Vf`). Em 03/10 o acumulado de outubro está em R$500.000 →
+`(3.500.000 − 2.800.000) + 500.000 = R$1.200.000`. Ciclo fechado.
+
+As duas âncoras são leituras que a rotina **já faz todo dia** — só precisam ser escritas na
+página da ação. Nenhum dado novo, nenhum card novo.
+
+**Se `Vf` não existir** (a rotina não rodou no último dia útil), use a última leitura disponível,
+escreva o caveat de imprecisão na página, e **mande o fechamento para confirmação da Fernanda** —
+não feche sozinha.
+
 ## BLOCO DE MAPEAMENTO DE RESPONSÁVEIS — editar aqui quando o time mudar
 
 Confirmado pela OM em 16/09/2026. A Larissa saiu do bloco: a Fernanda voltou de férias.
