@@ -70,6 +70,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 16 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
 | 17 | Contas Médicas - SLA de Pagamento de HS | 35629 | diária |
 | 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
+| 19 | Contas Médicas - Ciclo de processamento Cassi | 65831 (sem card próprio) | **semanal — pergunta na terça, ver seção do ciclo Cassi** |
 
 **⚠️ `Tempo para Resolução de Críticas - HS`: metade do limiar é inverificável.** O limiar diz
 `Tempo médio de resolução > 3 dias; ou crítica específica > 10 dias sem resolução`. Sem drill
