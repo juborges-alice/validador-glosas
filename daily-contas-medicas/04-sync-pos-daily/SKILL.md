@@ -43,8 +43,29 @@ lista na thread. Nunca escreva SQL.
 Busque no Drive por título:
 `title contains 'Daily Contas Médicas' and title contains '{AAAA/MM/DD de hoje}'`.
 Padrão do nome: `Daily Contas Médicas - AAAA/MM/DD HH:MM GMT-03:00 - Anotações do Gemini` (ou
-`- Notes by Gemini`). Se houver mais de um, use o mais recente. Se não encontrar: registre a nota
-no Bloco 5 (`transcrição não encontrada no Drive`) e continue — não trave.
+`- Notes by Gemini`). Se houver mais de um, use o mais recente.
+
+### Transcrição não encontrada — é alerta, não rodapé (decisão da OM, 22/09/2026)
+
+Continue a execução, **não trave**. Mas não basta anotar no Bloco 5: a daily síncrona é onde as
+decisões de fato acontecem, então **sem transcrição o 15h e o 19h rodam cegos naquele dia** — o
+que foi combinado na reunião não chega a lugar nenhum, e ninguém percebe. Foi o que aconteceu em
+21/09/2026: sem transcrição no Drive, o fechamento daquele dia registrou 0 decisões e 0 ações, e
+no dia seguinte a OM encontrou pendências que a reunião já tinha resolvido.
+
+Então, ao não encontrar:
+
+1. **Abra pendência no Bloco 4** com `Fonte` = `Bloco 3`, `Responsável` = a OM
+   (`<@U03A4SS2P1Q>`), `Pendência` = `Recuperar a transcrição da daily de DD/MM — a rotina rodou
+   sem ela`, `Status` = `Pendente`.
+2. **Marque a OM na thread de pendências**, com uma linha só:
+   `⚠️ Transcrição da daily de DD/MM não encontrada no Drive. As decisões da reunião de hoje não
+   entraram em nenhum bloco — o que valeu foi só o que está escrito nas threads.`
+3. **Escreva no Bloco 5** o que você usou no lugar dela (respostas do Slack, e quais threads).
+
+Antes de declarar ausente, tente a busca **sem a data**, só por título, e olhe os arquivos mais
+recentes: o nome pode ter vindo com formato ou horário diferente do padrão. Declare ausência só
+depois disso.
 
 Separe o conteúdo por **bloco de destino**:
 - Sobre um desvio que tem sub-bloco no Bloco 2 → campo `🗣️ Da daily síncrona` daquele desvio.

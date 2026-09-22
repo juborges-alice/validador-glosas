@@ -26,7 +26,9 @@ Capturar as últimas respostas humanas novas desde o marcador **Resumo da daily 
 `[meet-sync DD/MM]`** (ou a última varredura). Atualizar a página igual aos syncs anteriores:
 `Causa raiz` das linhas ⏳, `💬 Resposta do responsável`, Blocos 4 e 5. Se a transcrição ainda não
 tiver sido processada (sem `[meet-sync DD/MM]` no Bloco 5), buscá-la no Drive e distribuir nos
-blocos como a tarefa 04.
+blocos como a tarefa 04 — **incluindo o tratamento de transcrição ausente** descrito lá (pendência
+para a OM + linha na thread), que vale igual aqui. Se a tarefa 04 já abriu essa pendência hoje,
+não abra outra: atualize o `Status` da existente.
 
 ## 2. Registro — SÓ o que foi validado
 
@@ -43,6 +45,25 @@ foram postadas nas threads pela tarefa 04, marcando o responsável e a OM. A val
 
 **Registrar exige campos completos.** Se veio validação mas falta campo obrigatório (ação sem
 prazo ou sem responsável), **não registre** — sinalize o que falta como pendência D+1.
+
+### Antes de mandar qualquer item para D+1, releia a thread procurando conclusão
+
+A tabela acima cobre respostas **à proposta**. Mas humano fecha item sem responder proposta:
+escreve na thread que apurou a causa, que resolveu, que a decisão é não fazer nada. Pela regra
+"O humano dizer que acabou É validação" (§6 de `01-regras-de-registro.md`), **isso fecha**.
+
+Então, para cada item que você está prestes a classificar como "sem confirmação":
+
+1. Releia a thread inteira do KPI **e** a thread de pendências, não só as respostas que citam
+   a proposta.
+2. Achou afirmação inequívoca de conclusão → **feche**, com `— concluída por {nome} via Slack
+   em DD/MM`, e conte no rodapé como fechada, não como D+1.
+3. Texto ambíguo ("vamos acompanhar", "estamos olhando") → **não feche**; responda na thread
+   pedindo confirmação explícita e mande para D+1 normalmente.
+
+Nunca feche um item por inferência sua sobre o estado do mundo — só por afirmação de gente.
+
+### Como registrar cada tipo
 
 Ao registrar:
 - **Decisão** → **Decision Log**, campos de `01-regras-de-registro.md` §3.
@@ -179,9 +200,10 @@ Preencher o callout **Fechamento do dia · `[eod-sync DD/MM]`** que a tarefa 02 
 - Episódios abertos hoje: N · Episódios atualizados (linha de histórico): N · Episódios fechados: N
 - Ações registradas (Action Log): N
 - Propostas recusadas: N · Sem validação (→ D+1): N
+- Itens fechados por afirmação humana na thread (sem responder proposta): N — liste quais e quem disse
+- Transcrição da daily: processada / **não encontrada (pendência aberta para a OM)**
 - Conflitos não resolvidos (não registrados): lista, ou "nenhum"
 - Deep dives pendentes abertos hoje: lista, ou "nenhum"
-- Transcrição da daily: processada / não encontrada
 - Pendências para D+1: lista, ou "nenhuma"
 
 Se a `Status da execução` da Execução de Rotina ainda estiver `Pendente`, feche-a como

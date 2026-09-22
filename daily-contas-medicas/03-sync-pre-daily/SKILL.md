@@ -82,6 +82,12 @@ da página (ex: `✅ concluído`, `🔄 novo prazo DD/MM`, `❌ bloqueado: {moti
 `em andamento — aguardando tech`). **Não** alterar o Decision Log nem o Action Log agora — o
 registro formal é dos syncs das 15h/19h.
 
+**Conclusão dita em texto livre conta** (§6 de `01-regras-de-registro.md`): se a pessoa escreveu
+que apurou, resolveu ou encerrou o item — mesmo sem responder a nenhuma proposta —, marque
+`✅ concluído — {nome}, DD/MM` no `Status`. Isso não fecha nada nos logs, mas é o sinal que o
+fechamento das 19h vai ler para fechar de verdade. Texto ambíguo ("vamos acompanhar") não é
+conclusão: mantenha o status como está.
+
 ### 7. Conflito entre respostas
 
 Sinalizar no sub-bloco do desvio uma linha `⚠️ respostas divergentes: {quem} diz {X}, {quem} diz

@@ -491,6 +491,34 @@ Regras:
 thread → não atualize nada, não confirme, e registre o conflito na saída (qual thread, quem
 divergiu, o quê). Respostas que só comentam sem decidir não contam como conflito.
 
+### O humano dizer que acabou É validação (decisão da OM, 22/09/2026)
+
+**A validação não precisa ser resposta à sua proposta.** Se a pessoa responsável escreve na
+thread, com todas as letras, que o item está concluído / resolvido / encerrado / não tem mais
+pendência, **isso fecha o item** — mesmo que ela não tenha citado a proposta, não tenha
+escrito "ok", e o texto seja um comentário solto.
+
+Aplique a qualquer pendência: linha do Bloco 4, ação no Action Log (`Status` = `Concluída`),
+episódio do Decision Log (`Status de execução` = `Concluída`). Registre sempre **quem disse e
+quando**: `— concluída por {nome} via Slack em DD/MM`.
+
+**A recíproca continua valendo, e é o limite da regra:** a pessoa **abrir** trabalho novo,
+mudar escopo, definir prazo ou dono continua exigindo a proposta estruturada e o OK. Esta
+regra só **fecha** o que já existe; ela nunca cria nem altera nada.
+
+**Na dúvida, pergunte — não feche.** "Vamos acompanhar", "estamos olhando", "acho que já era"
+não fecham nada. Fechar exige afirmação inequívoca de conclusão. Quando o texto for ambíguo,
+responda na thread pedindo confirmação e deixe o item aberto.
+
+**O incidente que originou a regra (22/09/2026).** Em 21/09 a causa raiz da glosa do Hospital
+São Francisco e do Santa Mônica foi apurada e escrita na thread pela responsável, que
+registrou a decisão de **apenas acompanhar**. A rotina não fechou nada, porque o texto não era
+resposta formal a uma proposta — e no dia seguinte o item reapareceu como pendência aberta,
+com a própria rotina sugerindo "fechar plano de ação, dono e prazo". Na daily de 22/09 a OM
+teve que explicar ao time que era preciso ir à thread e escrever "concluída" de novo. Exigir
+que a pessoa repita, no formato certo, algo que ela já disse claramente é atrito que desgasta
+o ritual — e é o time pagando pela rigidez da rotina.
+
 ---
 
 ## 7. Fronteira entre sinalização e pendência
