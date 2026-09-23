@@ -156,12 +156,13 @@ Um KPI agregado responde a duas perguntas que quase nunca têm a mesma resposta:
   do delta**, nunca do nível.
 
 Em 23/09/2026 as duas divergiram por completo em `% Glosa Geral - HI`: o excedente acima da
-linha de 5% era **100% de Laboratório** (nível), mas do crescimento de +0,797pp contra Ago/26,
-**43,2% veio de Hospital**, 40,9% de Laboratório e 19,1% de puro mix. O report saiu só com o
-nível e roteou o vermelho para a Fernanda, quando a maior parcela do que mudou era da Alana.
+linha de 5% era **100% de Laboratório** (nível), mas do crescimento de +0,671pp contra Ago/26,
+**57,6% veio de Hospital** e 44,7% de Laboratório (Clínica puxou −2,3% para baixo). O report saiu
+só com o nível e roteou o vermelho para a Fernanda, quando a maior parcela do que mudou era da
+Alana.
 
-**Decomposição obrigatória do delta (shift-share).** Para cada tipo `t`, com taxa `r` e peso no
-faturado `w`:
+**Decomposição obrigatória do delta (shift-share).** Para cada tipo `t`, com taxa de glosa `r` e
+peso no faturado `w`, sobre a base de tipos que glosam (ver seção seguinte):
 
 ```
 efeito taxa (t) = (r_atual − r_anterior) × w_atual      → o recorte piorou de verdade
@@ -170,12 +171,30 @@ efeito mix  (t) = (w_atual − w_anterior) × (r_anterior − agregado_anterior)
 Σ (efeito taxa + efeito mix) = Δ do agregado
 ```
 
-**O efeito mix não é detalhe técnico: em Contas Médicas ele é a Cassi.** O Centro de
-Diagnósticos glosa 0% e é bloco grande do faturado. Quando a remessa da Cassi atrasa, o peso
-dele cai, o denominador perde faturamento sem glosa e o percentual agregado **sobe sozinho**.
-Em 23/09 o peso caiu de 9,41% para 6,28% (série parada desde 15/09) e isso respondeu por
-+0,152pp — quase um quinto do crescimento — **sem nada ter piorado na operação**. Sempre
-separe esse pedaço antes de acionar alguém.
+O faturado por tipo não tem card próprio: derive de `glosado_tipo ÷ %glosa_tipo`, com o glosado
+vindo de 31223 / 52038 / 52037 e o `%` do 50815. Confira a derivação contra o 65831 filtrado por
+tipo antes de publicar — em 23/09/2026 bateu ao centavo.
+
+### O deep dive exclui Centro de Diagnósticos — sempre
+
+**A Alice não glosa Cassi** (decisão da OM, 23/09/2026). O tipo `Centro De Diagnosticos` é, nesta
+base, exclusivamente Cassi, e a glosa dele é **estruturalmente zero** — não há o que investigar.
+Toda quebra por tipo, decomposição de delta e análise de motivo do deep dive roda sobre os três
+tipos que glosam: **Hospital, Laboratório e Clínica**.
+
+Isso não é só simplificação, é correção de sinal. Como a Cassi tem glosa zero e faturamento
+grande, o peso dela no denominador mexe no percentual agregado sem que nada tenha acontecido na
+operação: quando a remessa atrasa, sai faturamento sem glosa do denominador e o agregado **sobe
+sozinho**. Em 23/09 o peso caiu de 9,41% para 6,28% (série parada desde 15/09) e isso sozinho
+valia +0,152pp — quase um quinto do movimento aparente. Investigar esse pedaço é perseguir
+ruído, e acionar alguém por ele é acionar pelo motivo errado.
+
+**Consequência a declarar, em uma linha.** O KPI publicado (card 65942) **inclui** Centro de
+Diagnósticos no denominador; o deep dive não. Os dois deltas, portanto, não batem — em 23/09 o
+KPI se moveu +0,797pp e a base investigável +0,671pp. Escreva a diferença como composição da
+Cassi e siga; ela não é achado nem tem dono. Se a divergência passar a ser material com
+frequência, a pergunta à OM é se o card deveria excluir Centro de Diagnósticos do denominador —
+não é decisão da rotina.
 
 **Normalize antes de comparar motivos.** O mês corrente é parcial e o anterior é fechado:
 comparar R$ bruto enviesa para baixo. Converta cada motivo em **pp da taxa de glosa do próprio

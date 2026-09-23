@@ -97,11 +97,14 @@ cascata em `00-identificadores.md`, seção "Drill em cascata". Saber o **tipo**
 **motivo dentro do tipo** não é causa raiz, é meia investigação — e foi o que saiu em 23/09/2026
 no `% Glosa Geral - HI`.
 
-**Gate duro 3 — reporte nível E variação.** Todo KPI agregado 🔴 sai com as duas leituras:
-quem está acima da linha (nível) e quem fez o indicador se mover contra o mês anterior fechado
-(variação, pela decomposição shift-share de `00-identificadores.md`). Elas divergem com
-frequência e podem ter donos diferentes. Separe sempre o **efeito mix** — em Contas Médicas ele
-costuma ser a Cassi, que glosa 0% e infla o agregado quando a remessa atrasa.
+**Gate duro 3 — reporte nível E variação, e exclua a Cassi do deep dive.** Todo KPI agregado 🔴
+sai com as duas leituras: quem está acima da linha (nível) e quem fez o indicador se mover contra
+o mês anterior fechado (variação, pela decomposição shift-share de `00-identificadores.md`). Elas
+divergem com frequência e podem ter donos diferentes. A base do deep dive são **só os tipos que
+glosam** — Hospital, Laboratório e Clínica: a Alice não glosa Cassi, então `Centro De
+Diagnosticos` fica fora de toda quebra e decomposição. O KPI publicado inclui a Cassi no
+denominador e o deep dive não, então os deltas não batem; declare a diferença em uma linha como
+composição da Cassi e siga — ela não é achado e não tem dono.
 
 ## Passo 4 — Farol
 
@@ -561,7 +564,7 @@ conferindo contra a fonte.
 | 5 | **Nenhum Top N foi avaliado só pelos nomes conhecidos** — todas as linhas passaram pelo limiar. | Reavalie a lista inteira. |
 | 6 | **Antes de abrir entrada nova no Decision Log**, a busca por episódio aberto daquele KPI foi feita de fato (`01-regras-de-registro.md` §3). | Acrescente a linha de histórico ao episódio existente em vez de criar outra página. |
 | 7 | **KPI agregado 🔴 desceu a cascata de drill até o motivo dentro do tipo** (`00-identificadores.md`, "Drill em cascata"). | Execute o 52038/52037/31223 e o 66204 no recorte concentrado. Tipo sem motivo não é causa raiz. |
-| 8 | **A análise traz a decomposição do delta contra o mês anterior**, com efeito taxa e efeito mix separados, e os motivos comparados em pp (não em R$ bruto, que enviesa por o mês estar parcial). | Recalcule. Nível responde "quem está alto", não "o que mudou" — e é o que muda que gera ação. |
+| 8 | **A análise traz a decomposição do delta contra o mês anterior**, sobre a base sem Centro de Diagnósticos, com efeito taxa e efeito mix separados e os motivos comparados em pp (não em R$ bruto, que enviesa por o mês estar parcial). | Recalcule. Nível responde "quem está alto", não "o que mudou" — e é o que muda que gera ação. Cassi não glosa: investigar o pedaço dela é perseguir ruído. |
 | 9 | **A linha `Concentração:` saiu da cláusula do limiar que acendeu**, e quando nível e variação apontam recortes diferentes, as duas pessoas foram marcadas com a leitura de cada uma. | Reroteie. Em 23/09/2026 o vermelho foi para Laboratório pelo nível enquanto 43% do crescimento era Hospital. |
 
 **Sobre o item 6.** Está documentado desde 16/09 e continuou não sendo executado: em 17/09 havia
