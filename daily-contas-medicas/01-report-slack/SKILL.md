@@ -90,6 +90,19 @@ determinar. Para todo KPI 🔴, execute também os cards de drill da tabela de
 **Gate duro:** nunca escreva "usar o card X para investigar" como plano de ação sem já ter
 executado o card X.
 
+**Gate duro 2 — o drill não para no primeiro nível.** Se o drill de um KPI 🔴 for ele próprio um
+KPI de operação (`% Glosa por Tipo de HI`, `PEGs por Status no SLA`, `Status das Críticas`),
+execute também os drills **dele**, restritos ao recorte que concentrou o desvio. Tabela da
+cascata em `00-identificadores.md`, seção "Drill em cascata". Saber o **tipo** sem saber o
+**motivo dentro do tipo** não é causa raiz, é meia investigação — e foi o que saiu em 23/09/2026
+no `% Glosa Geral - HI`.
+
+**Gate duro 3 — reporte nível E variação.** Todo KPI agregado 🔴 sai com as duas leituras:
+quem está acima da linha (nível) e quem fez o indicador se mover contra o mês anterior fechado
+(variação, pela decomposição shift-share de `00-identificadores.md`). Elas divergem com
+frequência e podem ter donos diferentes. Separe sempre o **efeito mix** — em Contas Médicas ele
+costuma ser a Cassi, que glosa 0% e infla o agregado quando a remessa atrasa.
+
 ## Passo 4 — Farol
 
 Conforme `01-regras-de-registro.md` §1. Confira, antes de publicar:
@@ -547,6 +560,9 @@ conferindo contra a fonte.
 | 4 | **KPI de "alerta de trabalho" traz os dois horizontes**, mesmo com um deles zerado. | Execute o card inteiro, não só a faixa de ≤3 dias. |
 | 5 | **Nenhum Top N foi avaliado só pelos nomes conhecidos** — todas as linhas passaram pelo limiar. | Reavalie a lista inteira. |
 | 6 | **Antes de abrir entrada nova no Decision Log**, a busca por episódio aberto daquele KPI foi feita de fato (`01-regras-de-registro.md` §3). | Acrescente a linha de histórico ao episódio existente em vez de criar outra página. |
+| 7 | **KPI agregado 🔴 desceu a cascata de drill até o motivo dentro do tipo** (`00-identificadores.md`, "Drill em cascata"). | Execute o 52038/52037/31223 e o 66204 no recorte concentrado. Tipo sem motivo não é causa raiz. |
+| 8 | **A análise traz a decomposição do delta contra o mês anterior**, com efeito taxa e efeito mix separados, e os motivos comparados em pp (não em R$ bruto, que enviesa por o mês estar parcial). | Recalcule. Nível responde "quem está alto", não "o que mudou" — e é o que muda que gera ação. |
+| 9 | **A linha `Concentração:` saiu da cláusula do limiar que acendeu**, e quando nível e variação apontam recortes diferentes, as duas pessoas foram marcadas com a leitura de cada uma. | Reroteie. Em 23/09/2026 o vermelho foi para Laboratório pelo nível enquanto 43% do crescimento era Hospital. |
 
 **Sobre o item 6.** Está documentado desde 16/09 e continuou não sendo executado: em 17/09 havia
 uma página nova por dia, por KPI, praticamente sem falha desde 14/07 em `SLA Recurso de Glosa`,

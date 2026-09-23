@@ -125,6 +125,68 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | % Faturas por Status - HS | — sem drill cadastrado |
 | SLA de Pagamento de HS | 35588 (Média de Dias Úteis Entre Etapas de Pagamento) |
 
+### Drill em cascata — quando o drill devolve outro KPI de operação
+
+A tabela acima tem **um nível**. Três linhas dela apontam para um KPI que é ele próprio de
+operação — `% Glosa por Tipo de HI` (50815), `PEGs por Status no SLA` (32465) e
+`Status das Críticas` (66766). Quando um drill desses identifica **onde** está o desvio, ele
+ainda não disse **por quê**: pare aí é entregar meia investigação.
+
+**Regra:** se o drill de um KPI 🔴 for outro KPI de operação e ele concentrar o desvio num
+recorte, execute também os drills **desse** KPI, limitados ao recorte encontrado. A cascata tem
+no máximo dois níveis — não continue além disso.
+
+| KPI 🔴 | nível 1 (onde) | nível 2 obrigatório (por quê) |
+|---|---|---|
+| % Glosa Geral - HI | 50815 (% glosa por tipo) | **52038** (motivo · Laboratórios) · **52037** (motivo · Clínicas) · **31223** (motivo · Hospitais) · **66204** (motivo × prestador, aceita `invoice_date` e `institution_type`) |
+| % Glosa por Tipo de HI | 52038 · 52037 · 31223 | 66204, filtrado pelo tipo que concentra |
+| PEGs por Status no SLA - HI | 32465 | 73390 (faixas de dias úteis) |
+| Status das Críticas - HS | 66766 | 38203 (% críticas acatadas) |
+
+O 54617 (motivo **agregado**, sem tipo) e o 50815 (tipo **sem** motivo) não se substituem: rodar
+os dois e não cruzar responde "qual tipo" e "qual motivo" sem nunca responder "qual motivo em
+qual tipo", que é a única forma acionável. O cruzamento são o 52038/52037/31223.
+
+### Nível ≠ variação — as duas leituras são obrigatórias, e podem ter donos diferentes
+
+Um KPI agregado responde a duas perguntas que quase nunca têm a mesma resposta:
+
+- **Nível** — quem está acima da linha/meta hoje. Sai de comparar cada recorte contra o limiar.
+- **Variação** — quem fez o indicador se mover contra o mês anterior. Sai da **decomposição
+  do delta**, nunca do nível.
+
+Em 23/09/2026 as duas divergiram por completo em `% Glosa Geral - HI`: o excedente acima da
+linha de 5% era **100% de Laboratório** (nível), mas do crescimento de +0,797pp contra Ago/26,
+**43,2% veio de Hospital**, 40,9% de Laboratório e 19,1% de puro mix. O report saiu só com o
+nível e roteou o vermelho para a Fernanda, quando a maior parcela do que mudou era da Alana.
+
+**Decomposição obrigatória do delta (shift-share).** Para cada tipo `t`, com taxa `r` e peso no
+faturado `w`:
+
+```
+efeito taxa (t) = (r_atual − r_anterior) × w_atual      → o recorte piorou de verdade
+efeito mix  (t) = (w_atual − w_anterior) × (r_anterior − agregado_anterior)
+                                                        → a composição mudou, a taxa não
+Σ (efeito taxa + efeito mix) = Δ do agregado
+```
+
+**O efeito mix não é detalhe técnico: em Contas Médicas ele é a Cassi.** O Centro de
+Diagnósticos glosa 0% e é bloco grande do faturado. Quando a remessa da Cassi atrasa, o peso
+dele cai, o denominador perde faturamento sem glosa e o percentual agregado **sobe sozinho**.
+Em 23/09 o peso caiu de 9,41% para 6,28% (série parada desde 15/09) e isso respondeu por
++0,152pp — quase um quinto do crescimento — **sem nada ter piorado na operação**. Sempre
+separe esse pedaço antes de acionar alguém.
+
+**Normalize antes de comparar motivos.** O mês corrente é parcial e o anterior é fechado:
+comparar R$ bruto enviesa para baixo. Converta cada motivo em **pp da taxa de glosa do próprio
+tipo** (`glosado_motivo / faturado_do_tipo`) e compare os pp. Sem isso, motivo que cresceu
+aparece estável e motivo estável aparece em queda.
+
+**Roteamento:** a linha `Concentração:` do vermelho sai da cláusula do limiar que **acendeu**.
+Se acendeu a de nível, é concentração do excedente; se acendeu a de variação, é concentração do
+delta. Quando as duas leituras apontam tipos diferentes, marque **as duas** pessoas e diga qual
+leitura corresponde a cada uma.
+
 ## KPIs do tipo "alerta de trabalho"
 
 A maioria dos KPIs é termômetro: quando desvia, a rotina levanta hipótese e propõe plano de
