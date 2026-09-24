@@ -530,6 +530,33 @@ Regras:
 - **Guarde o `ts` desta mensagem** e registre-o no corpo da Execução de Rotina (linha
   `ts pendências: <ts>`), para os syncs re-cobrarem na mesma thread.
 
+### Mensagem 7 — Highlights e Lowlights da semana (SÓ às quintas)
+
+**Só em quinta-feira.** Nos outros dias esta mensagem não existe. É a última do report, postada
+depois da Mensagem 6, como **mensagem top-level** — thread própria, não resposta de outra.
+
+String literal:
+
+```
+📌 *Highlights e Lowlights da semana*
+Fechando a semana de {DD/MM} a {DD/MM}. Responda nesta thread, um item por resposta:
+
+• *Highlight* — o que foi bem, destravou, melhorou ou vale repetir. Vale entrega do time, caso resolvido, número que virou, parceria que andou.
+• *Lowlight* — o que travou, atrasou, deu errado ou incomodou. Vale problema sem dono, dependência externa parada, retrabalho, cansaço do time.
+
+Sem resposta = semana sem nada a destacar.
+```
+
+- **Guarde o `ts`** e registre no corpo da Execução de Rotina como `ts high/low: <ts>`.
+- O período `{DD/MM} a {DD/MM}` vai da **sexta anterior até a quinta de hoje** — é a semana que
+  o time efetivamente viveu desde o último fechamento.
+- **Não é pendência.** Não vira linha no Bloco 4 nem entrada no Decision Log. É registro
+  qualitativo da semana; quem transforma em ação é a OM, se quiser.
+- **Não preencha por conta própria.** Você não tem como saber o que o time sentiu na semana —
+  o valor desta mensagem é a resposta humana. Não escreva highlights inferidos dos KPIs.
+
+O fechamento de quinta (tarefa 05) consolida as respostas — ver `05-sync-fechamento/SKILL.md`.
+
 ---
 
 ## Conferência obrigatória antes de publicar

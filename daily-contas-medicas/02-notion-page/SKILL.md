@@ -405,6 +405,11 @@ como os syncs acham a thread.
 Registra o que a daily discutiu e não encaixa em outro bloco (decisões gerais, mudanças de
 fluxo), cada item com responsável · prazo · link do Decision Log ou Action Log.
 
+**Às quintas-feiras, reserve também o sub-bloco**
+`📌 Highlights e Lowlights · semana de {DD/MM} a {DD/MM}` com `⏳ aguardando respostas do time`.
+Quem preenche é o fechamento das 19h, a partir da thread da Mensagem 7 do report. Nos outros
+dias da semana este sub-bloco não existe.
+
 ---
 
 **Fechamento do dia** (callout, **não** toggle — único bloco após o separador `---`):

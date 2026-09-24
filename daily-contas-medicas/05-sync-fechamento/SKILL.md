@@ -191,6 +191,34 @@ Quando não houver: `[eod-sync DD/MM] Sem pendências para amanhã.` na thread.
 - Se a thread de pendências não existir hoje e houver itens D+1, abra a mensagem top-level no
   formato da Mensagem 6 da tarefa 01.
 
+## 4b. Highlights e Lowlights da semana — SÓ às quintas
+
+Só em quinta-feira. Leia a thread da **Mensagem 7** (`ts high/low` no corpo da Execução de
+Rotina) e consolide o que o time respondeu.
+
+**Onde vai:** no **Bloco 5** da página do dia, num sub-bloco próprio
+`📌 Highlights e Lowlights · semana de {DD/MM} a {DD/MM}`, com duas listas — Highlights e
+Lowlights —, cada item com **quem escreveu** e o texto, agrupando itens repetidos sem apagar a
+autoria. Depois poste **na própria thread** a consolidação, para o time ver o fechamento:
+
+```
+[high-low DD/MM] Semana consolidada — {H} highlights · {L} lowlights, de {N} pessoas.
+{link da página}
+```
+
+Regras:
+
+- **Não reescreva o que a pessoa disse.** Corrija só o óbvio de digitação; o valor está na
+  palavra dela, não na sua síntese.
+- **Não julgue nem classifique.** Highlight que você acha pequeno continua highlight; lowlight
+  que já tem decisão continua lowlight. A leitura é da OM.
+- **Não vira pendência, ação nem decisão automaticamente.** Se um lowlight apontar problema sem
+  dono, **não abra item** — escreva no fim da consolidação
+  `⚠️ {N} lowlight(s) sem dono — alçada da OM` e marque a OM na thread.
+- **Ninguém respondeu** → escreva `Sem respostas até o fechamento` no Bloco 5 e **não** poste
+  consolidação vazia na thread. Não cobre resposta: high/low é voluntário, não é pendência.
+- **Conte no rodapé** (passo 5) quantos highlights e lowlights entraram.
+
 ## 5. Rodapé de Fechamento na página
 
 Preencher o callout **Fechamento do dia · `[eod-sync DD/MM]`** que a tarefa 02 reservou no rodapé
@@ -201,6 +229,7 @@ Preencher o callout **Fechamento do dia · `[eod-sync DD/MM]`** que a tarefa 02 
 - Ações registradas (Action Log): N
 - Propostas recusadas: N · Sem validação (→ D+1): N
 - Itens fechados por afirmação humana na thread (sem responder proposta): N — liste quais e quem disse
+- **Quinta-feira:** Highlights e Lowlights da semana: H highlights · L lowlights, de N pessoas (ou `sem respostas`)
 - Transcrição da daily: processada / **não encontrada (pendência aberta para a OM)**
 - Conflitos não resolvidos (não registrados): lista, ou "nenhum"
 - Deep dives pendentes abertos hoje: lista, ou "nenhum"
