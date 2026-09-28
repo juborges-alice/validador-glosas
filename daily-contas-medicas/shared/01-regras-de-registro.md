@@ -106,9 +106,10 @@ no catálogo, e que precisam ser respeitadas:
     da janela + entradas dos 5 dias. **Nunca a soma dos alvos diários**, que contaria a mesma fila
     parada cinco vezes.
   - ⚪ **sem fila** (`alvo_5du = 0`) → não avalia, sai com número e série, sem farol e sem episódio.
-  - 🔴 `analisadas_5du < 80% do alvo_5du`; 🟢 caso contrário. A leitura é sempre no **acumulado de
-    5 dias úteis**, nunca no dia isolado: a análise é feita em lote e a série tem dias de 334 e
-    dias de 8.124 linhas, ambos normais.
+  - 🔴 `analisadas_5du < 80% do alvo_5du`; 🟢 caso contrário. **O farol é o `veredito_5du`**
+    (decisão da OM, 28/09/2026); o `veredito_dia` do card fica como leitura de apoio, fora do farol.
+    O alarme não é diário porque o tempo mediano entre a chegada da conta e a análise é de 3 dias:
+    a fila de um dia carrega três dias de trabalho, e 80% dela num dia só seria ciclo de um dia.
   - **Prazo não entra neste KPI.** PEGs vencendo em 7 du saem do `PEGs por Status de Análise no
     SLA - HI` (32465 / 73390), que é canônico. Os dois não compartilham farol. A linha diária de
     PEGs vencendo hoje sai do card **76260**, **sem filtro de tipo** — o escopo Hospital vale só
