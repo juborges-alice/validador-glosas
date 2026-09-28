@@ -60,7 +60,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 6 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | diária |
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
-| 9 | Contas Médicas - Qnt de guias analisadas por dia | **65837** (só Hospital) | diária ⚠️ |
+| 9 | Contas Médicas - Qnt de guias analisadas por dia | **76259** (só Hospital) | diária ⚠️ |
 | 10 | Contas Médicas - % PEGs sem NF | 65694 | diária |
 | 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
@@ -80,7 +80,7 @@ o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 Quando um drill for cadastrado, esta nota sai.
 
 **⚠️ `Qnt de guias analisadas por dia`: recalibrado em 28/09/2026 (decisão da OM).** Passou a ter
-**escopo Hospital** (card 65837, não mais o consolidado 65840), **dois gates** e **meta sazonal**.
+**escopo Hospital** e **card novo 76259**, com alvo capado pela fila disponível e leitura em 5 dias úteis.
 Regra completa na seção "Qnt de guias analisadas por dia" abaixo; o catálogo do Notion é a fonte.
 
 Conferido contra o catálogo em 22/09/2026 (as 19 linhas da tabela acima batem com o `ID Card
@@ -119,7 +119,7 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | — sem drill próprio; o card 73490 já é a lista item-a-item |
 | SLA de Análise de conta - HI | 65837 (guias/dia Hospitais) · 65839 (guias/dia Labs+Clínicas) · 32465 (PEGs por Status no SLA) |
 | PEGs por Status de Análise no SLA - HI | 65837 · 65839 |
-| Qnt de guias analisadas por dia | 65832 (SLA de Análise — é o gate) · 73390 (PEGs abertas por dias úteis) |
+| Qnt de guias analisadas por dia | 73390 (PEGs abertas por dias úteis — a linha de 7 du vencendo hoje) |
 | % PEGs sem NF | 56231 (Top 10 prestadores com mais PEGs sem NF) · 49800 (Protocolos sem NF por valor e data) |
 | Faturamento total acumulado | 65831 (R$ Faturado por tipo de instituição) · 50631 (Volumetria de Guias por Prestador) · 26655 (R$ Faturamento por Prestador) |
 | R$ Faturado Cassi | — sem drill cadastrado |
@@ -192,59 +192,94 @@ Regras desta classe:
    pelo **dia do mês** (em 16/09 usou "média do dia 16").
 3. **O acionável não está aqui, está no ciclo semanal** — seção abaixo.
 
-## Qnt de guias analisadas por dia — gates e meta sazonal (decisão da OM, 28/09/2026)
+## Qnt de guias analisadas por dia — fila disponível e produtividade (decisão da OM, 28/09/2026)
 
 Até 27/09 este KPI comparava o **consolidado** (Hospital + Labs + Clínicas, card 65840) do dia
-contra uma `capacidade_esperada` que é a **média móvel dos 20 dias úteis anteriores do próprio
-output do time**, com metade no domingo→segunda. Comparar um processo em lote contra a própria
-média faz o indicador acender em cerca de **metade dos dias por construção** — foi o que se mediu:
-**60 de 104 dias úteis vermelhos entre Mai e Set/26**. A recalibração tem quatro partes.
+contra a `capacidade_esperada`, que **não é meta de negócio**: o SQL a calcula como a média móvel
+dos 20 dias úteis anteriores do **próprio output do time**, com metade na segunda. Comparar um
+processo em lote contra a própria média acende em cerca de metade dos dias por construção — medido
+em 28/09/2026: **60 de 104 dias úteis vermelhos entre Mai e Set/26**. Não media desvio, media
+oscilação.
 
-**1. Escopo: só Hospital.** Card **65837**, não o consolidado 65840. Laboratório e Clínica migraram
-para envio em lote via CSV e operam perto da capacidade (98,5% em 24/09); mantê-los no indicador
-diário só adicionava ruído. O card 65839 sai da rotina diária.
+**Card novo: 76259** — `Contas Médicas - Produtividade de Análise vs Fila Disponível - HI`,
+criado em 28/09/2026 (collection 3662). Substitui o 65840 e o 65837 na rotina diária.
 
-**2. Gate de SLA — o indicador só é avaliado se houver prazo sendo perdido.** Leia o
-`SLA de Análise de conta - HI` (card 65832) no mês corrente:
-- **= 100%** → o KPI **não é avaliado**, sai ⚪ com o número e a série, sem farol e sem episódio.
-  Nenhuma PEG perdeu prazo: quanto o time analisou por dia é informação de capacidade, não desvio.
-- **< 100%** → o gate abre e o farol é calculado pela regra 3.
+### A pergunta que o indicador responde
 
-**3. Meta sazonal por faixa do mês, lida em janela de 5 dias úteis.** O volume que chega ao
-Hospital cai para um terço na última semana do mês — mediana de entradas por dia útil, Mai–Ago/26:
+"O time analisou tudo o que dava para analisar naquele dia?" — e ela tem duas metades que **não
+compartilham farol**:
 
-| Faixa do mês | Mediana de entradas | Índice sazonal | Fator aplicado |
-|---|---|---|---|
-| dias 01–07 | 2.494 | 1,39 | **1,0** |
-| dias 08–14 | 2.456 | 1,37 | **1,0** |
-| dias 15–21 | 2.114 | 1,18 | **0,9** |
-| dias 22–24 | 615 | 0,34 | **0,3** |
-| dias 25–fim | 616 | 0,34 | **0,3** |
+| Pergunta | Grão | Onde vive |
+|---|---|---|
+| **Prazo** — sobrou PEG que não podia sobrar? | PEG | `PEGs por Status de Análise no SLA - HI` (32465 / 73390) — canônico, régua da OM de 22/09 |
+| **Produtividade** — dado o que havia, o time produziu? | **linha (procedimento)** | **card 76259**, este KPI |
 
-`meta do dia = capacidade_esperada do card × fator da faixa`. O farol compara o **acumulado dos
-últimos 5 dias úteis** contra o **acumulado das metas dos mesmos 5 dias**, porque a análise é
-feita em lote: dias de 0 e dias de 11.000 guias são normais e a leitura de um dia isolado é ruído.
+O time analisa **linha a linha**, então produtividade é medida em linha. Prazo é por PEG, porque o
+SLA de 7 dias úteis é da PEG. Não misture: o card 76259 **não** recalcula prazo, e a tentativa de
+fazê-lo divergiu do `analysis_on_time` canônico (o fecho por `MAX` das linhas é mais estrito).
 
-- 🔴 acumulado 5 du **< 80%** da meta acumulada
-- 🟢 caso contrário
+### Como o 76259 mede
 
-**4. Gate de fila.** Se não há fila para analisar, não há o que cobrar. A fila **não** se calcula
-por `entradas − analisado` do card 65837: testado em 28/09/2026, os dois contadores reconciliam no
-agregado (gap de 1,4% em 5 meses) mas o resíduo intramensal oscila entre 200 e 12.800 guias e
-**nunca chega a zero**, então esse gate nunca dispararia. O motivo é que `entraram_na_fila` conta
-toda linha com `invoice_ready_step_date` e `analisado_pelo_time` conta só as que já estão em
-`4-Faturada` — populações diferentes. **A fila real é o card 73390** (PEGs abertas por dias úteis),
-o mesmo que alimenta `PEGs por Status de Análise no SLA - HI`: se ele devolver **0 PEGs em aberto**,
-o KPI não é avaliado. Em 28/09 havia 63 PEGs abertas, a mais velha com 6 dias úteis.
+- **Entrada na fila** = `invoice_date`, a chegada da conta — mesma âncora do SLA de PEG.
+- **Saída da fila** = `COALESCE(administrative_analysis_date, invoice_billed_step_date,
+  disallowance_date)`. Fecha sem resíduo: **0% de linha fantasma** nos meses fechados da janela.
+- **Analisadas** = linhas com `administrative_analysis_date` no dia — o trabalho de análise de fato.
+- **Capacidade** = média móvel dos 20 dias úteis anteriores das linhas analisadas, metade na segunda.
+- **ALVO DO DIA = MIN(capacidade, fila disponível)** — não se cobra do time mais do que existe.
+- **Janela de dado**: mês corrente + 3 meses anteriores.
 
-**Efeito medido da recalibração (Mai–Set/26, 104 dias úteis):** de **60** dias vermelhos para
-**16** — e zero em Set/26, porque o SLA de Análise fechou o mês em 100%. O caso que motivou a
-mudança: em 25/09 o report publicou 🔴 com 451 guias contra capacidade de 15.151 (2,98%); lido
-pela régua nova, o acumulado de 5 dias úteis foi de **13.348 guias contra meta de 4.286 — 311%**.
-O time estava analisando o triplo do que a sazonalidade do mês pedia.
+### Farol
 
-**Quando reavaliar os fatores:** recalcule a tabela de índice sazonal a cada trimestre, com os
-3 meses fechados mais recentes. Se a operação mudar a janela de recebimento de contas, ela muda.
+Leitura no **acumulado de 5 dias úteis**, nunca no dia isolado — a análise é feita em lote e a
+série tem dias de 334 e dias de 8.124 linhas, ambos normais.
+
+- ⚪ `alvo_5du = 0` → **sem fila, não avalia**. Não tinha o que analisar.
+- 🔴 `analisadas_5du < 80% do alvo_5du` → abaixo da capacidade **tendo fila disponível**.
+- 🟢 caso contrário.
+
+**O alvo capado pela fila resolve a sazonalidade sozinho**, sem tabela de fatores: quando a fila
+drena no fim do mês, o alvo cai junto. Medido — 31/07 alvo 351 em vez de 2.633; 31/08 alvo 450 em
+vez de 1.263; 25/09 alvo 1.520 em vez de 2.722.
+
+**Efeito medido (83 dias úteis avaliáveis, Jun–Set/26):** de 49% de dias vermelhos na leitura
+diária para **23%** na janela de 5 dias úteis. O caso que motivou a mudança: em 28/09 o report
+publicou 🔴 com 451 guias contra capacidade de 15.151 (2,98%); pelo 76259, o acumulado de 5 dias
+úteis de 25/09 foi de **13.348 linhas contra alvo de 10.992 — 121,4%, Dentro do esperado**.
+
+### Escopo: só Hospital
+
+O parâmetro `tipo_instituicao` do card é obrigatório e vem com default `Hospital`. Laboratório e
+Clínica saem da rotina diária por decisão da OM de 28/09: passaram a ser analisados **em massa**, o
+que torna a leitura de produtividade por linha sem sentido para eles. Os cards 65840, 65837 e 65839
+saem da rotina diária.
+
+### Além disso: PEGs vencendo hoje saem todo dia
+
+Pedido da OM em 28/09. Independentemente do farol deste KPI, o report publica **todo dia** a linha
+de PEGs em aberto com exatamente **7 dias úteis** — é o último dia útil para fechar dentro do SLA
+interno, e é o que ainda dá para salvar. O número sai do card **73390**, quebrado por tipo de
+instituição. Em 28/09: Hospital com 18 PEGs em aberto (9 em 1 du, 5 em 2 du, 3 em 3 du, 1 em 6 du)
+e **0 vencendo hoje**.
+
+### Por que a fila não sai do 65837 nem do 65838
+
+Ambos testados em 28/09/2026 e descartados como fonte de fila:
+
+- **65838** (`Diagnóstico diário de análise`) já tem a ideia certa — ele classifica
+  `OK - sem fila suficiente` —, mas a fila dele é só **a entrada do dia**, então ignora o estoque
+  que sobrou de ontem. E a entrada dele é `invoice_ready_step_date`, que é a etapa "3-Pronta": em
+  **17,3% das linhas de Hospital ela é posterior à análise**. Não é a chegada da conta.
+- **65837**: `entraram_na_fila` conta toda linha com `invoice_ready_step_date` e
+  `analisado_pelo_time` só as já em `4-Faturada` — populações diferentes. Reconciliam no agregado
+  (gap de 1,4% em 5 meses) mas o resíduo intramensal oscila entre 200 e 12.800 e **nunca zera**,
+  então um gate "sem fila" sobre ele jamais dispararia.
+- Em grão de linha com `invoice_date` → `COALESCE(...)`, e **só dentro da janela de 4 meses**, a
+  fila fecha limpa. Fora da janela não fecha: o `administrative_analysis_date` só começou a ser
+  preenchido em **Mai/2025** (Jan–Mar/25 são 100% nulos), o que criaria fila fantasma permanente.
+  É por isso que a janela é curta, e não por performance.
+
+**Quando reavaliar:** se a operação mudar a janela de recebimento de contas, ou se Laboratório
+voltar a ser analisado linha a linha, revisite o escopo e o corte de 80%.
 
 ## Ciclo de processamento Cassi — o indicador acionável (decisão da OM, 22/09/2026)
 

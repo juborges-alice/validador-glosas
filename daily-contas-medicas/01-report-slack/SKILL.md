@@ -367,6 +367,20 @@ para a página do Notion**, que é canônica e não tem limite de densidade.
 Se um dos dois horizontes estiver vazio, escreva a linha mesmo assim com `0 recursos` — a
 ausência é informação, e sumir com a linha quebra a leitura da série.
 
+#### Linha obrigatória — PEGs vencendo hoje (decisão da OM, 28/09/2026)
+
+Independentemente do farol de `PEGs por Status de Análise no SLA - HI` e de
+`Qnt de guias analisadas por dia`, a Mensagem 1 leva **sempre** uma resposta na sua thread com as
+PEGs em aberto que estão a **exatamente 7 dias úteis** do `invoice_date` — o último dia útil para
+fechar dentro do SLA interno, e o que ainda dá para salvar hoje. Sai do card **73390**, quebrado
+por tipo de instituição. A linha sai mesmo zerada; ausência não é informação.
+
+```
+⏱️ *PEGs vencendo hoje (7 du)* — {N} PEGs
+{tipo de instituição}: {n} PEGs · em aberto há 7 du
+Fila total em aberto: {M} PEGs ({distribuição por dias úteis})
+```
+
 ### Mensagem 3 — não existe nesta operação
 
 Reservado. Contas Médicas não tem bloco de "outros indicadores" no Slack.

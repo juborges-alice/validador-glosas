@@ -96,18 +96,21 @@ no catálogo, e que precisam ser respeitadas:
   10% do total em aberto, ou qualquer PEG >7 du), que em 22/09 disparou com 85 de 252 PEGs (33,73%)
   sem nenhuma PEG vencida e com o time analisando a 722% da capacidade esperada; e, antes dela, a
   de ">40% do total em aberto", que disparava com volume normal de início de mês.
-- **Dois gates antes do farol, e meta sazonal** — `Qnt de guias analisadas por dia`: recalibrado
-  em 28/09/2026 (decisão da OM). O KPI só é avaliado quando **ambos** os gates estão abertos;
-  fechado qualquer um deles, ele sai ⚪ com número e série, sem farol, sem deep dive e sem
-  episódio no Decision Log.
-  - **Gate de SLA:** `SLA de Análise de conta - HI` (card 65832) no mês corrente **< 100%**. Em
-    100%, nenhuma PEG perdeu prazo e quanto se analisou por dia é capacidade, não desvio.
-  - **Gate de fila:** card 73390 com **pelo menos 1 PEG em aberto**. Sem fila não há o que cobrar.
-  - Com os dois abertos, o farol sai do **acumulado de 5 dias úteis** contra a **meta sazonal
-    acumulada** dos mesmos dias (`capacidade_esperada × fator da faixa do mês`), 🔴 abaixo de 80%.
-    Escopo **Hospital** apenas, card 65837. Fatores e evidência em `00-identificadores.md`.
+- **Alvo capado pela fila, lido em 5 dias úteis** — `Qnt de guias analisadas por dia`:
+  recalibrado em 28/09/2026 (decisão da OM). Fonte passa a ser o card **76259**, grão **linha
+  (procedimento)**, escopo **Hospital**, janela de mês corrente + 3 meses anteriores.
+  - `alvo do dia = MIN(capacidade esperada, fila disponível)` — não se cobra do time mais do que
+    existe para analisar. É o que faz o alvo cair sozinho no fim do mês, sem tabela de sazonalidade.
+  - ⚪ **sem fila** (`alvo_5du = 0`) → não avalia, sai com número e série, sem farol e sem episódio.
+  - 🔴 `analisadas_5du < 80% do alvo_5du`; 🟢 caso contrário. A leitura é sempre no **acumulado de
+    5 dias úteis**, nunca no dia isolado: a análise é feita em lote e a série tem dias de 334 e
+    dias de 8.124 linhas, ambos normais.
+  - **Prazo não entra neste KPI.** PEGs vencendo em 7 du saem do `PEGs por Status de Análise no
+    SLA - HI` (32465 / 73390), que é canônico. Os dois não compartilham farol.
   - **Este KPI não roteia por concentração.** Com escopo Hospital, o responsável é fixo:
-    `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passa de dez para nove.
+    `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passa de dez
+    para nove.
+  Detalhamento, evidência e o que foi testado e descartado em `00-identificadores.md`.
 
 Quando um limiar for recalibrado no Notion, a mudança vale automaticamente: o catálogo é a
 fonte, este arquivo é só o resumo do que existe hoje.
