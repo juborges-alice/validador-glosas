@@ -98,7 +98,7 @@ no catálogo, e que precisam ser respeitadas:
   de ">40% do total em aberto", que disparava com volume normal de início de mês.
 - **Alvo capado pela fila, lido em 5 dias úteis** — `Qnt de guias analisadas por dia`:
   recalibrado em 28/09/2026 (decisão da OM). Fonte passa a ser o card **76259**, grão **linha
-  (procedimento)**, escopo **Hospital**, janela de mês corrente + 3 meses anteriores.
+  (procedimento)**, escopo **Hospital**, janela de mês corrente + mês anterior.
   - `alvo do dia = MIN(teto do time, fila disponível)`, com **metas separadas por time**: teto de
     **11.210** para Hospital e **4.311** para Clínica — o máximo que cada um já analisou num dia
     útil. Laboratório está fora do KPI (analisado em massa). Não se cobra mais do que existe para analisar, nem mais do que o

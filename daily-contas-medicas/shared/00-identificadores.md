@@ -230,7 +230,10 @@ fazê-lo divergiu do `analysis_on_time` canônico (o fecho por `MAX` das linhas 
 - **ALVO DO DIA = MIN(teto diário, fila disponível)** — não se cobra do time mais do que existe,
   nem mais do que ele consegue fazer num dia.
 - `capacidade_media_movel` (média móvel de 20 du) fica como **coluna de referência**, fora do farol.
-- **Janela de dado**: mês corrente + 3 meses anteriores.
+- **Janela de exibição**: mês corrente + **mês anterior** (decisão da OM, 28/09/2026).
+- **O teto não sai da janela.** Ele vem da série completa e confiável (**Mai/2025 em diante**),
+  porque "o máximo que o time já fez" não deve encolher só porque a tela mostra menos dias. O
+  estoque de abertura da janela também é calculado desde Mai/2025 — sem isso a fila vai a negativo.
 
 ### Farol
 
@@ -296,16 +299,24 @@ alvo de 14.534 — 91,8%, Dentro do esperado**.
 **São times diferentes** (decisão da OM, 28/09/2026), então cada um tem a sua fila, o seu teto e o
 seu farol. O card devolve uma linha por dia **e por tipo**.
 
-| Time | Teto diário | Mediana/dia | Dias 🔴 em 84 du |
-|---|---|---|---|
-| Hospital | **11.210** (23/02/2026) | 1.408 | 51% |
-| Clínica | **4.311** | 470 | **86%** |
+| Time | Teto diário | Quando | Mediana/dia | Dias 🔴 em 39 du |
+|---|---|---|---|---|
+| Hospital | **11.210** | 23/02/2026 | 1.408 | 56% |
+| Clínica | **4.311** | 13/03/2026 (sexta) | 470 | **79%** |
+
+**Como o teto foi calculado:** maior número de linhas analisadas num único dia útil por aquele
+time, sobre toda a série confiável (Mai/2025 em diante, 344 dias úteis para Hospital e 294 para
+Clínica). Não é pico solto em nenhum dos dois — os maiores dias se agrupam perto do topo:
+Hospital 11.210 · 11.079 · 10.971; Clínica 4.311 · 3.869 · 3.796 · 3.660 · 3.614.
+
+Se algum dia a OM preferir o teto calculado só na janela de 2 meses, os valores seriam
+Hospital 11.079 e Clínica 3.869 — praticamente os mesmos.
 
 **Laboratório está fora** — passou a ser analisado **em massa**, o que torna a leitura de
 produtividade por linha sem sentido para ele. Centro de Diagnósticos nunca entrou (é o fluxo Cassi).
 Os cards 65840, 65837 e 65839 saem da rotina diária.
 
-**Atenção ao número de Clínica.** Ele acende em 86% dos dias, contra 51% de Hospital. A série mostra
+**Atenção ao número de Clínica.** Ele acende em 79% dos dias, contra 56% de Hospital. A série mostra
 fila de 6.000 a 7.000 linhas com entrega diária de 376 a 634 — ou a fila de Clínica está
 estruturalmente represada, ou o teto de 4.311 está mal calibrado para o tamanho da fila. Vale um
 olhar da OM antes de cobrar o time por esse número.
