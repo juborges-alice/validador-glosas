@@ -56,7 +56,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 2 | Contas Médicas - % Glosa por Tipo de HI | 50815 | diária |
 | 3 | Contas Médicas - % Glosa Alice por Prestador - HI | 65700 | diária |
 | 4 | Contas Médicas - R$ Recurso de Glosa acumulado | 65834 | diária |
-| 5 | Contas Médicas - SLA Recurso de Glosa - HI | 60527 | diária |
+| 5 | Contas Médicas - SLA Recurso de Glosa - HI | **76364** (prazo contratual por lote) | diária ⚠️ |
 | 6 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | diária |
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
@@ -191,6 +191,39 @@ Regras desta classe:
    não um vermelho na daily. A comparação é válida em qualquer dia porque o card casa a média
    pelo **dia do mês** (em 16/09 usou "média do dia 16").
 3. **O acionável não está aqui, está no ciclo semanal** — seção abaixo.
+
+## SLA Recurso de Glosa - HI — prazo contratual por lote (decisão da OM, 28/09/2026)
+
+O card **60527** aplica um prazo único de 15 dias a todo recurso. O lote do **DASA recebido entre
+21 e 25/09/2026** tem prazo contratual de **30 dias corridos**, e sob a régua de 15 ele seria
+marcado como "fora do prazo" a partir do 15º dia — derrubando a aderência do mês por erro de régua,
+não por atraso da operação.
+
+**Card novo: 76364** — `SLA Recurso de Glosa - HI (prazo contratual por lote)`. Idêntico ao 60527
+em tudo (classificação recurso a recurso, contagem de PEGs distintas por balde, janela de 4 meses
+por `appeal_date`, aderência = Dentro / (Dentro + Fora) com "A vencer" fora do denominador), com
+uma única exceção: o lote DASA da janela recebe o prazo de 30 dias. Parâmetros `dasa_ini`,
+`dasa_fim` e `prazo_dasa`, editáveis sem mexer no SQL.
+
+**A correção é neutra hoje e protetiva depois.** Medido em 28/09:
+
+| | Aderência Set/26 |
+|---|---|
+| Card 60527 (atual) | 68,72% |
+| Card 76364 (corrigido) | **68,72%** — idêntico |
+| 76364 em ~10/10, lote no prazo de 30d | 68,72% |
+| 60527 em ~10/10, lote virando "fora do prazo" | **33,09%** |
+
+São **210 PEGs** do lote, contra 195 no denominador atual — por isso a queda seria de 35 pontos.
+
+**Atenção: "filtrar fora" literalmente seria o movimento errado.** Excluir os recursos do DASA da
+semana passada do cálculo **piora** a aderência de hoje, de 68,72% para 66,67%, porque os 12 que já
+foram resolvidos estão todos dentro do prazo e sustentam o número. O que corrige é dar a eles o
+prazo certo, não removê-los.
+
+**Quando o lote expirar** (21–25/10), as PEGs que seguirem sem análise passam a contar como Fora do
+SLA normalmente — o prazo é maior, não infinito. Se outro lote com prazo diferenciado chegar,
+ajuste os três parâmetros ou acrescente uma cláusula análoga.
 
 ## Qnt de guias analisadas por dia — fila disponível e produtividade (decisão da OM, 28/09/2026)
 
