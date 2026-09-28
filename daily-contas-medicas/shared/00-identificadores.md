@@ -224,8 +224,12 @@ fazê-lo divergiu do `analysis_on_time` canônico (o fecho por `MAX` das linhas 
 - **Saída da fila** = `COALESCE(administrative_analysis_date, invoice_billed_step_date,
   disallowance_date)`. Fecha sem resíduo: **0% de linha fantasma** nos meses fechados da janela.
 - **Analisadas** = linhas com `administrative_analysis_date` no dia — o trabalho de análise de fato.
-- **Capacidade** = média móvel dos 20 dias úteis anteriores das linhas analisadas, metade na segunda.
-- **ALVO DO DIA = MIN(capacidade, fila disponível)** — não se cobra do time mais do que existe.
+- **Teto diário** = **11.210 linhas**, o máximo que o time já analisou num dia útil (Hospital,
+  23/02/2026, série Mai/25–Set/26). É a produtividade máxima demonstrada, não a média. Parâmetro
+  `teto_diario` do card, editável sem mexer no SQL.
+- **ALVO DO DIA = MIN(teto diário, fila disponível)** — não se cobra do time mais do que existe,
+  nem mais do que ele consegue fazer num dia.
+- `capacidade_media_movel` (média móvel de 20 du) fica como **coluna de referência**, fora do farol.
 - **Janela de dado**: mês corrente + 3 meses anteriores.
 
 ### Farol
@@ -233,18 +237,39 @@ fazê-lo divergiu do `analysis_on_time` canônico (o fecho por `MAX` das linhas 
 Leitura no **acumulado de 5 dias úteis**, nunca no dia isolado — a análise é feita em lote e a
 série tem dias de 334 e dias de 8.124 linhas, ambos normais.
 
+**O alvo de 5 du NÃO é a soma dos alvos diários.** Somar `MIN(teto, fila)` de cada dia contaria a
+mesma fila parada cinco vezes e inflaria o alvo. O certo é:
+
+```
+disponiveis_5du = fila de abertura do 1º dia da janela + tudo que entrou nos 5 dias
+alvo_5du        = MIN(5 × teto diário, disponiveis_5du)
+```
+
 - ⚪ `alvo_5du = 0` → **sem fila, não avalia**. Não tinha o que analisar.
 - 🔴 `analisadas_5du < 80% do alvo_5du` → abaixo da capacidade **tendo fila disponível**.
 - 🟢 caso contrário.
+
+**O teto é a trava para pilha grande, e ainda não precisou funcionar.** Medido em 28/09/2026: a
+maior fila disponível numa janela de 5 du foi **30.674 linhas**, contra 5 × 11.210 = 56.050 de
+teto — o teto limitou o alvo em **0 de 84 dias**. Ele existe para o dia em que acumular mais do que
+o time tem como fazer; enquanto isso, quem manda no alvo é a fila.
 
 **O alvo capado pela fila resolve a sazonalidade sozinho**, sem tabela de fatores: quando a fila
 drena no fim do mês, o alvo cai junto. Medido — 31/07 alvo 351 em vez de 2.633; 31/08 alvo 450 em
 vez de 1.263; 25/09 alvo 1.520 em vez de 2.722.
 
-**Efeito medido (83 dias úteis avaliáveis, Jun–Set/26):** de 49% de dias vermelhos na leitura
-diária para **23%** na janela de 5 dias úteis. O caso que motivou a mudança: em 28/09 o report
-publicou 🔴 com 451 guias contra capacidade de 15.151 (2,98%); pelo 76259, o acumulado de 5 dias
-úteis de 25/09 foi de **13.348 linhas contra alvo de 10.992 — 121,4%, Dentro do esperado**.
+**Como a régua se comporta (84 dias úteis, Jun–Set/26, Hospital):** 51% dos dias ficam 🔴 e 49% 🟢.
+É uma régua exigente de propósito — o alvo é limpar a fila disponível a cada 5 dias úteis, e o
+tempo mediano de conta na fila é de 3 dias, então é coerente. Ela discrimina evento real: na série
+recente ficou 🔴 de 15 a 21/09, durante e logo após o pico de 9.989 entradas de 18/09, e voltou a
+🟢 em 22/09 quando o time recuperou — 88,6%, depois 91,2%, 92,5% e 91,8%.
+
+Se a OM quiser menos vermelho, **o corte é a alavanca, não o teto**: 80% → 51% dos dias · 70% →
+40% · 60% → 31% · 50% → 14%.
+
+O caso que motivou a mudança: em 28/09 o report publicou 🔴 com 451 guias contra capacidade de
+15.151 (2,98%); pelo 76259, o acumulado de 5 dias úteis de 25/09 foi de **13.348 linhas contra
+alvo de 14.534 — 91,8%, Dentro do esperado**.
 
 ### Escopo: só Hospital
 
@@ -257,9 +282,26 @@ saem da rotina diária.
 
 Pedido da OM em 28/09. Independentemente do farol deste KPI, o report publica **todo dia** a linha
 de PEGs em aberto com exatamente **7 dias úteis** — é o último dia útil para fechar dentro do SLA
-interno, e é o que ainda dá para salvar. O número sai do card **73390**, quebrado por tipo de
-instituição. Em 28/09: Hospital com 18 PEGs em aberto (9 em 1 du, 5 em 2 du, 3 em 3 du, 1 em 6 du)
-e **0 vencendo hoje**.
+interno, e é o que ainda dá para salvar.
+
+**SEM filtro de tipo de instituição.** O escopo Hospital vale só para a produtividade; para prazo,
+a OM quer ver **qualquer PEG vencendo**, inclusive Laboratório, Clínica e Centro de Diagnósticos.
+Fonte: card **76260** (`PEGs em Aberto por Dias Úteis e Tipo de Instituição - HI`), criado em
+28/09/2026, mesmo universo do 73390 e com a quebra por tipo e o valor em R$.
+
+Fila em 28/09 — **63 PEGs em aberto, 0 vencendo hoje**:
+
+| du | Tipo | PEGs | Valor |
+|---|---|---|---|
+| 1 | Hospital | 9 | R$156.220,72 |
+| 1 | Clínica | 7 | R$32.063,00 |
+| 2 | Laboratório | 7 | R$66.169,22 |
+| 2 | Hospital | 5 | R$511.826,05 |
+| 3 | Clínica | 4 | R$45.900,00 |
+| 3 | Hospital | 3 | R$201.567,15 |
+| 4 | Centro de Diagnósticos | 23 | R$1.171.626,05 |
+| 4 | Clínica | 4 | R$11.250,00 |
+| 6 | Hospital | 1 | R$36.412,84 |
 
 ### Por que a fila não sai do 65837 nem do 65838
 

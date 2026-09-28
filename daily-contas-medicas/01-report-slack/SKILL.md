@@ -372,14 +372,20 @@ ausência é informação, e sumir com a linha quebra a leitura da série.
 Independentemente do farol de `PEGs por Status de Análise no SLA - HI` e de
 `Qnt de guias analisadas por dia`, a Mensagem 1 leva **sempre** uma resposta na sua thread com as
 PEGs em aberto que estão a **exatamente 7 dias úteis** do `invoice_date` — o último dia útil para
-fechar dentro do SLA interno, e o que ainda dá para salvar hoje. Sai do card **73390**, quebrado
-por tipo de instituição. A linha sai mesmo zerada; ausência não é informação.
+fechar dentro do SLA interno, e o que ainda dá para salvar hoje.
+
+Sai do card **76260**, **sem filtro de tipo de instituição**: a OM quer ver qualquer PEG vencendo,
+inclusive Laboratório, Clínica e Centro de Diagnósticos. O escopo Hospital vale só para o KPI de
+produtividade. A linha sai **mesmo zerada** — ausência não é informação.
 
 ```
-⏱️ *PEGs vencendo hoje (7 du)* — {N} PEGs
-{tipo de instituição}: {n} PEGs · em aberto há 7 du
-Fila total em aberto: {M} PEGs ({distribuição por dias úteis})
+⏱️ *PEGs vencendo hoje (7 du)* — {N} PEGs · R$ {valor}
+{tipo}: {n} PEGs · R$ {valor}
+Fila total em aberto: {M} PEGs ({n} em 1 du · {n} em 2 du · …)
 ```
+
+Havendo PEG em 7 du, marque o responsável do tipo de instituição concentrado e peça o fechamento
+no dia. Zerado, a linha sai assim mesmo, como confirmação de que a fila está em dia.
 
 ### Mensagem 3 — não existe nesta operação
 

@@ -99,14 +99,20 @@ no catálogo, e que precisam ser respeitadas:
 - **Alvo capado pela fila, lido em 5 dias úteis** — `Qnt de guias analisadas por dia`:
   recalibrado em 28/09/2026 (decisão da OM). Fonte passa a ser o card **76259**, grão **linha
   (procedimento)**, escopo **Hospital**, janela de mês corrente + 3 meses anteriores.
-  - `alvo do dia = MIN(capacidade esperada, fila disponível)` — não se cobra do time mais do que
-    existe para analisar. É o que faz o alvo cair sozinho no fim do mês, sem tabela de sazonalidade.
+  - `alvo do dia = MIN(teto diário, fila disponível)`, com **teto = 11.210 linhas**, o máximo que o
+    time já analisou num dia útil. Não se cobra mais do que existe para analisar, nem mais do que o
+    time consegue fazer. É o que faz o alvo cair sozinho no fim do mês, sem tabela de sazonalidade.
+  - `alvo_5du = MIN(5 × teto, disponíveis_5du)`, onde `disponíveis_5du` = fila de abertura do 1º dia
+    da janela + entradas dos 5 dias. **Nunca a soma dos alvos diários**, que contaria a mesma fila
+    parada cinco vezes.
   - ⚪ **sem fila** (`alvo_5du = 0`) → não avalia, sai com número e série, sem farol e sem episódio.
   - 🔴 `analisadas_5du < 80% do alvo_5du`; 🟢 caso contrário. A leitura é sempre no **acumulado de
     5 dias úteis**, nunca no dia isolado: a análise é feita em lote e a série tem dias de 334 e
     dias de 8.124 linhas, ambos normais.
   - **Prazo não entra neste KPI.** PEGs vencendo em 7 du saem do `PEGs por Status de Análise no
-    SLA - HI` (32465 / 73390), que é canônico. Os dois não compartilham farol.
+    SLA - HI` (32465 / 73390), que é canônico. Os dois não compartilham farol. A linha diária de
+    PEGs vencendo hoje sai do card **76260**, **sem filtro de tipo** — o escopo Hospital vale só
+    para a produtividade.
   - **Este KPI não roteia por concentração.** Com escopo Hospital, o responsável é fixo:
     `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passa de dez
     para nove.
