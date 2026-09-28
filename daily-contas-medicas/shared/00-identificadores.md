@@ -192,6 +192,45 @@ Regras desta classe:
    pelo **dia do mês** (em 16/09 usou "média do dia 16").
 3. **O acionável não está aqui, está no ciclo semanal** — seção abaixo.
 
+## SLA de Pagamento de HS — lê o mês corrente (decisão da OM, 28/09/2026)
+
+Até 27/09 o KPI era lido sobre o **mês fechado**, e era vermelho previsível: o mês fechado não se
+move mais, então não há ação possível sobre ele. Passa a ser lido sobre o **mês corrente**, que é
+onde ainda dá para agir. Card **35629**, inalterado — muda a linha que a rotina lê, não a fonte.
+
+Efeito imediato na leitura de 28/09: Ago/26 fechado dava **3,31%** (38 de 1.148), acima do limiar
+de 3%; Set/26 corrente dá **1,62%** (15 de 927). O KPI sai do 🟡 rebaixado e vai para 🟢.
+
+**O denominador não é problema.** As faturas HS chegam em lote no início do mês: até o dia 10 o mês
+já tem praticamente todas. Medido (faturas com vínculo, por dia do mês):
+
+| Mês | até dia 5 | até dia 10 | mês todo |
+|---|---|---|---|
+| Mai/26 | 6 | 1.163 | 1.167 |
+| Jun/26 | 0 | 1.196 | 1.198 |
+| Jul/26 | 0 | 1.209 | 1.211 |
+| Ago/26 | 0 | 1.223 | 1.226 |
+| Set/26 | 1.175 | 1.176 | 1.177 |
+
+**Mas a leitura do mês corrente é OTIMISTA por construção, e isso precisa sair no caveat todo dia.**
+O card só classifica a fatura depois que ela tem pagamento apurado. Em 28/09 o Set/26 tinha 1.177
+faturas com vínculo e apenas **927 classificadas (79%)** — as 250 restantes ainda não pagaram, e
+pagamento que atrasa entra como "fora do prazo". Ou seja, o percentual do mês corrente tende a
+**subir** conforme o mês liquida. Mesmo um mês fechado não classifica 100%: Ago/26 tem 1.148
+classificadas de 1.226 com vínculo.
+
+**Guarda de materialidade:** enquanto o mês corrente tiver **menos de 100 faturas classificadas**,
+não acenda farol — saia ⚪ com o número e cite o mês anterior como contexto. É a janela dos
+primeiros dias do mês, antes de o lote ser processado.
+
+**Caveat obrigatório na linha do KPI, todo dia:**
+`mês corrente parcial — {n} de {N} faturas classificadas; o percentual tende a subir conforme os
+pagamentos liquidam`.
+
+**A segunda cláusula do limiar segue não verificável** (`prestador específico com > 2 faturas
+consecutivas fora do prazo`): o card não devolve a sequência por prestador. Mantida a nota no
+caveat até existir drill.
+
 ## SLA Recurso de Glosa - HI — prazo contratual por lote (decisão da OM, 28/09/2026)
 
 O card **60527** aplica um prazo único de 15 dias a todo recurso. O lote do **DASA recebido entre
