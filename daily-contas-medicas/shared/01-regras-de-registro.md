@@ -99,9 +99,14 @@ no catálogo, e que precisam ser respeitadas:
 - **Alvo capado pela fila, lido em 5 dias úteis** — `Qnt de guias analisadas por dia`:
   recalibrado em 28/09/2026 (decisão da OM). Fonte passa a ser o card **76259**, grão **linha
   (procedimento)**, escopo **Hospital**, janela de mês corrente + mês anterior.
-  - `alvo do dia = MIN(teto do time, fila disponível)`, com **metas separadas por time**: teto de
-    **11.210** para Hospital e **4.311** para Clínica — o máximo que cada um já analisou num dia
-    útil. Laboratório está fora do KPI (analisado em massa). Não se cobra mais do que existe para analisar, nem mais do que o
+  - `alvo do dia = MIN(teto do time, base cobrável)`, com **metas e réguas separadas por time**.
+    Teto = máximo que cada um já analisou num dia útil: **11.210** Hospital, **4.311** Clínica.
+    Laboratório está fora do KPI (analisado em massa).
+    - **Hospital**: base cobrável = **fila total** do dia. Régua original, inalterada.
+    - **Clínica**: base cobrável = **fila vencida**, o que entrou há 3 dias úteis ou mais e segue
+      aberto. Sob a fila total ela acendia em 79% dos dias contra 56% de Hospital, e janela, teto
+      e corte foram testados sem resolver — o alvo "zerar a fila inteira" fica acima do que aquele
+      time entrega. Com a fila vencida cai para 44%. Não se cobra mais do que existe para analisar, nem mais do que o
     time consegue fazer. É o que faz o alvo cair sozinho no fim do mês, sem tabela de sazonalidade.
   - `alvo_5du = MIN(5 × teto, disponíveis_5du)`, onde `disponíveis_5du` = fila de abertura do 1º dia
     da janela + entradas dos 5 dias. **Nunca a soma dos alvos diários**, que contaria a mesma fila

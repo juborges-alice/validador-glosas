@@ -227,8 +227,12 @@ fazê-lo divergiu do `analysis_on_time` canônico (o fecho por `MAX` das linhas 
 - **Teto diário**, por time = o máximo que aquele time já analisou num dia útil (série
   Mai/25–Set/26): **Hospital 11.210** (23/02/2026) · **Clínica 4.311**. É a produtividade máxima
   demonstrada, não a média. Parâmetros `teto_hospital` e `teto_clinica`, editáveis sem mexer no SQL.
-- **ALVO DO DIA = MIN(teto diário, fila disponível)** — não se cobra do time mais do que existe,
-  nem mais do que ele consegue fazer num dia.
+- **ALVO DO DIA = MIN(teto do time, base cobrável)** — não se cobra do time mais do que existe,
+  nem mais do que ele consegue fazer num dia. **A base cobrável é diferente para cada time**
+  (decisão da OM, 28/09/2026):
+  - **Hospital → fila total do dia.** "Analisou tudo o que dava para analisar." Régua original.
+  - **Clínica → só a fila vencida**, ou seja, o que entrou há **3 dias úteis ou mais** e segue em
+    aberto. "Analisou tudo o que já deveria ter saído." Parâmetro `ciclo_du` do card.
 - `capacidade_media_movel` (média móvel de 20 du) fica como **coluna de referência**, fora do farol.
 - **Janela de exibição**: mês corrente + **mês anterior** (decisão da OM, 28/09/2026).
 - **O teto não sai da janela.** Ele vem da série completa e confiável (**Mai/2025 em diante**),
@@ -316,10 +320,27 @@ Hospital 11.079 e Clínica 3.869 — praticamente os mesmos.
 produtividade por linha sem sentido para ele. Centro de Diagnósticos nunca entrou (é o fluxo Cassi).
 Os cards 65840, 65837 e 65839 saem da rotina diária.
 
-**Atenção ao número de Clínica.** Ele acende em 79% dos dias, contra 56% de Hospital. A série mostra
-fila de 6.000 a 7.000 linhas com entrega diária de 376 a 634 — ou a fila de Clínica está
-estruturalmente represada, ou o teto de 4.311 está mal calibrado para o tamanho da fila. Vale um
-olhar da OM antes de cobrar o time por esse número.
+**Por que Clínica tem régua própria.** Sob a régua da fila total, Clínica acendia em **79%** dos
+dias contra 56% de Hospital, e as três alavancas foram testadas em 28/09 sem resolver:
+
+| Alavanca | Testado | Resultado em Clínica |
+|---|---|---|
+| Janela | 6, 7, 8 e 10 du | 77% · 77% · 77% · 69% — travado |
+| Teto | 3.869 · 3.000 · 2.424 · 2.000 | 79% · 79% · 79% · 74% — o teto só trava o alvo em 3% dos dias |
+| Corte | 70% · 60% · 50% | só empurra o número |
+
+A causa não era nenhuma das três: o alvo "zerar a fila inteira" fica sistematicamente acima do que
+aquele time entrega. Em 5 dias úteis Hospital limpa **76%** da sua fila e Clínica **60%**. Trocando
+a base de Clínica para a fila vencida, o indicador cai para **44%** e volta a discriminar — em
+24/09 a fila vencida era 0 e ele analisou 3.213 (111,9%); em 22/09 a fila vencida era 5.633 e ele
+analisou 634 (19,4%).
+
+**Achado de prestador, à parte do indicador.** A fila de Clínica não está represada — a mediana é
+de 4 dias contra 3 de Hospital. Mas a quebra por **grupo econômico** mostra concentração que a
+leitura por unidade escondia: **B-ACTIVE ocupa 30,3% do tempo de fila de Clínica** (6.003 linhas em
+5 unidades — Paulista, Morumbi, Higienópolis, Chácara Flora e Moema — com 6 dias médios contra os 4
+da média). SALUDIA 17,1% e EQUILIBRYUM 8,4% completam 55,8% nos três maiores. O **CAEN** é o único
+com backlog aberto de verdade: 305 linhas. Isso é gestão de prestador, não produtividade do time.
 
 ### Roteamento: volta a depender do tipo
 
