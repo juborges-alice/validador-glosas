@@ -60,7 +60,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 6 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | diária |
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
-| 9 | Contas Médicas - Qnt de guias analisadas por dia | 65840 | diária |
+| 9 | Contas Médicas - Qnt de guias analisadas por dia | **65837** (só Hospital) | diária ⚠️ |
 | 10 | Contas Médicas - % PEGs sem NF | 65694 | diária |
 | 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
@@ -78,6 +78,10 @@ cadastrado, **só a média mensal é apurável** — a segunda cláusula nunca p
 o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 `segunda cláusula do limiar (crítica > 10 dias) não verificável — sem card de drill`.
 Quando um drill for cadastrado, esta nota sai.
+
+**⚠️ `Qnt de guias analisadas por dia`: recalibrado em 28/09/2026 (decisão da OM).** Passou a ter
+**escopo Hospital** (card 65837, não mais o consolidado 65840), **dois gates** e **meta sazonal**.
+Regra completa na seção "Qnt de guias analisadas por dia" abaixo; o catálogo do Notion é a fonte.
 
 Conferido contra o catálogo em 22/09/2026 (as 19 linhas da tabela acima batem com o `ID Card
 metabase` do Notion). A única divergência encontrada era o card do `SLA Recurso de Glosa - HI`,
@@ -115,7 +119,7 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | — sem drill próprio; o card 73490 já é a lista item-a-item |
 | SLA de Análise de conta - HI | 65837 (guias/dia Hospitais) · 65839 (guias/dia Labs+Clínicas) · 32465 (PEGs por Status no SLA) |
 | PEGs por Status de Análise no SLA - HI | 65837 · 65839 |
-| Qnt de guias analisadas por dia | 65837 (Hospitais) · 65839 (Labs+Clínicas) |
+| Qnt de guias analisadas por dia | 65832 (SLA de Análise — é o gate) · 73390 (PEGs abertas por dias úteis) |
 | % PEGs sem NF | 56231 (Top 10 prestadores com mais PEGs sem NF) · 49800 (Protocolos sem NF por valor e data) |
 | Faturamento total acumulado | 65831 (R$ Faturado por tipo de instituição) · 50631 (Volumetria de Guias por Prestador) · 26655 (R$ Faturamento por Prestador) |
 | R$ Faturado Cassi | — sem drill cadastrado |
@@ -187,6 +191,60 @@ Regras desta classe:
    não um vermelho na daily. A comparação é válida em qualquer dia porque o card casa a média
    pelo **dia do mês** (em 16/09 usou "média do dia 16").
 3. **O acionável não está aqui, está no ciclo semanal** — seção abaixo.
+
+## Qnt de guias analisadas por dia — gates e meta sazonal (decisão da OM, 28/09/2026)
+
+Até 27/09 este KPI comparava o **consolidado** (Hospital + Labs + Clínicas, card 65840) do dia
+contra uma `capacidade_esperada` que é a **média móvel dos 20 dias úteis anteriores do próprio
+output do time**, com metade no domingo→segunda. Comparar um processo em lote contra a própria
+média faz o indicador acender em cerca de **metade dos dias por construção** — foi o que se mediu:
+**60 de 104 dias úteis vermelhos entre Mai e Set/26**. A recalibração tem quatro partes.
+
+**1. Escopo: só Hospital.** Card **65837**, não o consolidado 65840. Laboratório e Clínica migraram
+para envio em lote via CSV e operam perto da capacidade (98,5% em 24/09); mantê-los no indicador
+diário só adicionava ruído. O card 65839 sai da rotina diária.
+
+**2. Gate de SLA — o indicador só é avaliado se houver prazo sendo perdido.** Leia o
+`SLA de Análise de conta - HI` (card 65832) no mês corrente:
+- **= 100%** → o KPI **não é avaliado**, sai ⚪ com o número e a série, sem farol e sem episódio.
+  Nenhuma PEG perdeu prazo: quanto o time analisou por dia é informação de capacidade, não desvio.
+- **< 100%** → o gate abre e o farol é calculado pela regra 3.
+
+**3. Meta sazonal por faixa do mês, lida em janela de 5 dias úteis.** O volume que chega ao
+Hospital cai para um terço na última semana do mês — mediana de entradas por dia útil, Mai–Ago/26:
+
+| Faixa do mês | Mediana de entradas | Índice sazonal | Fator aplicado |
+|---|---|---|---|
+| dias 01–07 | 2.494 | 1,39 | **1,0** |
+| dias 08–14 | 2.456 | 1,37 | **1,0** |
+| dias 15–21 | 2.114 | 1,18 | **0,9** |
+| dias 22–24 | 615 | 0,34 | **0,3** |
+| dias 25–fim | 616 | 0,34 | **0,3** |
+
+`meta do dia = capacidade_esperada do card × fator da faixa`. O farol compara o **acumulado dos
+últimos 5 dias úteis** contra o **acumulado das metas dos mesmos 5 dias**, porque a análise é
+feita em lote: dias de 0 e dias de 11.000 guias são normais e a leitura de um dia isolado é ruído.
+
+- 🔴 acumulado 5 du **< 80%** da meta acumulada
+- 🟢 caso contrário
+
+**4. Gate de fila.** Se não há fila para analisar, não há o que cobrar. A fila **não** se calcula
+por `entradas − analisado` do card 65837: testado em 28/09/2026, os dois contadores reconciliam no
+agregado (gap de 1,4% em 5 meses) mas o resíduo intramensal oscila entre 200 e 12.800 guias e
+**nunca chega a zero**, então esse gate nunca dispararia. O motivo é que `entraram_na_fila` conta
+toda linha com `invoice_ready_step_date` e `analisado_pelo_time` conta só as que já estão em
+`4-Faturada` — populações diferentes. **A fila real é o card 73390** (PEGs abertas por dias úteis),
+o mesmo que alimenta `PEGs por Status de Análise no SLA - HI`: se ele devolver **0 PEGs em aberto**,
+o KPI não é avaliado. Em 28/09 havia 63 PEGs abertas, a mais velha com 6 dias úteis.
+
+**Efeito medido da recalibração (Mai–Set/26, 104 dias úteis):** de **60** dias vermelhos para
+**16** — e zero em Set/26, porque o SLA de Análise fechou o mês em 100%. O caso que motivou a
+mudança: em 25/09 o report publicou 🔴 com 451 guias contra capacidade de 15.151 (2,98%); lido
+pela régua nova, o acumulado de 5 dias úteis foi de **13.348 guias contra meta de 4.286 — 311%**.
+O time estava analisando o triplo do que a sazonalidade do mês pedia.
+
+**Quando reavaliar os fatores:** recalcule a tabela de índice sazonal a cada trimestre, com os
+3 meses fechados mais recentes. Se a operação mudar a janela de recebimento de contas, ela muda.
 
 ## Ciclo de processamento Cassi — o indicador acionável (decisão da OM, 22/09/2026)
 
@@ -268,8 +326,10 @@ POR TIPO DE INSTITUIÇÃO — Hospital → Alana <@U073Z4ENBNW>
   - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI
   - SLA de Análise de conta - HI
   - PEGs por Status de Análise no SLA - HI
-  - Qnt de guias analisadas por dia
   - Faturamento total acumulado
+
+FIXO — Alana <@U073Z4ENBNW>
+  - Qnt de guias analisadas por dia   (escopo Hospital desde 28/09/2026; não roteia por concentração)
 ```
 
 **Todos os KPIs têm responsável.** Não existe mais a categoria "sem responsável": todo 🔴 abre
@@ -280,7 +340,7 @@ Marque sempre por ID (`<@U044N26BETU>`), nunca escreva o nome antes ou depois da
 
 ### Como rotear os KPIs "por tipo de instituição"
 
-Nesses **dez** KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
+Nesses **nove** KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
 só descobre isso **depois de executar o drill**, então o roteamento é a última coisa que se
 decide, não a primeira.
 
