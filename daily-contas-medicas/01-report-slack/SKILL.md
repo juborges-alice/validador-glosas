@@ -302,7 +302,7 @@ thread:
 ↩️ <@ID> responda nesta thread: causa raiz, plano de ação, responsável e prazo.
 ```
 
-**Nos nove KPIs roteados por tipo de instituição** (bloco de mapeamento), o responsável sai da
+**Nos dez KPIs roteados por tipo de instituição** (bloco de mapeamento), o responsável sai da
 concentração do desvio no drill — você só sabe quem marcar depois de executar o drill. Nesses
 casos, acrescente **antes** da linha `↩️` a linha que explica o roteamento:
 

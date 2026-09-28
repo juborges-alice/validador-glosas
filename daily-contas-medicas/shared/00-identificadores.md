@@ -60,7 +60,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 6 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | diária |
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
-| 9 | Contas Médicas - Qnt de guias analisadas por dia | **76259** (só Hospital) | diária ⚠️ |
+| 9 | Contas Médicas - Qnt de guias analisadas por dia | **76259** (Hospital e Clínica, metas separadas) | diária ⚠️ |
 | 10 | Contas Médicas - % PEGs sem NF | 65694 | diária |
 | 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
@@ -80,7 +80,7 @@ o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 Quando um drill for cadastrado, esta nota sai.
 
 **⚠️ `Qnt de guias analisadas por dia`: recalibrado em 28/09/2026 (decisão da OM).** Passou a ter
-**escopo Hospital** e **card novo 76259**, com alvo capado pela fila disponível e leitura em 5 dias úteis.
+**escopo Hospital + Clínica com metas separadas** e **card novo 76259**, com alvo capado pela fila disponível e leitura em 5 dias úteis.
 Regra completa na seção "Qnt de guias analisadas por dia" abaixo; o catálogo do Notion é a fonte.
 
 Conferido contra o catálogo em 22/09/2026 (as 19 linhas da tabela acima batem com o `ID Card
@@ -224,9 +224,9 @@ fazê-lo divergiu do `analysis_on_time` canônico (o fecho por `MAX` das linhas 
 - **Saída da fila** = `COALESCE(administrative_analysis_date, invoice_billed_step_date,
   disallowance_date)`. Fecha sem resíduo: **0% de linha fantasma** nos meses fechados da janela.
 - **Analisadas** = linhas com `administrative_analysis_date` no dia — o trabalho de análise de fato.
-- **Teto diário** = **11.210 linhas**, o máximo que o time já analisou num dia útil (Hospital,
-  23/02/2026, série Mai/25–Set/26). É a produtividade máxima demonstrada, não a média. Parâmetro
-  `teto_diario` do card, editável sem mexer no SQL.
+- **Teto diário**, por time = o máximo que aquele time já analisou num dia útil (série
+  Mai/25–Set/26): **Hospital 11.210** (23/02/2026) · **Clínica 4.311**. É a produtividade máxima
+  demonstrada, não a média. Parâmetros `teto_hospital` e `teto_clinica`, editáveis sem mexer no SQL.
 - **ALVO DO DIA = MIN(teto diário, fila disponível)** — não se cobra do time mais do que existe,
   nem mais do que ele consegue fazer num dia.
 - `capacidade_media_movel` (média móvel de 20 du) fica como **coluna de referência**, fora do farol.
@@ -291,12 +291,30 @@ O caso que motivou a mudança: em 28/09 o report publicou 🔴 com 451 guias con
 15.151 (2,98%); pelo 76259, o acumulado de 5 dias úteis de 25/09 foi de **13.348 linhas contra
 alvo de 14.534 — 91,8%, Dentro do esperado**.
 
-### Escopo: só Hospital
+### Escopo: Hospital e Clínica, com metas SEPARADAS
 
-O parâmetro `tipo_instituicao` do card é obrigatório e vem com default `Hospital`. Laboratório e
-Clínica saem da rotina diária por decisão da OM de 28/09: passaram a ser analisados **em massa**, o
-que torna a leitura de produtividade por linha sem sentido para eles. Os cards 65840, 65837 e 65839
-saem da rotina diária.
+**São times diferentes** (decisão da OM, 28/09/2026), então cada um tem a sua fila, o seu teto e o
+seu farol. O card devolve uma linha por dia **e por tipo**.
+
+| Time | Teto diário | Mediana/dia | Dias 🔴 em 84 du |
+|---|---|---|---|
+| Hospital | **11.210** (23/02/2026) | 1.408 | 51% |
+| Clínica | **4.311** | 470 | **86%** |
+
+**Laboratório está fora** — passou a ser analisado **em massa**, o que torna a leitura de
+produtividade por linha sem sentido para ele. Centro de Diagnósticos nunca entrou (é o fluxo Cassi).
+Os cards 65840, 65837 e 65839 saem da rotina diária.
+
+**Atenção ao número de Clínica.** Ele acende em 86% dos dias, contra 51% de Hospital. A série mostra
+fila de 6.000 a 7.000 linhas com entrega diária de 376 a 634 — ou a fila de Clínica está
+estruturalmente represada, ou o teto de 4.311 está mal calibrado para o tamanho da fila. Vale um
+olhar da OM antes de cobrar o time por esse número.
+
+### Roteamento: volta a depender do tipo
+
+Com Hospital e Clínica no mesmo KPI, o responsável **não é fixo**: Hospital → Alana
+`<@U073Z4ENBNW>`, Clínica → Fernanda `<@U044N26BETU>`. Como o card já separa por tipo, o
+roteamento sai direto da linha que acendeu — não precisa de drill de concentração.
 
 ### Além disso: PEGs vencendo hoje saem todo dia
 
@@ -425,8 +443,9 @@ POR TIPO DE INSTITUIÇÃO — Hospital → Alana <@U073Z4ENBNW>
   - PEGs por Status de Análise no SLA - HI
   - Faturamento total acumulado
 
-FIXO — Alana <@U073Z4ENBNW>
-  - Qnt de guias analisadas por dia   (escopo Hospital desde 28/09/2026; não roteia por concentração)
+POR TIPO, SEM DRILL — o card 76259 já separa as linhas por tipo, então o roteamento sai da linha
+que acendeu: Hospital → Alana <@U073Z4ENBNW> · Clínica → Fernanda <@U044N26BETU>
+  - Qnt de guias analisadas por dia   (escopo Hospital + Clínica desde 28/09/2026; Laboratório fora)
 ```
 
 **Todos os KPIs têm responsável.** Não existe mais a categoria "sem responsável": todo 🔴 abre
@@ -437,7 +456,7 @@ Marque sempre por ID (`<@U044N26BETU>`), nunca escreva o nome antes ou depois da
 
 ### Como rotear os KPIs "por tipo de instituição"
 
-Nesses **nove** KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
+Nesses **dez** KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
 só descobre isso **depois de executar o drill**, então o roteamento é a última coisa que se
 decide, não a primeira.
 
