@@ -245,9 +245,25 @@ disponiveis_5du = fila de abertura do 1º dia da janela + tudo que entrou nos 5 
 alvo_5du        = MIN(5 × teto diário, disponiveis_5du)
 ```
 
-- ⚪ `alvo_5du = 0` → **sem fila, não avalia**. Não tinha o que analisar.
-- 🔴 `analisadas_5du < 80% do alvo_5du` → abaixo da capacidade **tendo fila disponível**.
+- ⚪ alvo = 0 → **sem fila, não avalia**. Não tinha o que analisar.
+- 🔴 abaixo de **80%** do alvo → abaixo da capacidade **tendo fila disponível**.
 - 🟢 caso contrário.
+
+**O card entrega dois vereditos e a OM ainda não fechou qual vira farol.** Por ora o KPI usa o de
+5 dias úteis. Os números — fila, alvo e aderência — são calculados **diariamente** nos dois casos;
+o que muda é só a janela em que o alarme dispara.
+
+| Veredito | Como lê | Dias 🔴 em 84 dias úteis |
+|---|---|---|
+| `veredito_dia` | `analisadas < 80% de MIN(teto, fila do dia)` | **94%** |
+| `veredito_5du` | `analisadas_5du < 80% do alvo_5du` | **51%** |
+
+**Por que a leitura diária acende quase sempre, e isso não é defeito do dado.** O tempo mediano
+entre a chegada da conta (`invoice_date`) e a análise é de **3 dias**, então a fila de qualquer dia
+carrega cerca de três dias de trabalho. Pedir 80% da fila inteira todo dia é pedir ciclo de um dia.
+Aderência diária observada: mediana **32%**, p75 53%, p90 75%, máximo 99%.
+
+Calibração do corte, se a OM quiser a leitura diária: 50% → 71% dos dias · 40% → 63% · 30% → 49%.
 
 **O teto é a trava para pilha grande, e ainda não precisou funcionar.** Medido em 28/09/2026: a
 maior fila disponível numa janela de 5 du foi **30.674 linhas**, contra 5 × 11.210 = 56.050 de
