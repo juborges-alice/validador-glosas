@@ -143,6 +143,12 @@ select
     appeal_status                              as "status do recurso",
     appeal_object                              as "nível do recurso",
     appeal_attempt                             as "tentativa de recurso",
-    working_days_from_appeal_to_analysis       as "dias úteis em aberto"
+    working_days_from_appeal_to_analysis       as "dias úteis em aberto",
+    disallowance_date                          as "dissalowance date",
+    -- prazo de recurso: 60 dias corridos a partir da glosa (há casos excepcionais)
+    datediff(day, disallowance_date, appeal_date)
+                                               as "dias entre glosa e recurso",
+    case when datediff(day, disallowance_date, appeal_date) > 60 then 'Sim' else 'Não' end
+                                               as "recurso fora do prazo (60 dias)"
 from regra
 order by appeal_date, peg_code, guide_number, guide_item_number
