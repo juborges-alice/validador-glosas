@@ -68,7 +68,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 14 | Contas Médicas - Status das Críticas (por fatura) - HS | 66766 | diária |
 | 15 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária ⚠️ |
 | 16 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
-| 17 | Contas Médicas - SLA de Pagamento de HS | 35629 | diária |
+| 17 | Contas Médicas - SLA de Pagamento de HS | **76484** (NF do HS como marco inicial; substitui o 35629) | diária |
 | 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
 | 19 | Contas Médicas - Ciclo de processamento Cassi | 65831 (sem card próprio) | **semanal — pergunta na terça, ver seção do ciclo Cassi** |
 
@@ -192,7 +192,7 @@ Regras desta classe:
    pelo **dia do mês** (em 16/09 usou "média do dia 16").
 3. **O acionável não está aqui, está no ciclo semanal** — seção abaixo.
 
-## SLA de Pagamento de HS — lê o mês corrente (decisão da OM, 28/09/2026)
+## SLA de Pagamento de HS — lê o mês corrente e só conta fatura com NF (decisões da OM, 28/09/2026)
 
 Até 27/09 o KPI era lido sobre o **mês fechado**, e era vermelho previsível: o mês fechado não se
 move mais, então não há ação possível sobre ele. Passa a ser lido sobre o **mês corrente**, que é
@@ -230,6 +230,55 @@ pagamentos liquidam`.
 **A segunda cláusula do limiar segue não verificável** (`prestador específico com > 2 faturas
 consecutivas fora do prazo`): o card não devolve a sequência por prestador. Mantida a nota no
 caveat até existir drill.
+
+### A NF do HS é o marco inicial — fatura sem NF não entra no cálculo
+
+O prazo de pagamento só começa a correr quando o **HS manda a nota fiscal**. Sem NF não há como
+pagar, então fatura sem NF não é atraso da Alice e **não entra no cálculo** — nem no numerador nem
+no denominador. Card **76484**, que substitui o 35629 na leitura da rotina.
+
+**O que é "fatura sem NF válida"** (qualquer uma das três condições exclui):
+
+| Condição | O que significa |
+|---|---|
+| `invoice_binding_date IS NULL` | a NF nunca foi vinculada à fatura |
+| `note_date IS NULL` | não há data de emissão de NF |
+| `invoice_status IN ('RECEIVED','WAITING_INVOICE','WAITING_RESEND_INVOICE')` | a fatura está aguardando o HS enviar (ou reenviar) a NF |
+
+O `WAITING_RESEND_INVOICE` é o furo que o 35629 não fechava: a NF foi enviada, **rejeitada**, e a
+fatura está esperando o HS reenviar. Ela tem `invoice_binding_date` preenchido, então passava pelo
+filtro do 35629 e o relógio seguia correndo contra a Alice num período em que a bola estava com o
+HS. São poucas (1 em Set/26, 1 em Ago/26, 2 em Jul/26) e nenhuma chegou a ser paga, então **nenhum
+número histórico muda** — mas a regra fecha a porta.
+
+**Nenhum percentual histórico se alterou** com a nova régua, porque o 35629 já filtrava
+`invoice_binding_date is not null` e isso já excluía `RECEIVED` e `WAITING_INVOICE`. Conferido mês a
+mês: Out/25 19,49% · Nov/25 2,85% · Dez/25 4,61% · Jan/26 29,95% · Fev/26 4,12% · Mar/26 1,82% ·
+Abr/26 2,34% · Mai/26 2,72% · Jun/26 2,48% · Jul/26 3,70% · Ago/26 3,31% · Set/26 1,62%. O ganho é
+de definição e de blindagem, não de número.
+
+**A categoria `(fora do calculo) sem NF do HS` é só visibilidade — NÃO é achado.** O card devolve
+essa linha para mostrar o volume represado, e o volume é alto por natureza: uma fatia dos HS fatura
+no fim do mês. Medido na mesma altura do mês (dia 28), o represamento é estável:
+
+| Mês | faturas sem NF no dia 28 | % do mês | sem NF até hoje (resíduo) |
+|---|---|---|---|
+| Mar/26 | 139 | 12,5% | 3 |
+| Abr/26 | 133 | 11,6% | 14 |
+| Mai/26 | 137 | 11,6% | 15 |
+| Jun/26 | 136 | 11,2% | 11 |
+| Jul/26 | 131 | 10,7% | 12 |
+| Ago/26 | 73 | 5,8% | 31 |
+| **Set/26** | **131** | **10,0%** | 131 (mês ainda corrente) |
+
+Ou seja: os 131 de Set/26 são **o padrão, não uma anomalia** — e quase todos resolvem sozinhos até o
+fechamento (o resíduo dos meses fechados fica entre 3 e 31). **Não reportar como achado, não abrir
+episódio, não acender farol por esse número.** Ele só vira assunto se passar de ~15% do mês na
+mesma altura, ou se o resíduo do mês fechado passar de ~40.
+
+**Onde essas faturas devem ser acompanhadas:** no KPI **% Faturas por Status - HS** (card 30863),
+que é o indicador do funil de faturamento do HS — não aqui. Esse é justamente o KPI da Pendência 7
+(dono e horizonte a definir, prazo 29/09).
 
 ## SLA Recurso de Glosa - HI — prazo contratual por lote (decisão da OM, 28/09/2026)
 

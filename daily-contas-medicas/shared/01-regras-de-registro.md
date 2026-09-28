@@ -124,6 +124,21 @@ no catálogo, e que precisam ser respeitadas:
     `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passa de dez
     para nove.
   Detalhamento, evidência e o que foi testado e descartado em `00-identificadores.md`.
+- **Mês corrente e só fatura com NF** — `SLA de Pagamento de HS`: recalibrado em 28/09/2026
+  (decisões da OM). Fonte passa a ser o card **76484**, que substitui o 35629.
+  - **Lê o mês corrente, não o fechado.** No fechado não há ação possível. A leitura do corrente é
+    otimista por construção (só classifica fatura já paga), então o caveat de parcialidade é
+    obrigatório todo dia, e abaixo de 100 faturas classificadas sai ⚪ sem farol.
+  - **O relógio começa quando o HS manda a NF.** Fatura sem NF válida não entra no cálculo — nem no
+    numerador nem no denominador. Sem NF não há como pagar, logo não é atraso da Alice. Exclui
+    `invoice_binding_date IS NULL`, `note_date IS NULL` e os status `RECEIVED`, `WAITING_INVOICE` e
+    `WAITING_RESEND_INVOICE`.
+  - **A linha `(fora do calculo) sem NF do HS` NÃO é achado.** É visibilidade do volume represado, e
+    o volume é alto por natureza (~10-12% do mês na altura do dia 28, estável desde Mar/26). Não
+    acende farol, não abre episódio, não entra no report como desvio. Essas faturas se acompanham no
+    `% Faturas por Status - HS`. Só vira assunto acima de ~15% do mês na mesma altura.
+  - Nenhum percentual histórico mudou com a regra da NF — o 35629 já filtrava vínculo não nulo. O
+    ganho é de definição e de blindagem do `WAITING_RESEND_INVOICE`, que passava pelo filtro antigo.
 
 Quando um limiar for recalibrado no Notion, a mudança vale automaticamente: o catálogo é a
 fonte, este arquivo é só o resumo do que existe hoje.
