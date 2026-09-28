@@ -335,12 +335,14 @@ a base de Clínica para a fila vencida, o indicador cai para **44%** e volta a d
 24/09 a fila vencida era 0 e ele analisou 3.213 (111,9%); em 22/09 a fila vencida era 5.633 e ele
 analisou 634 (19,4%).
 
-**Achado de prestador, à parte do indicador.** A fila de Clínica não está represada — a mediana é
-de 4 dias contra 3 de Hospital. Mas a quebra por **grupo econômico** mostra concentração que a
-leitura por unidade escondia: **B-ACTIVE ocupa 30,3% do tempo de fila de Clínica** (6.003 linhas em
-5 unidades — Paulista, Morumbi, Higienópolis, Chácara Flora e Moema — com 6 dias médios contra os 4
-da média). SALUDIA 17,1% e EQUILIBRYUM 8,4% completam 55,8% nos três maiores. O **CAEN** é o único
-com backlog aberto de verdade: 305 linhas. Isso é gestão de prestador, não produtividade do time.
+**A fila de Clínica não está represada** — a mediana é de 4 dias contra 3 de Hospital.
+
+**A concentração por grupo econômico é normal e esperada — não reportar como achado** (confirmado
+pela OM em 28/09/2026). A quebra da fila de Clínica mostra B-ACTIVE com 30,3% do tempo de fila
+(6.003 linhas em 5 unidades: Paulista, Morumbi, Higienópolis, Chácara Flora e Moema), SALUDIA com
+17,1% e EQUILIBRYUM com 8,4% — 55,8% nos três maiores. É o perfil normal da carteira de Clínica,
+que tem poucos grupos grandes. Fica registrado aqui só para evitar que uma execução futura da
+rotina redescubra isso e abra episódio indevidamente.
 
 ### Roteamento: volta a depender do tipo
 
