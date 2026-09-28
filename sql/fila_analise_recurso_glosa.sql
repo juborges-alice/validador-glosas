@@ -2,6 +2,7 @@
 -- Fonte: curated.totvs_procedure_invoice (1 linha por item de guia)
 -- Traz, item a item, tudo que foi recursado e ainda não teve análise concluída
 -- (appeal_status 'Protocolado' ou 'Em Analise').
+-- Hospital segue outra regra e fica fora da fila (escopo: Labs e Clínicas).
 -- A coluna "O que vc precisa verificar?" aplica a regra de cada motivo de glosa
 -- conforme o "Fluxograma ouro — Análise de recurso de glosa".
 
@@ -12,6 +13,7 @@ with base as (
         left(trim(t.disallowance_reason), 3) as motivo_codigo_original
     from curated.totvs_procedure_invoice t
     where t.appeal_status in ('Protocolado', 'Em Analise')
+      and coalesce(trim(t.institution_type), '') <> 'Hospital'
 ),
 
 motivo as (
