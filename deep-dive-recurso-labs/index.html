@@ -1,0 +1,337 @@
+<title>Queda de Recurso em Setembro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: relatório de investigação em uma coluna. Veredito no topo, depois uma seção por pergunta, hipóteses testadas e próximos passos. */
+:root {
+  --bg: #fbf8f9;
+  --surface: #ffffff;
+  --ink: #40002d;
+  --ink-2: #6b5a64;
+  --ink-3: #94858d;
+  --line: #eee5ea;
+  --line-2: #dfd2d9;
+  --accent: #be0380;
+  --accent-soft: #fbe7f3;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --s-muted: #d9ced4;
+  --good: #0f7b3f; --good-soft: #e3f4ea;
+  --warn: #8a5a00; --warn-soft: #fbf0d9;
+  --bad: #b3261e; --bad-soft: #fbe9e7;
+  --neutral-soft: #f1ecef;
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891;
+    --line: #34282f; --line-2: #45363e; --accent: #e0479f; --accent-soft: #3a1830;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s-muted: #4d3f47;
+    --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891;
+  --line: #34282f; --line-2: #45363e; --accent: #e0479f; --accent-soft: #3a1830;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s-muted: #4d3f47;
+  --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.1; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 15px; font-family: var(--font-body); font-weight: 600; }
+p { margin: 0; max-width: 72ch; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+header, section { display: flex; flex-direction: column; gap: 14px; }
+.scope { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--neutral-soft); color: var(--ink-2); white-space: nowrap; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; }
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.v { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.v .q { font-size: 13px; color: var(--ink-2); }
+.v .a { font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: 1.2; }
+.v p { font-size: 14px; color: var(--ink-2); }
+.pill { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.flat { background: var(--neutral-soft); color: var(--ink-2); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+th:first-child, td:first-child { text-align: left; }
+td.wrap-cell { white-space: normal; min-width: 200px; text-align: left; }
+tr.hl td { background: var(--accent-soft); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
+svg .val { fill: var(--ink); font-weight: 600; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .today { stroke: var(--accent); stroke-width: 2; }
+svg .hit { fill: transparent; }
+svg .hit:hover { fill: var(--ink); fill-opacity: 0.04; }
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; max-width: 280px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.prov { display: flex; flex-direction: column; gap: 10px; }
+.prov h3 { font-family: var(--font-display); font-size: 19px; }
+.prov dl { display: grid; grid-template-columns: 1fr; gap: 2px; margin: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+.prov dt { color: var(--ink-3); font-size: 12px; }
+.prov dd { margin: 0 0 6px; font-weight: 600; }
+.prov p { font-size: 14px; color: var(--ink-2); }
+ol.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+ol.steps li { padding-left: 4px; }
+ol.steps b { color: var(--ink); }
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); }
+code { font-size: 12.5px; background: var(--neutral-soft); padding: 1px 5px; border-radius: 5px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } .panel { padding: 14px; } th, td { padding: 7px 8px; } }
+</style>
+
+<div id="tip" hidden></div>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Projeto Recurso de Glosa · Deep dive</span>
+    <h1>Queda de Recurso em Setembro</h1>
+    <p class="muted">A pergunta: a queda forte de recursos em setembro é redução real, efeito da tabela nova de glosa por autorização, ou mudança de comportamento dos laboratórios, que estariam represando recursos?</p>
+    <div class="scope">
+      <span class="chip">Somente laboratórios</span>
+      <span class="chip">Health Institution · totvs-alice · fases 1 a 4</span>
+      <span class="chip">Glosas de jan a set/2026</span>
+      <span class="chip">Recursos até 25/09/2026</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Resposta curta</h2>
+    <div class="verdict">
+      <div class="v">
+        <span class="q">A glosa por falta de autorização caiu?</span>
+        <span class="pill good">Sim, mas está voltando</span>
+        <span class="a">6,3% → 2,3% do apresentado</span>
+        <p>De abr–jun para julho, a família de autorização caiu 64%. Depois voltou a subir: 3,2% em agosto e 4,0% em setembro. Quem puxa a volta é o 7EY (senha cancelada), que o projeto já reclassificou como erro interno.</p>
+      </div>
+      <div class="v">
+        <span class="q">A queda de recursos em setembro é redução real?</span>
+        <span class="pill warn">Ainda não dá para afirmar</span>
+        <span class="a">Nenhuma glosa de agosto foi recursada</span>
+        <p>Nenhum laboratório recursou as glosas de agosto, ao mesmo tempo. O motivo é de calendário: essas glosas só foram pagas (e o prestador só as viu no demonstrativo) entre 03 e 21/09. O recurso costuma vir de 2 a 6 semanas depois do pagamento.</p>
+      </div>
+      <div class="v">
+        <span class="q">Algum prestador mudou o comportamento?</span>
+        <span class="pill bad">DASA, sim</span>
+        <span class="a">0% contra 27–30% no mesmo prazo</span>
+        <p>A DASA recursa, em média, 27–30% do valor em até 15 dias do pagamento. Em agosto, está em zero, e em setembro usou a janela para protocolar 816 guias de glosas de 2025. O Fleury recursa sempre tarde e ainda tem 13 PEGs de julho sem pagamento. O Femme precisa de mais uma semana para dar leitura.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>1. A tabela nova reduziu a glosa por autorização</h2>
+    <p class="muted">Em julho, a tabela de motivos mudou. 7DL, 7DK, 7EZ, 7DD e 7EI deixaram de ser usados. A glosa de autorização passou a sair como 7F8 (exige autorização prévia) e 7EY (senha cancelada). Por isso a comparação é feita pela família de motivos, e não pelo código.</p>
+    <div class="panel">
+      <h3 style="margin-bottom:6px">Glosa da família autorização, em % do valor apresentado (mês da conta)</h3>
+      <div class="legend" style="margin-bottom:10px">
+        <span><i style="background:var(--s1)"></i>Códigos antigos (7DL, 7DK, 7EZ, 7DD, 7DM, 7EL)</span>
+        <span><i style="background:var(--s2)"></i>7F8 · tabela nova</span>
+        <span><i style="background:var(--s3)"></i>7EY · senha cancelada</span>
+      </div>
+      <div id="chAuth"></div>
+      <div class="tbl-wrap" style="margin-top:14px"><table id="tAuth"></table></div>
+    </div>
+    <div class="panel tbl-wrap">
+      <h3 style="margin-bottom:10px">A glosa total não caiu: ela migrou para os motivos novos</h3>
+      <table>
+        <thead><tr><th>Família (% do apresentado)</th><th>Média abr–jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Leitura</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>Autorização</td><td>6,28%</td><td>2,26%</td><td>3,21%</td><td>4,02%</td><td class="wrap-cell">Caiu com a tabela nova e está voltando pelo 7EY</td></tr>
+          <tr><td>Duplicidade (7G4, 7G3, 7DY, 7DX)</td><td>1,10%</td><td>2,84%</td><td>2,11%</td><td>1,82%</td><td class="wrap-cell">Subiu com o 7G4. A regra de quantidade por TUSS está em parametrização</td></tr>
+          <tr><td>Local/unidade (7G9, 7EI)</td><td>0,86%</td><td>2,25%</td><td>1,58%</td><td>1,04%</td><td class="wrap-cell">O 7G9 é quase todo do Fleury, e ele quase não recursa</td></tr>
+          <tr><td>Execução (7EK)</td><td>1,87%</td><td>0,78%</td><td>2,01%</td><td>1,82%</td><td class="wrap-cell">Estável</td></tr>
+          <tr><td>Data (7F6)</td><td>1,99%</td><td>0,46%</td><td>1,06%</td><td>2,32%</td><td class="wrap-cell">Voltou a crescer em setembro</td></tr>
+          <tr><td><b>Total de glosa</b></td><td><b>10,65% *</b></td><td><b>8,96%</b></td><td><b>10,11%</b></td><td><b>11,28%</b></td><td class="wrap-cell">Nível parecido com o de antes da mudança</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted" style="margin-top:10px">* Média de abr–mai. Junho ficou em 17,7% por causa do pico pontual de 7F6 e foi deixado de fora.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Por que o recurso sumiu em setembro</h2>
+    <p class="muted">O prestador só vê a glosa quando recebe o demonstrativo de pagamento. O recurso vem depois do pagamento, e não da glosa. As glosas de agosto foram pagas entre 03 e 21/09. A base de recursos vai até 25/09. Para quase todos, a janela normal de recurso ainda não tinha chegado.</p>
+    <div class="panel">
+      <h3 style="margin-bottom:6px">Glosas de agosto: quando foram pagas e quando o recurso costuma chegar</h3>
+      <div class="legend" style="margin-bottom:10px">
+        <span><i style="background:var(--s-muted)"></i>Pagamento (demonstrativo)</span>
+        <span><i style="background:var(--s1)"></i>Janela típica de recurso (dias entre pagamento e recurso nas últimas coortes)</span>
+        <span><i style="background:var(--accent)"></i>Último dado da base (25/09)</span>
+      </div>
+      <div id="chTimeline"></div>
+    </div>
+    <div class="panel tbl-wrap">
+      <h3 style="margin-bottom:10px">Mesma régua para todas as coortes: % do valor glosado recursado em até N dias após o pagamento</h3>
+      <table>
+        <thead><tr><th>Prestador</th><th>Régua</th><th>Mar</th><th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Leitura</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>DASA</td><td>15 dias</td><td>0,0%</td><td>0,0%</td><td>3,7%</td><td>26,9%</td><td>29,9%</td><td><b>0,0%</b></td><td class="wrap-cell"><span class="pill bad">Fora do padrão</span> R$ 327 mil já elegíveis e nada recursado</td></tr>
+          <tr><td>Femme</td><td>10 dias</td><td>0,0%</td><td>29,5%</td><td>95,2%</td><td>0,0%</td><td>41,7%</td><td><b>0,0%</b></td><td class="wrap-cell"><span class="pill flat">Oscila muito</span> Leitura em 01–09/10</td></tr>
+          <tr><td>Fleury</td><td>30 dias</td><td>11,4%</td><td>0,0%</td><td>7,2%</td><td>0,8%</td><td>20,7%</td><td>–</td><td class="wrap-cell"><span class="pill flat">Sempre tardio</span> Só dá para ler em outubro</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted" style="margin-top:10px">Só entram itens pagos com antecedência suficiente para completar a régua até 25/09. A DASA vem acelerando: o prazo médio entre pagamento e recurso caiu de 43 dias (mar) para 16 dias (jul). Por isso o zero de agosto chama atenção.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Prestador a prestador</h2>
+    <p class="muted">Três grupos respondem por quase todo o recurso de laboratório. Percentual recursado da coorte = tudo o que já foi recursado ÷ glosado no mês da glosa.</p>
+    <div class="grid2">
+      <div class="panel prov">
+        <span class="pill bad">Sinal de represamento</span>
+        <h3>DASA</h3>
+        <dl>
+          <dt>% recursado, coortes abr → jul</dt><dd>56% · 71% · 71% · 61%</dd>
+          <dt>Glosas de ago sem recurso</dt><dd>R$ 438 mil · 1.265 guias</dd>
+          <dt>Pagamento das glosas de ago</dt><dd>03 a 17/09</dd>
+          <dt>Recursos em set</dt><dd>854 guias, sendo 816 de 2025</dd>
+        </dl>
+        <p>A capacidade de recurso da DASA em setembro foi para o lote de glosas de fev–abr/2025. Se ela mantiver o padrão histórico, cerca de R$ 284 mil das glosas de agosto ainda devem chegar como recurso.</p>
+      </div>
+      <div class="panel prov">
+        <span class="pill warn">Tardio e com PEGs sem pagamento</span>
+        <h3>Fleury</h3>
+        <dl>
+          <dt>% recursado, coortes abr → jul</dt><dd>30% · 37% · 50% · 22%</dd>
+          <dt>Glosas de ago sem recurso</dt><dd>R$ 783 mil · 2.218 guias</dd>
+          <dt>Glosas de jul em PEG sem pagamento</dt><dd>R$ 203 mil · 13 PEGs</dd>
+          <dt>7G9 em jul, recursado</dt><dd>R$ 215 mil · 1%</dd>
+        </dl>
+        <p>O Fleury recursa em lote, de 4 a 6 semanas depois do pagamento. Fez isso em mai–jun (quase zero) e em jul–ago (703 e 1.559 guias). Cerca de 40% das glosas de julho estão em PEGs ainda não pagas, e sem pagamento não há recurso. Aqui o represamento está do lado da Alice.</p>
+      </div>
+      <div class="panel prov">
+        <span class="pill flat">Aguardar</span>
+        <h3>Femme</h3>
+        <dl>
+          <dt>% recursado, coortes abr → jul</dt><dd>100% · 100% · 88% · 82%</dd>
+          <dt>Glosas de ago sem recurso</dt><dd>R$ 83 mil · 440 guias</dd>
+          <dt>Pagamento das glosas de ago</dt><dd>14/09</dd>
+          <dt>Último recurso na base</dt><dd>03/09</dd>
+        </dl>
+        <p>O Femme recursa quase tudo o que é glosado, entre 12 e 25 dias após o pagamento. A janela de agosto vai de 26/09 a 09/10. Se nada entrar até lá, vale contato.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. Hipóteses testadas</h2>
+    <div class="panel tbl-wrap">
+      <table>
+        <thead><tr><th>Hipótese</th><th>Como testei</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td class="wrap-cell"><b>A tabela nova reduziu a glosa por autorização</b></td><td class="wrap-cell">Família de autorização em % do apresentado, antes e depois de julho</td><td class="wrap-cell"><span class="pill good">Confirmada</span> −64% em julho, mas com volta pelo 7EY (0,4% → 2,0% do apresentado)</td></tr>
+          <tr><td class="wrap-cell"><b>Menos glosa de autorização gerou menos recurso de autorização</b></td><td class="wrap-cell">Recurso da família por mês e acato das coortes</td><td class="wrap-cell"><span class="pill warn">Parcial</span> O volume glosado caiu, mas a taxa de recurso dessas glosas ficou parecida (29% em até 60 dias em jul, contra 28–33% em mai–jun). O acato caiu de 83% (jun) para 68% (jul): glosa mais correta</td></tr>
+          <tr><td class="wrap-cell"><b>Os prestadores estão recursando por fora, reapresentando a conta</b></td><td class="wrap-cell">Guias do tipo "GUIA DE RECURSO DE GLOSA" ligadas ao item original</td><td class="wrap-cell"><span class="pill flat">Descartada</span> 100% dessas guias vêm de recursos já registrados. Elas são o pagamento do recurso acatado (PEG de destino)</td></tr>
+          <tr><td class="wrap-cell"><b>A queda de setembro é efeito de calendário</b></td><td class="wrap-cell">Datas de pagamento e prazo entre pagamento e recurso por prestador</td><td class="wrap-cell"><span class="pill good">Confirmada</span> Glosas de agosto pagas entre 03 e 21/09, com recurso típico de 12 a 42 dias depois</td></tr>
+          <tr><td class="wrap-cell"><b>Algum prestador está represando</b></td><td class="wrap-cell">% recursado em até N dias após o pagamento, coorte contra coorte</td><td class="wrap-cell"><span class="pill bad">DASA</span> Fora do padrão. Fleury e Femme ainda sem leitura possível</td></tr>
+          <tr><td class="wrap-cell"><b>Há represamento do lado da Alice</b></td><td class="wrap-cell">Glosas em PEG sem data de pagamento</td><td class="wrap-cell"><span class="pill warn">Fleury</span> R$ 203 mil de glosas de julho em 13 PEGs sem pagamento</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. O que acompanhar em outubro</h2>
+    <div class="panel">
+      <ol class="steps">
+        <li><b>Até 09/10: DASA e Femme.</b> Se as glosas de agosto continuarem sem recurso, a queda é de comportamento. O card "Expectativa de Recurso para entrar na competência – Laboratório" já sinaliza contato proativo abaixo de 40%.</li>
+        <li><b>Fim de outubro: Fleury.</b> Ler a coorte de agosto com a régua de 30 dias após o pagamento, que é a janela normal dele.</li>
+        <li><b>Agora: as 13 PEGs do Fleury de julho sem pagamento.</b> Entender o motivo do bloqueio. Quando forem pagas, até R$ 203 mil de glosa podem virar recurso de uma vez e distorcer o indicador do mês.</li>
+        <li><b>7EY em alta.</b> Foi de 0,4% para 2,0% do apresentado. Como o projeto já trata esse motivo como erro interno, ele deve gerar recurso e acato alto em out/nov. O ticket de bloqueio de submissão com senha cancelada ganha prioridade.</li>
+        <li><b>7G9 no Fleury.</b> R$ 215 mil glosados em julho e só 1% recursado. A causa mapeada (CNPJ não centralizado) é do lado da Alice. Vale checar se não é glosa indevida que o prestador não consegue contestar.</li>
+        <li><b>Mudar a régua do indicador.</b> Medir o % de recurso de glosa pela data de pagamento, e não pela data da glosa. Assim o mês de resultado deixa de parecer uma queda só porque o demonstrativo saiu mais tarde.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Método</h2>
+    <div class="panel">
+      <ul class="plain">
+        <li>Base: <code>curated.totvs_procedure_invoice</code>, laboratórios, Health Institution, totvs-alice, fases 1 a 4. É o mesmo recorte dos cards do painel Contas Médicas HI.</li>
+        <li>Família autorização: 7DL, 7DK, 7DD, 7DM, 7EZ, 7EL, 7F9, 7F8 e 7EY. Local/unidade: 7EI e 7G9. Duplicidade: 7DY, 7DX, 7G4, 7G3 e 7EE.</li>
+        <li>% de glosa: glosado ÷ apresentado, por mês da conta. % recursado da coorte: valor recursado ÷ glosado, por mês da glosa. Acato: autorizado ÷ analisado.</li>
+        <li>O prazo entre pagamento e recurso usa <code>payment_date</code> e <code>appeal_date</code> dos itens da coorte. "Janela típica" é o intervalo dos prazos médios das últimas três coortes de cada prestador.</li>
+        <li>A estimativa de recurso a caminho usa o % recursado médio das coortes de abr–jul de cada prestador.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+const AUTH = [{"m": "2026-01", "apres": 6635519.360000003, "old": 579533.7199999999, "ey": 0.0, "f8": 0.0}, {"m": "2026-02", "apres": 9298578.680000002, "old": 649350.5300000001, "ey": 0.0, "f8": 0.0}, {"m": "2026-03", "apres": 9269807.680000005, "old": 532191.18, "ey": 0.0, "f8": 0.0}, {"m": "2026-04", "apres": 11051067.32000002, "old": 444640.13999999996, "ey": 311600.11, "f8": 0.0}, {"m": "2026-05", "apres": 10301029.200000025, "old": 617522.3599999999, "ey": 26288.449999999997, "f8": 0.0}, {"m": "2026-06", "apres": 11703389.110000037, "old": 594556.5599999998, "ey": 77118.93, "f8": 0.0}, {"m": "2026-07", "apres": 11031869.66000003, "old": 8171.610000000001, "ey": 44424.060000000005, "f8": 196309.01000000007}, {"m": "2026-08", "apres": 13035860.86000004, "old": 14574.36, "ey": 152513.26, "f8": 250847.85000000006}, {"m": "2026-09", "apres": 13218148.69000004, "old": 13432.429999999998, "ey": 262593.97000000003, "f8": 255559.45000000004}];
+const MES = { "01":"jan","02":"fev","03":"mar","04":"abr","05":"mai","06":"jun","07":"jul","08":"ago","09":"set","10":"out","11":"nov" };
+const lab = (m) => MES[m.slice(5,7)];
+const pct = (v, d=1) => v.toLocaleString("pt-BR", {minimumFractionDigits:d, maximumFractionDigits:d}) + "%";
+const tip = document.getElementById("tip");
+function bindTips(root) {
+  root.querySelectorAll("[data-tip]").forEach(el => {
+    el.addEventListener("mousemove", e => { tip.innerHTML = el.getAttribute("data-tip"); tip.hidden = false; tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (e.clientY + 14) + "px"; });
+    el.addEventListener("mouseleave", () => tip.hidden = true);
+  });
+}
+function barPath(x, y, w, h, r=4) { if (h <= 0) return ""; r = Math.min(r, h, w/2); return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`; }
+
+(function authChart() {
+  const W = 640, H = 250, L = 40, R = 10, T = 22, B = 28, pw = W-L-R, ph = H-T-B, max = 10;
+  const y = v => T + ph - v/max*ph;
+  const band = pw / AUTH.length, bw = Math.min(36, band*0.55);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Glosa de autorização em % do apresentado por mês">`;
+  for (let i=0;i<=5;i++){ const v=max*i/5; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}%</text>`; }
+  AUTH.forEach((a,i) => {
+    const segs = [["var(--s1)", 100*a.old/a.apres], ["var(--s2)", 100*a.f8/a.apres], ["var(--s3)", 100*a.ey/a.apres]];
+    const cx = L + band*i + band/2, x = cx - bw/2; let acc = 0; const tot = segs.reduce((t,z)=>t+z[1],0);
+    const lastIdx = segs.map(z=>z[1]>0.02).lastIndexOf(true);
+    segs.forEach(([col,v],j) => { if (v <= 0.02) return; const y0 = y(acc+v), h = y(acc)-y0-(acc>0?2:0); s += j===lastIdx ? `<path d="${barPath(x,y0,bw,Math.max(h,0))}" fill="${col}"/>` : `<rect x="${x}" y="${y0}" width="${bw}" height="${Math.max(h,0)}" fill="${col}"/>`; acc += v; });
+    s += `<text class="val" x="${cx}" y="${y(tot)-7}" text-anchor="middle">${pct(tot)}</text><text x="${cx}" y="${H-8}" text-anchor="middle">${lab(a.m)}</text>`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="<b>${lab(a.m)}/26</b><br>Códigos antigos: ${pct(segs[0][1],2)}<br>7F8: ${pct(segs[1][1],2)}<br>7EY: ${pct(segs[2][1],2)}<br>Total autorização: ${pct(tot,2)}"/>`;
+  });
+  const xs = L + band*6; s += `<line x1="${xs}" x2="${xs}" y1="${T-6}" y2="${T+ph}" stroke="var(--ink-3)" stroke-width="1"/><text x="${xs+6}" y="${T+4}" class="val">tabela nova</text>`;
+  s += `</svg>`;
+  const el = document.getElementById("chAuth"); el.innerHTML = s; bindTips(el);
+  document.getElementById("tAuth").innerHTML = `<thead><tr><th>% do apresentado</th>${AUTH.map(a=>`<th>${lab(a.m)}</th>`).join("")}</tr></thead><tbody>` +
+    [["Códigos antigos","old"],["7F8","f8"],["7EY","ey"]].map(([n,k]) => `<tr><td>${n}</td>${AUTH.map(a=>`<td>${pct(100*a[k]/a.apres,2)}</td>`).join("")}</tr>`).join("") +
+    `<tr><td><b>Total autorização</b></td>${AUTH.map(a=>`<td><b>${pct(100*(a.old+a.f8+a.ey)/a.apres,2)}</b></td>`).join("")}</tr></tbody>`;
+})();
+
+(function timeline() {
+  const rows = [
+    { n:"DASA", pay:["2026-09-03","2026-09-17"], rec:["2026-09-19","2026-10-13"], lag:"16 a 26 dias" },
+    { n:"Femme", pay:["2026-09-14","2026-09-14"], rec:["2026-09-26","2026-10-09"], lag:"12 a 25 dias" },
+    { n:"Fleury", pay:["2026-09-10","2026-09-21"], rec:["2026-10-07","2026-11-02"], lag:"27 a 42 dias" },
+  ];
+  const d0 = new Date("2026-09-01"), d1 = new Date("2026-11-20"), W = 640, L = 64, R = 12, T = 18, rowH = 44, H = T + rows.length*rowH + 28;
+  const x = d => L + (new Date(d) - d0) / (d1 - d0) * (W-L-R);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Linha do tempo de pagamento e recurso das glosas de agosto">`;
+  ["2026-09-01","2026-09-15","2026-10-01","2026-10-15","2026-11-01","2026-11-15"].forEach(d => { s += `<line class="grid" x1="${x(d)}" x2="${x(d)}" y1="${T-6}" y2="${H-24}"/><text x="${x(d)}" y="${H-8}" text-anchor="middle">${d.slice(8)}/${MES[d.slice(5,7)]}</text>`; });
+  rows.forEach((r,i) => {
+    const yc = T + i*rowH + rowH/2;
+    s += `<text x="0" y="${yc+4}" class="val">${r.n}</text>`;
+    const px0 = x(r.pay[0]), px1 = Math.max(x(r.pay[1]), px0+6);
+    s += `<rect x="${px0}" y="${yc-8}" width="${px1-px0}" height="16" rx="4" fill="var(--s-muted)"/>`;
+    s += `<rect x="${x(r.rec[0])}" y="${yc-8}" width="${x(r.rec[1])-x(r.rec[0])}" height="16" rx="4" fill="var(--s1)"/>`;
+    s += `<rect class="hit" x="${L}" y="${yc-rowH/2}" width="${W-L-R}" height="${rowH}" data-tip="<b>${r.n}</b><br>Pagamento: ${r.pay[0].slice(8)}/09 a ${r.pay[1].slice(8)}/09<br>Recurso típico: ${r.lag} após o pagamento<br>Janela esperada: ${r.rec[0].slice(8)}/${MES[r.rec[0].slice(5,7)]} a ${r.rec[1].slice(8)}/${MES[r.rec[1].slice(5,7)]}"/>`;
+  });
+  const xt = x("2026-09-25"); s += `<line class="today" x1="${xt}" x2="${xt}" y1="${T-10}" y2="${H-24}"/><text x="${xt+5}" y="${T-2}" class="val">25/09</text>`;
+  s += `</svg>`;
+  const el = document.getElementById("chTimeline"); el.innerHTML = s; bindTips(el);
+})();
+</script>
