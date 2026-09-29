@@ -1,0 +1,429 @@
+<title>Baseline Recurso de Glosa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: painel operacional de uma coluna; placar de indicadores no topo, depois uma seção por pergunta (volume, coorte, acato, motivos) e método no fim. */
+:root {
+  --bg: #fbf8f9;
+  --surface: #ffffff;
+  --ink: #40002d;
+  --ink-2: #6b5a64;
+  --ink-3: #94858d;
+  --line: #eee5ea;
+  --line-2: #dfd2d9;
+  --accent: #be0380;
+  --accent-soft: #fbe7f3;
+  --s-ei: #be0380;
+  --s-ee: #2a78d6;
+  --s-excl: #cfc3c9;
+  --good: #0f7b3f;
+  --good-soft: #e3f4ea;
+  --bad: #b3261e;
+  --bad-soft: #fbe9e7;
+  --neutral-soft: #f1ecef;
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891;
+    --line: #34282f; --line-2: #45363e; --accent: #e0479f; --accent-soft: #3a1830;
+    --s-ei: #e0479f; --s-ee: #3987e5; --s-excl: #574850;
+    --good: #5fd08f; --good-soft: #17301f; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891;
+  --line: #34282f; --line-2: #45363e; --accent: #e0479f; --accent-soft: #3a1830;
+  --s-ei: #e0479f; --s-ee: #3987e5; --s-excl: #574850;
+  --good: #5fd08f; --good-soft: #17301f; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.1; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 15px; font-family: var(--font-body); font-weight: 600; }
+p { margin: 0; max-width: 72ch; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+.num { font-variant-numeric: tabular-nums; }
+header { display: flex; flex-direction: column; gap: 12px; }
+.scope { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--neutral-soft); color: var(--ink-2); white-space: nowrap; }
+.chip.acc { background: var(--accent-soft); color: var(--ink); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.seg button { font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--ink-2); padding: 7px 14px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+th:first-child, td:first-child { text-align: left; }
+td.ind { white-space: normal; min-width: 190px; }
+td.ind b { display: block; font-weight: 600; }
+td.ind span { font-size: 12px; color: var(--ink-3); }
+.col-base { background: var(--accent-soft); }
+.col-res { font-weight: 700; }
+.delta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.delta.good { background: var(--good-soft); color: var(--good); }
+.delta.bad { background: var(--bad-soft); color: var(--bad); }
+.delta.flat { background: var(--neutral-soft); color: var(--ink-2); }
+.insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+.insight { display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.insight .big { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1.1; }
+.insight p { font-size: 14px; color: var(--ink-2); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.chart-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend i.line { height: 2px; border-radius: 0; vertical-align: 3px; width: 16px; background: var(--ink-2); }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
+svg .val { fill: var(--ink); font-weight: 600; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .base { stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .hit { fill: transparent; cursor: default; }
+svg .hit:hover { fill: var(--ink); fill-opacity: 0.04; }
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; max-width: 280px; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+.motivos th { cursor: pointer; user-select: none; }
+.motivos th[aria-sort] { color: var(--ink); }
+.motivos td:first-child { white-space: normal; min-width: 240px; }
+.bar-cell { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.bar-cell .b { height: 6px; border-radius: 3px; background: var(--accent); opacity: .75; }
+.tag { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--neutral-soft); color: var(--ink-2); margin-left: 6px; }
+.top { font-weight: 700; color: var(--accent); }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.notes ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); }
+.notes b { color: var(--ink); }
+code { font-size: 12.5px; background: var(--neutral-soft); padding: 1px 5px; border-radius: 5px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } .panel { padding: 14px; } th, td { padding: 8px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div id="tip" hidden></div>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Projeto Recurso de Glosa · Contas Médicas</span>
+    <h1>Baseline Recurso de Glosa</h1>
+    <p class="muted">Indicadores de referência para acompanhar o resultado do projeto. O baseline é a média dos meses antes do resultado. Setembro de 2026 é o primeiro mês de resultado.</p>
+    <div class="scope">
+      <span class="chip">Health Institution</span>
+      <span class="chip">Clínica + Laboratório</span>
+      <span class="chip">totvs-alice · fases 1 a 4</span>
+      <span class="chip acc">Sem recursos 7F6 em jul/ago</span>
+      <span class="chip acc">Sem lote excepcional DASA em set</span>
+      <span class="chip">Dados até 25/09/2026 (recurso) e 28/09/2026 (glosa)</span>
+    </div>
+    <div class="toolbar">
+      <span class="small muted">Janela do baseline</span>
+      <div class="seg" role="group" aria-label="Janela do baseline">
+        <button type="button" id="bw3" aria-pressed="true">Jun–Ago (3 meses)</button>
+        <button type="button" id="bw4" aria-pressed="false">Mai–Ago (4 meses)</button>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Placar dos indicadores</h2>
+    <div class="panel tbl-wrap">
+      <table id="score"></table>
+    </div>
+    <p class="small muted">Setembro está parcial: recursos até 25/09. O Δ compara setembro com o baseline. Verde indica o sentido desejado (menos glosa e menos recurso). O acato não tem sentido desejado fixo, por isso aparece em cinza.</p>
+  </section>
+
+  <section>
+    <h2>Leitura rápida</h2>
+    <div class="insights" id="insights"></div>
+  </section>
+
+  <section>
+    <h2>Volume de recursos por mês de recebimento</h2>
+    <div class="panel">
+      <div class="chart-head">
+        <h3>Guias com recurso (distintas), por mês do recurso</h3>
+        <div class="legend">
+          <span><i style="background:var(--accent)"></i>Considerado no indicador</span>
+          <span><i style="background:var(--s-excl)"></i>Retirado (7F6 jul/ago, DASA set)</span>
+          <span><i class="line"></i>Baseline</span>
+        </div>
+      </div>
+      <div id="chQtd"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Glosado × recursado na jornada da glosa</h2>
+    <p class="muted">Aqui o recurso é atribuído ao mês em que a glosa foi feita. A pergunta é quanto do que glosamos em cada mês voltou como recurso. O recurso chega, em geral, de 31 a 90 dias depois da glosa. Por isso comparamos as coortes na mesma idade: o que já tinha sido recursado até o dia 25 do mês seguinte à glosa. As glosas de 7F6 estão fora das coortes.</p>
+    <div class="grid2">
+      <div class="panel">
+        <div class="chart-head">
+          <h3>Valor glosado por mês da glosa (R$ mil)</h3>
+          <span class="small muted">A mudança na forma de glosar entrou em junho e estava 100% ativa em julho.</span>
+        </div>
+        <div id="chGlos"></div>
+      </div>
+      <div class="panel">
+        <div class="chart-head">
+          <h3>% do valor glosado já recursado até o dia 25 do mês seguinte</h3>
+          <span class="small muted">A mesma régua para todas as coortes. É a prévia do efeito.</span>
+        </div>
+        <div id="chSnap"></div>
+      </div>
+    </div>
+    <div class="panel tbl-wrap">
+      <table id="coorte"></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Acato: total, erro interno e erro externo</h2>
+    <div class="panel">
+      <div class="chart-head">
+        <h3>% do valor analisado que foi acatado, por mês do recurso</h3>
+        <div class="legend">
+          <span><i style="background:var(--s-ei)"></i>EI · erro interno</span>
+          <span><i style="background:var(--s-ee)"></i>EE · erro externo</span>
+        </div>
+      </div>
+      <div id="chAcato"></div>
+      <p class="small muted" style="margin-top:10px">Analisado = Autorizado + Autorizado Parcialmente + Negado. A soma de EI e EE é o acato total. Menos de 0,1% do acatado não tem EI/EE informado.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Quebra por motivo de glosa</h2>
+    <p class="muted">Os 20 motivos com mais guias recursadas na janela jun–ago. Valor glosado e % recursado vêm das glosas feitas em jun–ago. Guias recursadas e acato vêm dos recursos recebidos em jun–ago. Clique no cabeçalho para ordenar. O maior valor de cada coluna aparece destacado.</p>
+    <div class="panel tbl-wrap">
+      <table class="motivos" id="motivos"></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Método e ressalvas</h2>
+    <div class="notes">
+      <div class="panel">
+        <h3 style="margin-bottom:8px">Definições</h3>
+        <ul>
+          <li><b>% de glosa geral</b>: valor glosado ÷ valor apresentado, por mês da conta (<code>invoice_date</code>), a mesma base do card Valor Total Glosado.</li>
+          <li><b>Quantidade de recurso</b>: guias distintas com <code>appeal_value</code> preenchido, por mês do recurso (<code>appeal_date</code>), a mesma base do card Quantidade de Recurso.</li>
+          <li><b>% de recurso de glosa</b>: valor recursado ÷ valor glosado da mesma glosa, agrupado pelo mês da glosa (<code>disallowance_date</code>), a mesma lógica do card 64387.</li>
+          <li><b>% de acato</b>: valor de recurso Autorizado ou Autorizado Parcialmente ÷ valor analisado, por mês do recurso. A divisão entre EI e EE usa o prefixo do motivo da operadora (<code>appeal_operator_reason</code>), como no card de acato por motivo.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3 style="margin-bottom:8px">Recortes e ressalvas</h3>
+        <ul>
+          <li><b>7F6 (Data preenchida incorretamente)</b>: retirado dos recursos de jul/ago (822 guias em ago e 100 em jul) e das coortes de glosa. Inclui as linhas com motivo combinado que contêm 7F6.</li>
+          <li><b>DASA em setembro</b>: retiradas 816 guias recursadas em 24/09 que eram de glosas de fev a abr de 2025. Os demais recursos DASA de setembro continuam no indicador.</li>
+          <li><b>Setembro parcial</b>: o último recurso na base é de 25/09. O mês ainda pode receber recursos, e parte do que foi protocolado pode entrar com atraso no TOTVS.</li>
+          <li><b>7F6 voltou a aparecer nas glosas de setembro</b>: R$ 312 mil. Pode gerar uma nova onda de recursos em out/nov.</li>
+          <li>Na tabela de motivos, os motivos combinados (A | B) contam pelo primeiro código.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const D = {"glosa": [{"m": "2026-03", "apres": 12642448.200000787, "glos": 894900.6100000013, "glos7": 0.0, "gap": 41151, "ggl": 3350}, {"m": "2026-04", "apres": 15063359.190000597, "glos": 1278811.7899999977, "glos7": 0.0, "gap": 49104, "ggl": 4366}, {"m": "2026-05", "apres": 14017406.280000966, "glos": 1169740.8999999985, "glos7": 0.0, "gap": 42287, "ggl": 4262}, {"m": "2026-06", "apres": 15547879.550000895, "glos": 2134388.839999992, "glos7": 714181.4899999998, "gap": 46911, "ggl": 6353}, {"m": "2026-07", "apres": 15245154.579998234, "glos": 1015896.2499999973, "glos7": 50664.35999999994, "gap": 44740, "ggl": 3821}, {"m": "2026-08", "apres": 17569965.82999883, "glos": 1351649.9699999953, "glos7": 140699.26000000004, "gap": 49928, "ggl": 4098}, {"m": "2026-09", "apres": 17690933.15999694, "glos": 1527670.0300000014, "glos7": 312054.70000000024, "gap": 51258, "ggl": 5405}], "rec": [{"guias_bruto": 1323, "guias_ajust": 1323, "guias_7f6": 0, "guias_dasa": 0, "vlr_rec_ajust": 547003.77, "vlr_analisado": 547003.77, "vlr_acatado": 132239.36, "acat_ei": 11980.25, "acat_ee": 120227.43, "acat_outro": 31.68, "guias_analisadas": 1323, "guias_acatadas": 551, "vlr_analisado_bruto": 547003.77, "vlr_acatado_bruto": 132239.36, "m": "2026-04"}, {"guias_bruto": 1381, "guias_ajust": 1381, "guias_7f6": 0, "guias_dasa": 0, "vlr_rec_ajust": 615447.91, "vlr_analisado": 615447.91, "vlr_acatado": 514147.99, "acat_ei": 46177.87, "acat_ee": 467970.12, "acat_outro": null, "guias_analisadas": 1381, "guias_acatadas": 1079, "vlr_analisado_bruto": 615447.91, "vlr_acatado_bruto": 514147.99, "m": "2026-05"}, {"guias_bruto": 1930, "guias_ajust": 1930, "guias_7f6": 0, "guias_dasa": 0, "vlr_rec_ajust": 459900.79, "vlr_analisado": 459900.79, "vlr_acatado": 235200.17, "acat_ei": 87120.33, "acat_ee": 148079.84, "acat_outro": null, "guias_analisadas": 1930, "guias_acatadas": 1105, "vlr_analisado_bruto": 459900.79, "vlr_acatado_bruto": 235200.17, "m": "2026-06"}, {"guias_bruto": 2532, "guias_ajust": 2432, "guias_7f6": 100, "guias_dasa": 0, "vlr_rec_ajust": 907218.07, "vlr_analisado": 907218.07, "vlr_acatado": 703856.76, "acat_ei": 158002.59, "acat_ee": 545543.99, "acat_outro": 310.18, "guias_analisadas": 2432, "guias_acatadas": 2000, "vlr_analisado_bruto": 1024360.67, "vlr_acatado_bruto": 820999.36, "m": "2026-07"}, {"guias_bruto": 2963, "guias_ajust": 2153, "guias_7f6": 822, "guias_dasa": 0, "vlr_rec_ajust": 716475.2, "vlr_analisado": 716475.2, "vlr_acatado": 573371.6, "acat_ei": 275622.96, "acat_ee": 297748.64, "acat_outro": null, "guias_analisadas": 2153, "guias_acatadas": 1630, "vlr_analisado_bruto": 1123548.03, "vlr_acatado_bruto": 978156.19, "m": "2026-08"}, {"guias_bruto": 1187, "guias_ajust": 340, "guias_7f6": 31, "guias_dasa": 816, "vlr_rec_ajust": 140366.11, "vlr_analisado": 138064.83, "vlr_acatado": 108801.04, "acat_ei": 22646.52, "acat_ee": 86154.52, "acat_outro": null, "guias_analisadas": 326, "guias_acatadas": 249, "vlr_analisado_bruto": 156678.85, "vlr_acatado_bruto": 120244.56, "m": "2026-09"}], "coorte": [{"glosado_7f6": 0.0, "rec_7f6": 0.0, "glosado_sem7f6": 901832.2900000012, "rec_45d": 72990.1, "rec_60d": 104792.41, "rec_90d": 329372.01, "rec_total": 329372.01, "guias_glosadas": 3347, "guias_rec_60d": 259, "guias_rec_total": 927, "m": "2026-03", "snap_glos": 901832.2900000013, "snap_rec": 61444.55, "snap_gg": 3347, "snap_gr": 124}, {"glosado_7f6": 0.0, "rec_7f6": 0.0, "glosado_sem7f6": 1256392.109999998, "rec_45d": 118084.38, "rec_60d": 317302.16, "rec_90d": 559265.27, "rec_total": 560357.77, "guias_glosadas": 4356, "guias_rec_60d": 977, "guias_rec_total": 1600, "m": "2026-04", "snap_glos": 1256392.109999998, "snap_rec": 63291.38, "snap_gg": 4356, "snap_gr": 142}, {"glosado_7f6": 0.0, "rec_7f6": 0.0, "glosado_sem7f6": 1145892.9799999986, "rec_45d": 212077.07, "rec_60d": 441761.34, "rec_90d": 675834.04, "rec_total": 675834.04, "guias_glosadas": 3962, "guias_rec_60d": 1536, "guias_rec_total": 1892, "m": "2026-05", "snap_glos": 1145892.9799999986, "snap_rec": 191807.91, "snap_gg": 3962, "snap_gr": 751}, {"glosado_7f6": 714181.4899999998, "rec_7f6": 498057.72, "glosado_sem7f6": 1470578.5399999938, "rec_45d": 281964.83, "rec_60d": 437951.77, "rec_90d": 760550.56, "rec_total": 760550.56, "guias_glosadas": 5336, "guias_rec_60d": 1629, "guias_rec_total": 2491, "m": "2026-06", "snap_glos": 1470578.5399999938, "snap_rec": 242243.51, "snap_gg": 5336, "snap_gr": 886}, {"glosado_7f6": 50664.35999999995, "rec_7f6": 43482.46, "glosado_sem7f6": 966723.5599999983, "rec_45d": 236780.11, "rec_60d": 333260.9, "rec_90d": 396060.24, "rec_total": 396060.24, "guias_glosadas": 3707, "guias_rec_60d": 1037, "guias_rec_total": 1131, "m": "2026-07", "snap_glos": 966723.5599999982, "snap_rec": 144846.76, "snap_gg": 3707, "snap_gr": 415}, {"glosado_7f6": 140699.26000000004, "rec_7f6": 0.0, "glosado_sem7f6": 1211270.8499999947, "rec_45d": 9899.0, "rec_60d": 9899.0, "rec_90d": 9899.0, "rec_total": 9899.0, "guias_glosadas": 3739, "guias_rec_60d": 13, "guias_rec_total": 13, "m": "2026-08", "snap_glos": 1211270.8499999947, "snap_rec": 9899.0, "snap_gg": 3739, "snap_gr": 13}, {"glosado_7f6": 312054.7000000002, "rec_7f6": 0.0, "glosado_sem7f6": 1215615.3299999963, "rec_45d": 0.0, "rec_60d": 0.0, "rec_90d": 0.0, "rec_total": 0.0, "guias_glosadas": 4640, "guias_rec_60d": 0, "guias_rec_total": 0, "m": "2026-09"}], "motivos": [{"motivo": "7DL - Autorização de item não localizada", "glos": 494631.77999999985, "gg": 1214, "rec": 299206.41000000003, "gr": 638, "grec": 1888, "vrec": 832976.41, "van": 832976.41, "vac": 456835.21, "ei": 67094.76, "ee": 389740.45}, {"motivo": "7EK - Procedimento sem registro de execução", "glos": 554078.2200000003, "gg": 1670, "rec": 214155.75, "gr": 664, "grec": 1361, "vrec": 396880.92000000004, "van": 396880.92000000004, "vac": 381921.9, "ei": 2524.7, "ee": 379320.81}, {"motivo": "7F6 - Data preenchida incorretamente", "glos": 887163.9199999995, "gg": 1878, "rec": 532355.4099999999, "gr": 964, "grec": 919, "vrec": 519954.46, "van": 515113.76, "vac": 512825.52, "ei": 435740.2, "ee": 76154.49}, {"motivo": "7DY - Item redundante na mesma guia", "glos": 167432.16, "gg": 856, "rec": 113852.87, "gr": 494, "grec": 691, "vrec": 157312.49, "van": 157312.49, "vac": 140428.71999999997, "ei": 133661.58, "ee": 6533.35}, {"motivo": "7G4 - COBRANÇA DE PROCEDIMENTO/ITEM ASSISTENCIAL EM DUPLICIDADE", "glos": 503693.35000000015, "gg": 2094, "rec": 163035.01, "gr": 563, "grec": 470, "vrec": 141703.58, "van": 141703.58, "vac": 139676.91, "ei": 133923.98, "ee": 5752.93}, {"motivo": "(sem motivo)", "glos": 38371.19, "gg": 333, "rec": 32204.67, "gr": 269, "grec": 268, "vrec": 32188.19, "van": 32188.19, "vac": 32110.29, "ei": 29843.44, "ee": 2266.85}, {"motivo": "7E6 - Prescrição sem justificativa para o prontuário", "glos": 21165.349999999995, "gg": 186, "rec": 19123.39, "gr": 162, "grec": 252, "vrec": 32825.35, "van": 32825.35, "vac": 32825.35, "ei": 31502.65, "ee": 1322.7}, {"motivo": "7EY - SENHA DE AUTORIZAÇÃO CANCELADA", "glos": 274235.6299999997, "gg": 711, "rec": 43611.38, "gr": 172, "grec": 244, "vrec": 117094.11, "van": 117094.11, "vac": 86058.63, "ei": 7906.46, "ee": 78152.17}, {"motivo": "7DX - Item cobrado em múltiplas guias", "glos": 75448.95, "gg": 468, "rec": 22815.1, "gr": 73, "grec": 219, "vrec": 57636.62, "van": 57636.62, "vac": 37646.060000000005, "ei": 23686.0, "ee": 13960.06}, {"motivo": "7EZ - COBRANÇA DE PROCEDIMENTO COM DATA DE AUTORIZAÇÃO POSTERIOR À DO ATENDIMENTO", "glos": 105114.36, "gg": 160, "rec": 48461.11, "gr": 119, "grec": 181, "vrec": 63634.43, "van": 63634.43, "vac": 51278.29, "ei": 9078.47, "ee": 42199.82}, {"motivo": "7E1 - Valor apresentado divergente do negociado", "glos": 162415.2900000002, "gg": 1965, "rec": 47341.61, "gr": 103, "grec": 160, "vrec": 51319.520000000004, "van": 51319.520000000004, "vac": 21047.25, "ei": 15360.679999999998, "ee": 5658.87}, {"motivo": "7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA", "glos": 451926.62999999995, "gg": 1321, "rec": 94539.35, "gr": 212, "grec": 157, "vrec": 54697.71, "van": 54697.71, "vac": 45399.18, "ei": 6127.7, "ee": 39271.48}, {"motivo": "0TS - SADT conflitantes", "glos": 3470.71, "gg": 40, "rec": 3470.71, "gr": 40, "grec": 150, "vrec": 15953.8, "van": 15953.8, "vac": 15848.54, "ei": 15281.75, "ee": 566.79}, {"motivo": "7EF - Reexecução", "glos": 0, "gg": 0, "rec": 0, "gr": 0, "grec": 104, "vrec": 11086.99, "van": 11086.99, "vac": 10791.36, "ei": 10791.36, "ee": 0.0}, {"motivo": "7F0 - Cobrança de exame em quantidade incompatível com o procedimento/evolução clínica", "glos": 1823.69, "gg": 17, "rec": 832.22, "gr": 6, "grec": 102, "vrec": 12257.07, "van": 12257.07, "vac": 10413.66, "ei": 8920.13, "ee": 1493.53}, {"motivo": "701 - COBRANÇA DE EXAME NÃO COMPATÍVEL COM A IDADE.", "glos": 9256.390000000001, "gg": 53, "rec": 7211.77, "gr": 49, "grec": 92, "vrec": 15413.17, "van": 15413.17, "vac": 15413.17, "ei": 15345.96, "ee": 67.21}, {"motivo": "7DT - Procedimento negociado como captation", "glos": 17637.2, "gg": 83, "rec": 13373.71, "gr": 65, "grec": 76, "vrec": 16573.52, "van": 16573.52, "vac": 55.85, "ei": 0.0, "ee": 55.85}, {"motivo": "7G3 - DUPLICIDADE DE CONTA DEVIDO A PERÍODO JÁ APRESENTADO EM OUTRA PARCIAL", "glos": 80004.53, "gg": 351, "rec": 16133.34, "gr": 87, "grec": 76, "vrec": 12946.26, "van": 12946.26, "vac": 11626.96, "ei": 10579.33, "ee": 1047.63}, {"motivo": "7EI - Procedimento autorizado em unidade divergente da cobrada", "glos": 191349.2999999999, "gg": 485, "rec": 3645.34, "gr": 10, "grec": 65, "vrec": 24200.26, "van": 24200.26, "vac": 151.24, "ei": 0.0, "ee": 151.24}, {"motivo": "7DK - Procedimento não autorizado", "glos": 20391.91, "gg": 40, "rec": 9342.44, "gr": 14, "grec": 49, "vrec": 19629.53, "van": 19629.53, "vac": 10473.77, "ei": 711.07, "ee": 9762.7}], "motivos_outros": 17};
+const $ = (s) => document.querySelector(s);
+const MES = { "01":"jan","02":"fev","03":"mar","04":"abr","05":"mai","06":"jun","07":"jul","08":"ago","09":"set","10":"out","11":"nov","12":"dez" };
+const lab = (m) => MES[m.slice(5,7)] + "/" + m.slice(2,4);
+const fmtInt = (v) => Math.round(v).toLocaleString("pt-BR");
+const fmtPct = (v, d=1) => (v == null || !isFinite(v)) ? "–" : v.toLocaleString("pt-BR", {minimumFractionDigits:d, maximumFractionDigits:d}) + "%";
+const fmtBRL = (v) => "R$ " + (v >= 1e6 ? (v/1e6).toLocaleString("pt-BR",{maximumFractionDigits:2}) + " mi" : (v/1e3).toLocaleString("pt-BR",{maximumFractionDigits:0}) + " mil");
+const div = (a,b) => b ? 100*a/b : null;
+
+const MONTHS = ["2026-05","2026-06","2026-07","2026-08","2026-09"];
+const RES = "2026-09";
+let win = ["2026-06","2026-07","2026-08"];
+try { if (localStorage.getItem("bw") === "4") win = ["2026-05","2026-06","2026-07","2026-08"]; } catch (e) {}
+
+const byM = (arr) => Object.fromEntries(arr.map(r => [r.m, r]));
+const G = byM(D.glosa), R = byM(D.rec), C = byM(D.coorte);
+
+const IND = [
+  { k:"pg", name:"% de glosa geral", sub:"glosado ÷ apresentado, por mês da conta", f:(m)=>div(G[m].glos, G[m].apres), fmt:fmtPct, dir:-1, unit:"pp" },
+  { k:"pg7", name:"% de glosa geral, sem 7F6", sub:"mesma conta, tirando o motivo 7F6", f:(m)=>div(G[m].glos - G[m].glos7, G[m].apres), fmt:fmtPct, dir:-1, unit:"pp" },
+  { k:"qtd", name:"Quantidade de recursos", sub:"guias distintas, por mês do recurso", f:(m)=>R[m].guias_ajust, fmt:fmtInt, dir:-1, unit:"%" },
+  { k:"vrec", name:"Valor recursado", sub:"por mês do recurso", f:(m)=>R[m].vlr_rec_ajust, fmt:fmtBRL, dir:-1, unit:"%" },
+  { k:"ac", name:"% de acato total", sub:"acatado ÷ analisado (valor)", f:(m)=>div(R[m].vlr_acatado, R[m].vlr_analisado), fmt:fmtPct, dir:0, unit:"pp" },
+  { k:"ei", name:"% de acato por erro interno (EI)", sub:"acatado EI ÷ analisado", f:(m)=>div(R[m].acat_ei, R[m].vlr_analisado), fmt:fmtPct, dir:-1, unit:"pp" },
+  { k:"ee", name:"% de acato por erro externo (EE)", sub:"acatado EE ÷ analisado", f:(m)=>div(R[m].acat_ee, R[m].vlr_analisado), fmt:fmtPct, dir:0, unit:"pp" },
+];
+const mean = (xs) => xs.reduce((a,b)=>a+b,0)/xs.length;
+
+function renderScore() {
+  const head = `<thead><tr><th>Indicador</th><th class="col-base">Baseline</th>${MONTHS.map(m=>`<th${m===RES?' class="col-res"':''}>${lab(m)}${m===RES?' ·&nbsp;resultado':''}</th>`).join("")}<th>Δ set vs baseline</th></tr></thead>`;
+  const rows = IND.map(ind => {
+    const base = mean(win.map(ind.f));
+    const res = ind.f(RES);
+    let dtxt, cls;
+    if (ind.unit === "pp") { const d = res - base; dtxt = (d>0?"+":"") + d.toLocaleString("pt-BR",{maximumFractionDigits:1, minimumFractionDigits:1}) + " p.p."; cls = Math.abs(d) < 0.5 ? "flat" : (ind.dir === 0 ? "flat" : ((d*ind.dir) > 0 ? "good" : "bad")); }
+    else { const d = 100*(res/base - 1); dtxt = (d>0?"+":"") + d.toLocaleString("pt-BR",{maximumFractionDigits:0}) + "%"; cls = Math.abs(d) < 3 ? "flat" : ((d*ind.dir) > 0 ? "good" : "bad"); }
+    const arrow = cls === "good" ? "▼" : cls === "bad" ? "▲" : "●";
+    return `<tr><td class="ind"><b>${ind.name}</b><span>${ind.sub}</span></td><td class="col-base"><b>${ind.fmt(base)}</b></td>${MONTHS.map(m=>`<td class="${m===RES?'col-res':''}${win.includes(m)?'':' muted'}">${ind.fmt(ind.f(m))}</td>`).join("")}<td><span class="delta ${cls}">${ind.dir===0?"●":arrow} ${dtxt}</span></td></tr>`;
+  }).join("");
+  // Coorte: indicador de % recurso de glosa (régua d25 M+1)
+  const snap = (m) => C[m] && C[m].snap_glos ? div(C[m].snap_rec, C[m].snap_glos) : null;
+  const tot = (m) => C[m] ? div(C[m].rec_total, C[m].glosado_sem7f6) : null;
+  const preBase = mean(["2026-04","2026-05","2026-06"].map(snap));
+  const preTot = mean(["2026-04","2026-05","2026-06"].map(tot));
+  const cohortRow = `<tr><td class="ind"><b>% de recurso de glosa (coorte)</b><span>recursado até dia 25 do mês seguinte ÷ glosado, por mês da glosa. Baseline: coortes abr–jun, antes da mudança</span></td><td class="col-base"><b>${fmtPct(preBase)}</b></td>${MONTHS.map(m=>`<td class="${m===RES?'col-res':''}">${m===RES?'<span class="muted">em out</span>':fmtPct(snap(m))}</td>`).join("")}<td><span class="delta good">▼ ago: ${(snap("2026-08")-preBase).toLocaleString("pt-BR",{maximumFractionDigits:1,minimumFractionDigits:1})} p.p.</span></td></tr>
+  <tr><td class="ind"><b>% de recurso de glosa (coorte, acumulado)</b><span>tudo que já foi recursado ÷ glosado. Só vale para coortes maduras (60 a 90 dias)</span></td><td class="col-base"><b>${fmtPct(preTot)}</b></td>${MONTHS.map(m=>`<td class="${m===RES?'col-res':''}${m>="2026-07"?' muted':''}">${m===RES?'<span class="muted">em out</span>':fmtPct(tot(m)) + (m>="2026-07"?' *':'')}</td>`).join("")}<td><span class="delta flat">● em maturação</span></td></tr>`;
+  $("#score").innerHTML = head + "<tbody>" + rows + cohortRow + "</tbody>";
+}
+
+function renderInsights() {
+  const qb = mean(win.map(m=>R[m].guias_ajust)), qs = R[RES].guias_ajust;
+  const snapPre = mean(["2026-04","2026-05","2026-06"].map(m=>div(C[m].snap_rec, C[m].snap_glos)));
+  const snapAgo = div(C["2026-08"].snap_rec, C["2026-08"].snap_glos);
+  const acB = mean(win.map(m=>div(R[m].vlr_acatado, R[m].vlr_analisado))), acS = div(R[RES].vlr_acatado, R[RES].vlr_analisado);
+  const eiB = mean(win.map(m=>div(R[m].acat_ei, R[m].vlr_analisado))), eiS = div(R[RES].acat_ei, R[RES].vlr_analisado);
+  const items = [
+    { big: fmtInt(qs) + " guias", t: "recursadas em setembro, até 25/09", p: `Contra ${fmtInt(qb)} de média no baseline, uma queda de ${Math.round(100*(1-qs/qb))}%. Mesmo projetando o mês inteiro, setembro fica bem abaixo de todos os meses anteriores.` },
+    { big: fmtPct(snapAgo), t: "das glosas de agosto já voltaram como recurso", p: `Na mesma régua (até o dia 25 do mês seguinte), as coortes de abr–jun, antes da mudança, tinham em média ${fmtPct(snapPre)}. É o primeiro sinal de que a glosa mais correta está gerando menos recurso. A coorte de julho (${fmtPct(div(C["2026-07"].snap_rec, C["2026-07"].snap_glos))}) ainda ficou perto de junho.` },
+    { big: fmtPct(acS), t: "de acato em setembro", p: `O baseline é ${fmtPct(acB)}. O acato por erro interno caiu de ${fmtPct(eiB)} para ${fmtPct(eiS)} do analisado. O que continua sendo acatado vem principalmente de erro externo, quando o prestador corrige e reapresenta.` },
+    { big: "7DL e 7EK", t: "concentram 43% das guias recursadas", p: "7DL (autorização não localizada) tem o maior volume, mas acato de 55%. 7EK, 7DY e 7G4 têm acato acima de 90%. Em 7DY e 7G4, 95% ou mais do acato é erro interno, e esses motivos são os primeiros candidatos para revisar a regra de glosa." },
+  ];
+  $("#insights").innerHTML = items.map(i=>`<div class="insight"><span class="big num">${i.big}</span><b>${i.t}</b><p>${i.p}</p></div>`).join("");
+}
+
+// ---------- charts ----------
+const tip = $("#tip");
+function showTip(e, html) { tip.innerHTML = html; tip.hidden = false; const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8); tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; }
+function hideTip() { tip.hidden = true; }
+function bindTips(root) {
+  root.querySelectorAll("[data-tip]").forEach(el => {
+    el.addEventListener("mousemove", e => showTip(e, el.getAttribute("data-tip")));
+    el.addEventListener("mouseleave", hideTip);
+  });
+}
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); const n = v/p; return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p; }
+function barPath(x, y, w, h, r=4) { if (h <= 0) return ""; r = Math.min(r, h, w/2); return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`; }
+
+// columns: cats [{label, segs:[{v, color, tip}], total, totalLabel}], opts {max, fmtAxis, baseline, baseLabel}
+function columns(el, cats, o) {
+  const W = 640, H = 260, L = 48, Rr = 12, T = 22, B = 30;
+  const pw = W - L - Rr, ph = H - T - B;
+  const max = o.max || niceMax(Math.max(...cats.map(c=>c.total), o.baseline||0) * 1.1);
+  const y = v => T + ph - (v/max)*ph;
+  const band = pw / cats.length, bw = Math.min(40, band*0.5);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.aria||''}">`;
+  for (let i=0;i<=4;i++){ const v = max*i/4, yy = y(v); s += `<line class="grid" x1="${L}" x2="${W-Rr}" y1="${yy}" y2="${yy}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${o.fmtAxis(v)}</text>`; }
+  cats.forEach((c,i) => {
+    const cx = L + band*i + band/2, x = cx - bw/2;
+    let acc = 0;
+    c.segs.forEach((sg, j) => {
+      if (sg.v <= 0) return;
+      const y0 = y(acc + sg.v), h = y(acc) - y0 - (acc>0 ? 2 : 0);
+      const isTop = c.segs.slice(j+1).every(z=>z.v<=0);
+      s += isTop ? `<path d="${barPath(x, y0, bw, h)}" fill="${sg.color}"/>` : `<rect x="${x}" y="${y0}" width="${bw}" height="${Math.max(h,0)}" fill="${sg.color}"/>`;
+      acc += sg.v;
+    });
+    s += `<text class="val num" x="${cx}" y="${y(c.total)-7}" text-anchor="middle">${c.totalLabel}</text>`;
+    s += `<text x="${cx}" y="${H-8}" text-anchor="middle"${c.em?' class="val"':''}>${c.label}</text>`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="${c.tip.replace(/"/g,'&quot;')}"/>`;
+  });
+  if (o.baseline != null) { const yy = y(o.baseline); s += `<line class="base" x1="${L}" x2="${W-Rr}" y1="${yy}" y2="${yy}"/><text x="${L+6}" y="${yy-6}" text-anchor="start" class="val">${o.baseLabel}</text>`; }
+  s += `</svg>`;
+  el.innerHTML = s; bindTips(el);
+}
+
+function renderQtd() {
+  const ms = ["2026-04","2026-05","2026-06","2026-07","2026-08","2026-09"];
+  const base = mean(win.map(m=>R[m].guias_ajust));
+  columns($("#chQtd"), ms.map(m => {
+    const r = R[m], excl = r.guias_bruto - r.guias_ajust;
+    return { label: lab(m) + (m===RES?" ·parcial":""), em: m===RES, total: r.guias_bruto, totalLabel: fmtInt(r.guias_ajust),
+      segs: [{v:r.guias_ajust, color:"var(--accent)"}, {v:excl, color:"var(--s-excl)"}],
+      tip: `<b>${lab(m)}</b><br>Considerado: ${fmtInt(r.guias_ajust)} guias<br>Retirado 7F6: ${fmtInt(r.guias_7f6)}<br>Retirado DASA: ${fmtInt(r.guias_dasa)}<br>Total bruto: ${fmtInt(r.guias_bruto)}` };
+  }), { fmtAxis: v => fmtInt(v), baseline: base, baseLabel: "baseline " + fmtInt(base), aria: "Guias recursadas por mês" });
+}
+
+function renderCoorte() {
+  const ms = ["2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"];
+  columns($("#chGlos"), ms.concat(["2026-09"]).map(m => {
+    const c = C[m];
+    return { label: lab(m), em: m>="2026-07", total: c.glosado_sem7f6/1e3, totalLabel: fmtInt(c.glosado_sem7f6/1e3),
+      segs: [{v:c.glosado_sem7f6/1e3, color: m>="2026-07" ? "var(--accent)" : "var(--s-excl)"}],
+      tip: `<b>Glosas de ${lab(m)}</b><br>Glosado (sem 7F6): ${fmtBRL(c.glosado_sem7f6)}<br>7F6 retirado: ${fmtBRL(c.glosado_7f6)}<br>Guias glosadas: ${fmtInt(c.guias_glosadas)}` };
+  }), { fmtAxis: v => fmtInt(v), aria: "Valor glosado por mês da glosa" });
+  columns($("#chSnap"), ms.map(m => {
+    const c = C[m], v = div(c.snap_rec, c.snap_glos);
+    return { label: lab(m), em: m>="2026-07", total: v, totalLabel: fmtPct(v),
+      segs: [{v, color: m>="2026-07" ? "var(--accent)" : "var(--s-excl)"}],
+      tip: `<b>Glosas de ${lab(m)}</b><br>Recursado até o dia 25 do mês seguinte: ${fmtBRL(c.snap_rec)}<br>${fmtPct(v)} do valor · ${fmtPct(div(c.snap_gr,c.snap_gg))} das guias` };
+  }), { max: 20, fmtAxis: v => fmtInt(v) + "%", aria: "Percentual recursado até dia 25 do mês seguinte" });
+
+  const head = `<thead><tr><th>Mês da glosa</th><th>Glosado (sem 7F6)</th><th>Guias glosadas</th><th>Recursado até dia 25 M+1</th><th>% valor</th><th>% guias</th><th>Recursado acumulado</th><th>% acumulado</th><th>Situação</th></tr></thead>`;
+  const rows = ms.concat(["2026-09"]).map(m => {
+    const c = C[m];
+    const st = m <= "2026-06" ? "Madura" : m === "2026-09" ? "Sem recurso ainda" : "Em maturação";
+    const snapOk = c.snap_glos != null;
+    return `<tr><td>${lab(m)}${m>="2026-07"?' <span class="tag">nova glosa</span>':''}</td><td>${fmtBRL(c.glosado_sem7f6)}</td><td>${fmtInt(c.guias_glosadas)}</td><td>${snapOk?fmtBRL(c.snap_rec):'–'}</td><td>${snapOk?fmtPct(div(c.snap_rec,c.snap_glos)):'–'}</td><td>${snapOk?fmtPct(div(c.snap_gr,c.snap_gg)):'–'}</td><td>${fmtBRL(c.rec_total)}</td><td>${fmtPct(div(c.rec_total,c.glosado_sem7f6))}</td><td class="muted">${st}</td></tr>`;
+  }).join("");
+  $("#coorte").innerHTML = head + "<tbody>" + rows + "</tbody>";
+}
+
+function renderAcato() {
+  const ms = ["2026-04","2026-05","2026-06","2026-07","2026-08","2026-09"];
+  const base = mean(win.map(m=>div(R[m].vlr_acatado, R[m].vlr_analisado)));
+  columns($("#chAcato"), ms.map(m => {
+    const r = R[m], ei = div(r.acat_ei, r.vlr_analisado), ee = div(r.acat_ee, r.vlr_analisado), tot = div(r.vlr_acatado, r.vlr_analisado);
+    return { label: lab(m) + (m===RES?" ·parcial":""), em: m===RES, total: tot, totalLabel: fmtPct(tot, 0),
+      segs: [{v:ei, color:"var(--s-ei)"}, {v:ee, color:"var(--s-ee)"}],
+      tip: `<b>Recursos de ${lab(m)}</b><br>Analisado: ${fmtBRL(r.vlr_analisado)}<br>Acatado: ${fmtBRL(r.vlr_acatado)} (${fmtPct(tot)})<br>EI: ${fmtPct(ei)} · EE: ${fmtPct(ee)}<br>Do acatado, ${fmtPct(div(r.acat_ei, r.vlr_acatado),0)} é EI` };
+  }), { max: 100, fmtAxis: v => fmtInt(v) + "%", baseline: base, baseLabel: "baseline " + fmtPct(base,0), aria: "Percentual de acato por mês" });
+}
+
+// ---------- motivos ----------
+const MCOLS = [
+  { k:"motivo", t:"Motivo", v:r=>r.motivo, txt:true },
+  { k:"glos", t:"Glosado jun–ago", v:r=>r.glos, f:fmtBRL },
+  { k:"prec", t:"% recursado", v:r=>r.glos>0 ? div(r.rec, r.glos) : null, f:v=>fmtPct(v,0) },
+  { k:"grec", t:"Guias recursadas", v:r=>r.grec, f:fmtInt, bar:true },
+  { k:"pac", t:"% acato", v:r=>div(r.vac, r.van), f:v=>fmtPct(v,0) },
+  { k:"pei", t:"% do acato que é EI", v:r=>div(r.ei, r.vac), f:v=>fmtPct(v,0) },
+];
+let sortK = "grec", sortDir = -1;
+function renderMotivos() {
+  const rows = D.motivos.slice();
+  const col = MCOLS.find(c=>c.k===sortK);
+  rows.sort((a,b)=> { const x = col.v(a), y = col.v(b); if (col.txt) return sortDir * String(x).localeCompare(String(y)); return sortDir * ((x??-1) - (y??-1)); });
+  const maxes = {}; MCOLS.forEach(c => { if (!c.txt) maxes[c.k] = Math.max(...rows.filter(r => c.k!=="prec" && c.k!=="pac" && c.k!=="pei" ? true : r.grec >= 50).map(r => c.v(r) ?? -1)); });
+  const maxG = Math.max(...rows.map(r=>r.grec));
+  const head = `<thead><tr>${MCOLS.map(c=>`<th data-k="${c.k}" tabindex="0"${c.k===sortK?` aria-sort="${sortDir<0?'descending':'ascending'}"`:''}>${c.t}${c.k===sortK?(sortDir<0?' ↓':' ↑'):''}</th>`).join("")}</tr></thead>`;
+  const body = rows.map(r => `<tr>${MCOLS.map(c => {
+    if (c.txt) return `<td>${r.motivo}${r.motivo.startsWith("7F6")?'<span class="tag">pontual</span>':''}</td>`;
+    const v = c.v(r), top = v != null && v === maxes[c.k] ? ' class="top"' : '';
+    if (c.bar) return `<td><div class="bar-cell"><span${top}>${c.f(v)}</span><span class="b" style="width:${Math.round(60*v/maxG)}px"></span></div></td>`;
+    return `<td${top}>${v==null?'–':c.f(v)}</td>`;
+  }).join("")}</tr>`).join("");
+  $("#motivos").innerHTML = head + "<tbody>" + body + "</tbody>";
+  $("#motivos").querySelectorAll("th").forEach(th => {
+    const go = () => { const k = th.dataset.k; if (k === sortK) sortDir *= -1; else { sortK = k; sortDir = k==="motivo" ? 1 : -1; } renderMotivos(); };
+    th.addEventListener("click", go); th.addEventListener("keydown", e => { if (e.key==="Enter"||e.key===" ") { e.preventDefault(); go(); } });
+  });
+}
+
+function renderAll() { renderScore(); renderInsights(); renderQtd(); renderCoorte(); renderAcato(); renderMotivos(); }
+function setWin(n) {
+  win = n === 4 ? ["2026-05","2026-06","2026-07","2026-08"] : ["2026-06","2026-07","2026-08"];
+  $("#bw3").setAttribute("aria-pressed", n===3); $("#bw4").setAttribute("aria-pressed", n===4);
+  try { localStorage.setItem("bw", String(n)); } catch (e) {}
+  renderAll();
+}
+$("#bw3").addEventListener("click", ()=>setWin(3));
+$("#bw4").addEventListener("click", ()=>setWin(4));
+setWin(win.length);
+</script>
