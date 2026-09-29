@@ -139,6 +139,18 @@ no catálogo, e que precisam ser respeitadas:
     `% Faturas por Status - HS`. Só vira assunto acima de ~15% do mês na mesma altura.
   - Nenhum percentual histórico mudou com a regra da NF — o 35629 já filtrava vínculo não nulo. O
     ganho é de definição e de blindagem do `WAITING_RESEND_INVOICE`, que passava pelo filtro antigo.
+  - **Fatura aberta que já estourou os 5 DU conta como fora do prazo** (decisão da OM, 29/09/2026),
+    mesmo sem pagamento apurado. `A vencer` (aberta ainda dentro dos 5 DU) fica fora do denominador,
+    mesma convenção do `SLA Recurso de Glosa - HI`.
+  - ⚠️ **O limiar de 3% não vale mais.** Foi calibrado contra a régua antiga; com a régua nova os 12
+    meses ficam entre 6,53% e 34,24%, porque cada mês carrega uma cauda de 52 a 67 faturas antigas
+    nunca pagas que a régua antiga não enxergava. Até a OM definir limiar novo, o KPI sai **⚪ com
+    número, série e caveat** — sem farol e sem episódio.
+  - ⚠️ **A categoria `em aberto, ja estourou` é TETO do atraso, não fato.** `invoice_payment_date`
+    entra na base com até ~8 DU de atraso: entre 28 e 29/09/2026 as abertas estouradas de Set/26
+    caíram de 157 para 57 porque 103 tinham sido pagas em 17/09 — e dentro do prazo. Nunca afirmar
+    que elas *estão* atrasadas, nunca abrir episódio só com base nelas, e nunca ler a queda da
+    categoria como melhora da operação. Só `pago em atraso` é fato consumado.
 
 Quando um limiar for recalibrado no Notion, a mudança vale automaticamente: o catálogo é a
 fonte, este arquivo é só o resumo do que existe hoje.

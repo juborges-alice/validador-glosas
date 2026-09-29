@@ -68,7 +68,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 14 | Contas Médicas - Status das Críticas (por fatura) - HS | 66766 | diária |
 | 15 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária ⚠️ |
 | 16 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
-| 17 | Contas Médicas - SLA de Pagamento de HS | **76484** (NF do HS como marco inicial; substitui o 35629) | diária |
+| 17 | Contas Médicas - SLA de Pagamento de HS | **76484** (NF como marco inicial + atraso em aberto; substitui o 35629) | diária |
 | 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
 | 19 | Contas Médicas - Ciclo de processamento Cassi | 65831 (sem card próprio) | **semanal — pergunta na terça, ver seção do ciclo Cassi** |
 
@@ -192,7 +192,7 @@ Regras desta classe:
    pelo **dia do mês** (em 16/09 usou "média do dia 16").
 3. **O acionável não está aqui, está no ciclo semanal** — seção abaixo.
 
-## SLA de Pagamento de HS — lê o mês corrente e só conta fatura com NF (decisões da OM, 28/09/2026)
+## SLA de Pagamento de HS — mês corrente, só fatura com NF, e conta o atraso em aberto (decisões da OM, 28 e 29/09/2026)
 
 Até 27/09 o KPI era lido sobre o **mês fechado**, e era vermelho previsível: o mês fechado não se
 move mais, então não há ação possível sobre ele. Passa a ser lido sobre o **mês corrente**, que é
@@ -280,10 +280,77 @@ mesma altura, ou se o resíduo do mês fechado passar de ~40.
 que é o indicador do funil de faturamento do HS — não aqui. Esse é justamente o KPI da Pendência 7
 (dono e horizonte a definir, prazo 29/09).
 
+### Fatura aberta que já estourou conta como fora do prazo (decisão da OM, 29/09/2026)
+
+Até 28/09 o KPI só classificava fatura **já paga** — o atraso só aparecia depois de liquidado, e o
+número do mês corrente era otimista por construção. Passa a contar também a fatura **em aberto que
+já passou dos 5 DU**, para mostrar o atraso real. Card **76484**, categorias:
+
+| Categoria | Definição | Entra no % |
+|---|---|---|
+| `Dentro do prazo (<=5 DU)` | paga em até 5 DU do vínculo da NF | sim |
+| `Fora do prazo - pago em atraso` | paga acima de 5 DU — **confirmado** | sim |
+| `Fora do prazo - em aberto, ja estourou` | sem pagamento na base e já passou de 5 DU — **presumido** | sim |
+| `A vencer` | aberta, ainda dentro dos 5 DU | **não** |
+| `(fora do calculo) sem NF do HS` | ver seção acima | **não** |
+
+`% fora = (fora_pago + fora_aberto) / (dentro + fora_pago + fora_aberto)`. O `A vencer` fica fora do
+denominador, mesma convenção do `SLA Recurso de Glosa - HI` (76364).
+
+**A régua nova muda o patamar do indicador. Os 12 meses ficam acima do limiar de 3%:**
+
+| Mês | dentro | fora pago | fora aberto | **% fora (nova)** | % antiga |
+|---|---|---|---|---|---|
+| Out/25 | 732 | 177 | 55 | **24,07%** | 19,49% |
+| Nov/25 | 919 | 27 | 52 | **7,92%** | 2,85% |
+| Dez/25 | 911 | 44 | 55 | **9,80%** | 4,61% |
+| Jan/26 | 678 | 289 | 64 | **34,24%** | 29,95% |
+| Fev/26 | 955 | 41 | 57 | **9,31%** | 4,12% |
+| Mar/26 | 1.026 | 19 | 67 | **7,73%** | 1,82% |
+| Abr/26 | 1.044 | 25 | 64 | **7,86%** | 2,34% |
+| Mai/26 | 1.073 | 30 | 63 | **7,98%** | 2,72% |
+| Jun/26 | 1.101 | 28 | 67 | **7,94%** | 2,48% |
+| Jul/26 | 1.097 | 42 | 67 | **9,04%** | 3,70% |
+| Ago/26 | 1.115 | 38 | 64 | **8,38%** | 3,31% |
+| Set/26 | 1.030 | 15 | 57 | **6,53%** | 1,62% |
+
+Todo mês fechado carrega uma cauda estável de **52 a 67 faturas antigas nunca pagas**, que a régua
+antiga nunca enxergava. Essa cauda é a maior parte do salto. **O limiar de 3% foi calibrado contra a
+régua antiga e não vale mais** — com a régua nova o KPI sai 🔴 todo dia, o que não informa nada.
+Precisa de novo limiar da OM antes de virar farol; até lá, **sai ⚪ com o número, a série e o
+caveat**, sem episódio no Decision Log.
+
+### ⚠️ Latência de registro do pagamento — a categoria "em aberto" é TETO, não fato
+
+`invoice_payment_date` entra na base com atraso de até **~8 dias úteis**. Medido entre 28 e
+29/09/2026, sem nada ter mudado na operação:
+
+| | 28/09 | 29/09 |
+|---|---|---|
+| Set/26 abertas | 251 | 142 |
+| Set/26 abertas e já estouradas | **157** | **57** |
+
+As 100 que sumiram não foram pagas no dia 28: **103 faturas tinham data de pagamento de 17/09** e só
+apareceram pagas na base no dia 29 — e foram pagas **dentro do prazo**. Ou seja, cerca de **2/3 da
+categoria "em aberto, já estourou" era artefato de latência** e se reclassificou sozinha.
+
+**Consequências obrigatórias na leitura diária:**
+
+1. Nunca afirmar que as faturas em aberto estouradas *estão* atrasadas. Elas são o **teto** do
+   atraso possível naquele dia.
+2. O caveat da linha do KPI passa a ser:
+   `{n} em aberto já acima de 5 DU — teto do atraso; o pagamento entra na base com até ~8 DU de
+   atraso e parte se reclassifica dentro do prazo`.
+3. **Nunca abrir episódio no Decision Log com base só na categoria em aberto.** Só o
+   `fora do prazo - pago em atraso` é fato consumado.
+4. Ao comparar dois dias, lembrar que a queda da categoria em aberto **não é melhora da operação** —
+   é registro chegando.
+
 ## SLA Recurso de Glosa - HI — prazo contratual por lote (decisão da OM, 28/09/2026)
 
 O card **60527** aplica um prazo único de 15 dias a todo recurso. O lote do **DASA recebido entre
-21 e 25/09/2026** tem prazo contratual de **30 dias corridos**, e sob a régua de 15 ele seria
+21 e 25/09/2026** tem prazo contratual de **30 dias corridos** (corridos confirmado pela OM em
+29/09/2026 — vence entre 21 e 25/10/2026), e sob a régua de 15 ele seria
 marcado como "fora do prazo" a partir do 15º dia — derrubando a aderência do mês por erro de régua,
 não por atraso da operação.
 
