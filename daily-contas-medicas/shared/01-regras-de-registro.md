@@ -124,38 +124,35 @@ no catálogo, e que precisam ser respeitadas:
     `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passa de dez
     para nove.
   Detalhamento, evidência e o que foi testado e descartado em `00-identificadores.md`.
-- **Mês corrente e só fatura com NF** — `SLA de Pagamento de HS`: recalibrado em 28/09/2026
-  (decisões da OM). Fonte passa a ser o card **76484**, que substitui o 35629.
+- **Mês corrente, e o número oficial é o do 35629** — `SLA de Pagamento de HS`, recalibrado em
+  28-29/09/2026 (decisões da OM). Card **35629** é a fonte do percentual; o **76484** reproduz o
+  mesmo número e acrescenta linhas de complemento que **não entram no percentual**.
   - **Lê o mês corrente, não o fechado.** No fechado não há ação possível. A leitura do corrente é
     otimista por construção (só classifica fatura já paga), então o caveat de parcialidade é
     obrigatório todo dia, e abaixo de 100 faturas classificadas sai ⚪ sem farol.
-  - **O relógio começa quando o HS manda a NF.** Fatura sem NF válida não entra no cálculo — nem no
-    numerador nem no denominador. Sem NF não há como pagar, logo não é atraso da Alice. Exclui
-    `invoice_binding_date IS NULL`, `note_date IS NULL` e os status `RECEIVED`, `WAITING_INVOICE` e
-    `WAITING_RESEND_INVOICE`.
-  - **A linha `(fora do calculo) sem NF do HS` NÃO é achado.** É visibilidade do volume represado, e
-    o volume é alto por natureza (~10-12% do mês na altura do dia 28, estável desde Mar/26). Não
-    acende farol, não abre episódio, não entra no report como desvio. Essas faturas se acompanham no
-    `% Faturas por Status - HS`. Só vira assunto acima de ~15% do mês na mesma altura.
-  - Nenhum percentual histórico mudou com a regra da NF — o 35629 já filtrava vínculo não nulo. O
-    ganho é de definição e de blindagem do `WAITING_RESEND_INVOICE`, que passava pelo filtro antigo.
-  - **Fatura aberta que já estourou os 5 DU conta como fora do prazo** (decisão da OM, 29/09/2026),
-    mesmo sem pagamento apurado. `A vencer` (aberta ainda dentro dos 5 DU) fica fora do denominador,
-    mesma convenção do `SLA Recurso de Glosa - HI`.
-  - **O prazo de 5 DU conta do ENVIO da NF** (`note_date`), não do vínculo interno (decisão da OM,
-    29/09/2026). O tempo de vínculo da Alice fica **dentro** do prazo. Cai a exclusão por
-    `invoice_binding_date IS NULL`: se o HS mandou a NF, o relógio corre.
-  - ⚠️ **O limiar de 3% não vale mais, por larga margem.** Com a régua completa os 12 meses ficam
-    entre **22,51% e 48,21%** (Set/26 em 29,60%). A causa é de régua, não de desempenho: o processo
-    de pagamento está calibrado para fechar em 5 DU contados do **vínculo** — 606 de 925 faturas de
-    Set/26 estão exatamente em `du = 5` — então mover o marco um único dia para trás joga o bloco
-    inteiro para 6 DU. Até a OM definir limiar novo, o KPI sai **⚪ com número, série e caveat** —
-    sem farol e sem episódio. Nunca reportar o salto como piora da operação.
-  - ⚠️ **A categoria `em aberto, ja estourou` é TETO do atraso, não fato.** `invoice_payment_date`
-    entra na base com até ~8 DU de atraso: entre 28 e 29/09/2026 as abertas estouradas de Set/26
-    caíram de 157 para 57 porque 103 tinham sido pagas em 17/09 — e dentro do prazo. Nunca afirmar
-    que elas *estão* atrasadas, nunca abrir episódio só com base nelas, e nunca ler a queda da
-    categoria como melhora da operação. Só `pago em atraso` é fato consumado.
+  - **Régua do 35629, que é a canônica:** marco inicial = `invoice_binding_date` (vínculo da NF no
+    eita), marco final = pagamento, medida em dias úteis (`working_days_from_note_binding_to_payment`),
+    corte em 5 DU, universo só de faturas **com NF vinculada e já pagas**, mês de referência é o de
+    `invoice_date`. **O limiar de 3% continua valendo** — o número oficial não mudou.
+  - **Fatura sem NF do HS não entra no cálculo** (`RECEIVED`, `WAITING_INVOICE`): sem NF não há como
+    pagar, logo não é atraso da Alice. Isso o 35629 já fazia via `invoice_binding_date is not null`.
+  - **O atraso em aberto sai em linha separada, nunca no percentual.** A OM pediu visibilidade do
+    atraso real; o 76484 entrega isso em `complemento - em aberto, ja estourou`,
+    `complemento - a vencer` e `complemento - sem NF do HS`. Visibilidade não pode custar a
+    comparabilidade do número oficial.
+  - ⚠️ **A linha `em aberto, ja estourou` é TETO do atraso, não fato.** `invoice_payment_date` entra
+    na base com até ~8 DU de atraso: entre 28 e 29/09/2026 as abertas estouradas de Set/26 caíram de
+    157 para 57 porque 103 tinham sido pagas em 17/09 — e dentro do prazo. Nunca afirmar que elas
+    *estão* atrasadas, nunca abrir episódio só com base nelas, e nunca ler a queda como melhora da
+    operação. O farol e o limiar valem **só** para o percentual oficial.
+  - **Por que uma fatura fica fora** sai de `check_sla_payment_reason` (herdado do 35629):
+    `atraso pagamento` = total > 5 DU; `atraso operacao` = vínculo→lote PLS > 2 DU;
+    `atraso operacao e pagamento` = as duas. Atenção: `atraso operacao` dispara mesmo quando o total
+    ficou dentro dos 5 DU — o motivo diz onde o tempo foi gasto, não substitui o veredito.
+  - ❌ **Descartado (erro meu, 29/09/2026):** usar `note_date` (emissão da NF) como marco inicial e
+    somar as faturas em aberto dentro do percentual. As duas coisas juntas levaram Set/26 de 1,43%
+    para 29,60% — não por piora da operação, mas por troca de régua. Se reaparecer em algum card ou
+    registro, está errado.
 
 Quando um limiar for recalibrado no Notion, a mudança vale automaticamente: o catálogo é a
 fonte, este arquivo é só o resumo do que existe hoje.

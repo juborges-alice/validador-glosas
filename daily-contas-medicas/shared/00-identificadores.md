@@ -68,7 +68,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 14 | Contas Médicas - Status das Críticas (por fatura) - HS | 66766 | diária |
 | 15 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária ⚠️ |
 | 16 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
-| 17 | Contas Médicas - SLA de Pagamento de HS | **76484** (envio da NF como marco inicial; substitui o 35629) | diária |
+| 17 | Contas Médicas - SLA de Pagamento de HS | **35629** (oficial) · 76484 (mesmo número + complementos) | diária |
 | 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
 | 19 | Contas Médicas - Ciclo de processamento Cassi | 65831 (sem card próprio) | **semanal — pergunta na terça, ver seção do ciclo Cassi** |
 
@@ -280,114 +280,78 @@ mesma altura, ou se o resíduo do mês fechado passar de ~40.
 que é o indicador do funil de faturamento do HS — não aqui. Esse é justamente o KPI da Pendência 7
 (dono e horizonte a definir, prazo 29/09).
 
-### Fatura aberta que já estourou conta como fora do prazo (decisão da OM, 29/09/2026)
+### O número oficial é o do card 35629 — os complementos ficam em linha separada
 
-Até 28/09 o KPI só classificava fatura **já paga** — o atraso só aparecia depois de liquidado, e o
-número do mês corrente era otimista por construção. Passa a contar também a fatura **em aberto que
-já passou dos 5 DU**, para mostrar o atraso real. Card **76484**, categorias:
+> **Correção de 29/09/2026.** Durante a recalibração eu mudei o marco inicial do KPI para
+> `note_date` (emissão da NF) e misturei as faturas em aberto no percentual. As duas coisas juntas
+> levaram o indicador de 1,43% para 29,60% em Set/26 — **isso estava errado** e a OM apontou. O
+> número oficial é e continua sendo o do **35629**. O card 76484 agora o reproduz sem nenhuma
+> alteração e trata o resto como complemento fora do percentual.
 
-| Categoria | Definição | Entra no % |
+**Como o 35629 calcula** — e é essa a régua canônica:
+
+| Elemento | Definição |
+|---|---|
+| Marco inicial | `invoice_binding_date` — o **vínculo da NF no eita**, quando a nota do HS entra no sistema |
+| Marco final | `invoice_payment_date` — o pagamento efetivo na TOTVS |
+| Medida | `working_days_from_note_binding_to_payment`, em **dias úteis** |
+| Corte | `<= 5 DU` → `no prazo (<=5WD)`; acima → `fora do prazo (>5WD)` |
+| Universo | só fatura **com NF vinculada** (`invoice_binding_date is not null`) e **já paga** (`payment_status = 'pago'`) |
+| Mês de referência | mês de `invoice_date` (criação da fatura), **não** o mês do pagamento |
+| Exceções | três ajustes de feriado fixos: pagamentos em 29/12/2025 descontam 2 DU; em 21/11 e 27/11/2025 descontam 1 DU |
+
+`% fora = fora do prazo / (no prazo + fora do prazo)`.
+
+**O que o 35629 deixa de fora, por construção** (medido em 29/09, grão `eita_code`):
+
+| Mês | Total de resumos | Sem NF vinculada | Com NF, não pago | **Entra no gráfico** |
+|---|---|---|---|---|
+| Abr/26 | 1.149 | 14 | 66 | 1.069 |
+| Mai/26 | 1.182 | 15 | 64 | 1.103 |
+| Jun/26 | 1.209 | 11 | 69 | 1.129 |
+| Jul/26 | 1.223 | 12 | 72 | 1.139 |
+| Ago/26 | 1.257 | 28 | 76 | 1.153 |
+| **Set/26** | **1.308** | **119** | **144** | **1.045** |
+
+- **Sem NF vinculada** = `RECEIVED` + `WAITING_INVOICE`: o HS ainda não mandou a NF. Em Set/26 são
+  99 + 20. Volume alto é normal no mês corrente (ver seção acima).
+- **Com NF, não pago** = entrou no sistema mas ainda não liquidou. Em Set/26 são 144, sendo **104 sem
+  lote PLS** e **40 com PLS e sem pagamento**, R$ 311.063,06 em aberto.
+
+**Por que uma fatura fica "fora do prazo"** — o 35629 já traz o motivo em `check_sla_payment_reason`,
+que o 76484 passa a expor:
+
+| Motivo | Regra | Set/26 |
 |---|---|---|
-| `Dentro do prazo (<=5 DU)` | paga em até 5 DU do vínculo da NF | sim |
-| `Fora do prazo - pago em atraso` | paga acima de 5 DU — **confirmado** | sim |
-| `Fora do prazo - em aberto, ja estourou` | sem pagamento na base e já passou de 5 DU — **presumido** | sim |
-| `A vencer` | aberta, ainda dentro dos 5 DU | **não** |
-| `(fora do calculo) sem NF do HS` | ver seção acima | **não** |
+| `atraso pagamento` | total vínculo→pagamento > 5 DU | 8 |
+| `atraso operacao` | vínculo→lote PLS > 2 DU | 6 |
+| `atraso operacao e pagamento` | as duas coisas | 1 |
 
-`% fora = (fora_pago + fora_aberto) / (dentro + fora_pago + fora_aberto)`. O `A vencer` fica fora do
-denominador, mesma convenção do `SLA Recurso de Glosa - HI` (76364).
+Cuidado ao ler: `atraso operacao` dispara por vínculo→PLS > 2 DU **mesmo quando o total ficou dentro
+dos 5 DU** — em Set/26 há 19 faturas assim, classificadas como `no prazo` com motivo
+`atraso operacao`. O motivo descreve onde o tempo foi gasto, não substitui o veredito.
 
-**A régua nova muda o patamar do indicador. Os 12 meses ficam acima do limiar de 3%:**
+**As três linhas de complemento do 76484** (`complemento - em aberto, ja estourou`,
+`complemento - a vencer`, `complemento - sem NF do HS`) **não entram no percentual**. Elas existem
+porque a OM pediu visibilidade do atraso real, e a visibilidade não pode custar a comparabilidade do
+número oficial. Set/26 em 29/09: 58 em aberto já acima de 5 DU, 86 a vencer, 119 sem NF.
 
-| Mês | dentro | fora pago | fora aberto | **% fora (nova)** | % antiga |
-|---|---|---|---|---|---|
-| Out/25 | 732 | 177 | 55 | **24,07%** | 19,49% |
-| Nov/25 | 919 | 27 | 52 | **7,92%** | 2,85% |
-| Dez/25 | 911 | 44 | 55 | **9,80%** | 4,61% |
-| Jan/26 | 678 | 289 | 64 | **34,24%** | 29,95% |
-| Fev/26 | 955 | 41 | 57 | **9,31%** | 4,12% |
-| Mar/26 | 1.026 | 19 | 67 | **7,73%** | 1,82% |
-| Abr/26 | 1.044 | 25 | 64 | **7,86%** | 2,34% |
-| Mai/26 | 1.073 | 30 | 63 | **7,98%** | 2,72% |
-| Jun/26 | 1.101 | 28 | 67 | **7,94%** | 2,48% |
-| Jul/26 | 1.097 | 42 | 67 | **9,04%** | 3,70% |
-| Ago/26 | 1.115 | 38 | 64 | **8,38%** | 3,31% |
-| Set/26 | 1.030 | 15 | 57 | **6,53%** | 1,62% |
+**O limiar de 3% continua válido**, porque o número oficial não mudou. Set/26 está em **1,43%** 🟢.
 
-Todo mês fechado carrega uma cauda estável de **52 a 67 faturas antigas nunca pagas**, que a régua
-antiga nunca enxergava. Essa cauda é a maior parte do salto. **O limiar de 3% foi calibrado contra a
-régua antiga e não vale mais** — com a régua nova o KPI sai 🔴 todo dia, o que não informa nada.
-Precisa de novo limiar da OM antes de virar farol; até lá, **sai ⚪ com o número, a série e o
-caveat**, sem episódio no Decision Log.
-
-### ⚠️ Latência de registro do pagamento — a categoria "em aberto" é TETO, não fato
+### ⚠️ Latência de registro do pagamento — a linha "em aberto" é TETO, não fato
 
 `invoice_payment_date` entra na base com atraso de até **~8 dias úteis**. Medido entre 28 e
-29/09/2026, sem nada ter mudado na operação:
+29/09/2026, sem nada ter mudado na operação, as faturas de Set/26 em aberto e já estouradas caíram de
+**157 para 57**: 103 delas tinham data de pagamento de **17/09** e só apareceram pagas na base no dia
+29 — todas **dentro do prazo**.
 
-| | 28/09 | 29/09 |
-|---|---|---|
-| Set/26 abertas | 251 | 142 |
-| Set/26 abertas e já estouradas | **157** | **57** |
+**Consequências na leitura diária:**
 
-As 100 que sumiram não foram pagas no dia 28: **103 faturas tinham data de pagamento de 17/09** e só
-apareceram pagas na base no dia 29 — e foram pagas **dentro do prazo**. Ou seja, cerca de **2/3 da
-categoria "em aberto, já estourou" era artefato de latência** e se reclassificou sozinha.
-
-**Consequências obrigatórias na leitura diária:**
-
-1. Nunca afirmar que as faturas em aberto estouradas *estão* atrasadas. Elas são o **teto** do
+1. Nunca afirmar que as faturas da linha de complemento *estão* atrasadas. Elas são o **teto** do
    atraso possível naquele dia.
-2. O caveat da linha do KPI passa a ser:
-   `{n} em aberto já acima de 5 DU — teto do atraso; o pagamento entra na base com até ~8 DU de
-   atraso e parte se reclassifica dentro do prazo`.
-3. **Nunca abrir episódio no Decision Log com base só na categoria em aberto.** Só o
-   `fora do prazo - pago em atraso` é fato consumado.
-4. Ao comparar dois dias, lembrar que a queda da categoria em aberto **não é melhora da operação** —
-   é registro chegando.
-
-### O prazo de 5 DU conta do ENVIO da NF, não do vínculo (decisão da OM, 29/09/2026)
-
-O marco inicial passa a ser a **data de emissão/envio da NF** (`note_date`), não o
-`invoice_binding_date`. O tempo que a Alice leva para vincular a NF recebida passa a estar **dentro**
-do prazo, não fora dele — antes esse pedaço era invisível no KPI.
-
-Consequência: a condição de exclusão `invoice_binding_date IS NULL` **cai**. Se o HS mandou a NF, o
-relógio corre, mesmo que a Alice ainda não tenha vinculado. A porta de entrada agora é só
-`note_date IS NOT NULL` mais os três status de espera de NF. Na prática não muda a população (as 238
-faturas sem vínculo são as mesmas 238 sem `note_date`), mas fecha o caso em que a Alice segura a NF
-sem vincular.
-
-**O indicador triplica. Não é deterioração da operação.**
-
-| Mês | dentro | fora pago | fora aberto | **% (envio da NF)** | % (vínculo) | % (régua antiga) |
-|---|---|---|---|---|---|---|
-| Out/25 | 600 | 309 | 55 | **37,76%** | 24,07% | 19,49% |
-| Nov/25 | 754 | 192 | 52 | **24,45%** | 7,92% | 2,85% |
-| Dez/25 | 724 | 231 | 55 | **28,32%** | 9,80% | 4,61% |
-| Jan/26 | 534 | 433 | 64 | **48,21%** | 34,24% | 29,95% |
-| Fev/26 | 816 | 180 | 57 | **22,51%** | 9,31% | 4,12% |
-| Mar/26 | 819 | 226 | 67 | **26,35%** | 7,73% | 1,82% |
-| Abr/26 | 842 | 227 | 65 | **25,75%** | 7,86% | 2,34% |
-| Mai/26 | 832 | 271 | 63 | **28,64%** | 7,98% | 2,72% |
-| Jun/26 | 835 | 294 | 68 | **30,24%** | 7,94% | 2,48% |
-| Jul/26 | 860 | 279 | 68 | **28,75%** | 9,04% | 3,70% |
-| Ago/26 | 853 | 300 | 68 | **30,14%** | 8,38% | 3,31% |
-| Set/26 | 792 | 253 | 80 | **29,60%** | 6,53% | 1,62% |
-
-**Por que um marco 0–1 DU mais cedo triplica o número:** o processo de pagamento está calibrado para
-fechar exatamente em 5 DU **contados do vínculo**. A distribuição se empilha na borda — de 925
-faturas pagas de Set/26, **606 estão em `du_vinculo = 5` e `du_emissao = 5`**, e mais **227 estão em
-`du_vinculo = 5` com `du_emissao` entre 6 e 11**. Ou seja, quase tudo que a Alice paga encosta no
-limite. Mover o marco um único dia para trás joga esse bloco inteiro para 6 DU.
-
-A mediana envio→vínculo é de **0 a 1 dia útil** — o vínculo é rápido. O problema não é o vínculo, é
-que **não há folga nenhuma** entre o envio da NF e o pagamento. Com a régua certa, a operação entrega
-o pagamento em 5 DU do vínculo, mas em 6 DU ou mais do envio na maior parte dos casos.
-
-**Isso é conclusão de régua, não de desempenho, e precisa sair assim no report.** O que a operação
-faz hoje não mudou; mudou o que se mede. A leitura correta é: *o processo foi desenhado para um marco
-que não é o contratual, e por isso não tem folga para o marco contratual.*
+2. Nunca abrir episódio no Decision Log com base só nessa linha.
+3. Queda dessa linha entre dois dias **não é melhora da operação** — é registro chegando.
+4. O farol e o limiar se aplicam **só** ao percentual oficial do 35629.
 
 ## SLA Recurso de Glosa - HI — prazo contratual por lote (decisão da OM, 28/09/2026)
 
