@@ -68,7 +68,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 14 | Contas Médicas - Status das Críticas (por fatura) - HS | 66766 | diária |
 | 15 | Contas Médicas - Tempo para Resolução de Críticas - HS | 48840 | diária ⚠️ |
 | 16 | Contas Médicas - % Faturas por Status - HS | 30863 | diária |
-| 17 | Contas Médicas - SLA de Pagamento de HS | **76484** (NF como marco inicial + atraso em aberto; substitui o 35629) | diária |
+| 17 | Contas Médicas - SLA de Pagamento de HS | **76484** (envio da NF como marco inicial; substitui o 35629) | diária |
 | 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
 | 19 | Contas Médicas - Ciclo de processamento Cassi | 65831 (sem card próprio) | **semanal — pergunta na terça, ver seção do ciclo Cassi** |
 
@@ -345,6 +345,49 @@ categoria "em aberto, já estourou" era artefato de latência** e se reclassific
    `fora do prazo - pago em atraso` é fato consumado.
 4. Ao comparar dois dias, lembrar que a queda da categoria em aberto **não é melhora da operação** —
    é registro chegando.
+
+### O prazo de 5 DU conta do ENVIO da NF, não do vínculo (decisão da OM, 29/09/2026)
+
+O marco inicial passa a ser a **data de emissão/envio da NF** (`note_date`), não o
+`invoice_binding_date`. O tempo que a Alice leva para vincular a NF recebida passa a estar **dentro**
+do prazo, não fora dele — antes esse pedaço era invisível no KPI.
+
+Consequência: a condição de exclusão `invoice_binding_date IS NULL` **cai**. Se o HS mandou a NF, o
+relógio corre, mesmo que a Alice ainda não tenha vinculado. A porta de entrada agora é só
+`note_date IS NOT NULL` mais os três status de espera de NF. Na prática não muda a população (as 238
+faturas sem vínculo são as mesmas 238 sem `note_date`), mas fecha o caso em que a Alice segura a NF
+sem vincular.
+
+**O indicador triplica. Não é deterioração da operação.**
+
+| Mês | dentro | fora pago | fora aberto | **% (envio da NF)** | % (vínculo) | % (régua antiga) |
+|---|---|---|---|---|---|---|
+| Out/25 | 600 | 309 | 55 | **37,76%** | 24,07% | 19,49% |
+| Nov/25 | 754 | 192 | 52 | **24,45%** | 7,92% | 2,85% |
+| Dez/25 | 724 | 231 | 55 | **28,32%** | 9,80% | 4,61% |
+| Jan/26 | 534 | 433 | 64 | **48,21%** | 34,24% | 29,95% |
+| Fev/26 | 816 | 180 | 57 | **22,51%** | 9,31% | 4,12% |
+| Mar/26 | 819 | 226 | 67 | **26,35%** | 7,73% | 1,82% |
+| Abr/26 | 842 | 227 | 65 | **25,75%** | 7,86% | 2,34% |
+| Mai/26 | 832 | 271 | 63 | **28,64%** | 7,98% | 2,72% |
+| Jun/26 | 835 | 294 | 68 | **30,24%** | 7,94% | 2,48% |
+| Jul/26 | 860 | 279 | 68 | **28,75%** | 9,04% | 3,70% |
+| Ago/26 | 853 | 300 | 68 | **30,14%** | 8,38% | 3,31% |
+| Set/26 | 792 | 253 | 80 | **29,60%** | 6,53% | 1,62% |
+
+**Por que um marco 0–1 DU mais cedo triplica o número:** o processo de pagamento está calibrado para
+fechar exatamente em 5 DU **contados do vínculo**. A distribuição se empilha na borda — de 925
+faturas pagas de Set/26, **606 estão em `du_vinculo = 5` e `du_emissao = 5`**, e mais **227 estão em
+`du_vinculo = 5` com `du_emissao` entre 6 e 11**. Ou seja, quase tudo que a Alice paga encosta no
+limite. Mover o marco um único dia para trás joga esse bloco inteiro para 6 DU.
+
+A mediana envio→vínculo é de **0 a 1 dia útil** — o vínculo é rápido. O problema não é o vínculo, é
+que **não há folga nenhuma** entre o envio da NF e o pagamento. Com a régua certa, a operação entrega
+o pagamento em 5 DU do vínculo, mas em 6 DU ou mais do envio na maior parte dos casos.
+
+**Isso é conclusão de régua, não de desempenho, e precisa sair assim no report.** O que a operação
+faz hoje não mudou; mudou o que se mede. A leitura correta é: *o processo foi desenhado para um marco
+que não é o contratual, e por isso não tem folga para o marco contratual.*
 
 ## SLA Recurso de Glosa - HI — prazo contratual por lote (decisão da OM, 28/09/2026)
 

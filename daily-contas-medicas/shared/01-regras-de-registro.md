@@ -142,10 +142,15 @@ no catálogo, e que precisam ser respeitadas:
   - **Fatura aberta que já estourou os 5 DU conta como fora do prazo** (decisão da OM, 29/09/2026),
     mesmo sem pagamento apurado. `A vencer` (aberta ainda dentro dos 5 DU) fica fora do denominador,
     mesma convenção do `SLA Recurso de Glosa - HI`.
-  - ⚠️ **O limiar de 3% não vale mais.** Foi calibrado contra a régua antiga; com a régua nova os 12
-    meses ficam entre 6,53% e 34,24%, porque cada mês carrega uma cauda de 52 a 67 faturas antigas
-    nunca pagas que a régua antiga não enxergava. Até a OM definir limiar novo, o KPI sai **⚪ com
-    número, série e caveat** — sem farol e sem episódio.
+  - **O prazo de 5 DU conta do ENVIO da NF** (`note_date`), não do vínculo interno (decisão da OM,
+    29/09/2026). O tempo de vínculo da Alice fica **dentro** do prazo. Cai a exclusão por
+    `invoice_binding_date IS NULL`: se o HS mandou a NF, o relógio corre.
+  - ⚠️ **O limiar de 3% não vale mais, por larga margem.** Com a régua completa os 12 meses ficam
+    entre **22,51% e 48,21%** (Set/26 em 29,60%). A causa é de régua, não de desempenho: o processo
+    de pagamento está calibrado para fechar em 5 DU contados do **vínculo** — 606 de 925 faturas de
+    Set/26 estão exatamente em `du = 5` — então mover o marco um único dia para trás joga o bloco
+    inteiro para 6 DU. Até a OM definir limiar novo, o KPI sai **⚪ com número, série e caveat** —
+    sem farol e sem episódio. Nunca reportar o salto como piora da operação.
   - ⚠️ **A categoria `em aberto, ja estourou` é TETO do atraso, não fato.** `invoice_payment_date`
     entra na base com até ~8 DU de atraso: entre 28 e 29/09/2026 as abertas estouradas de Set/26
     caíram de 157 para 57 porque 103 tinham sido pagas em 17/09 — e dentro do prazo. Nunca afirmar
