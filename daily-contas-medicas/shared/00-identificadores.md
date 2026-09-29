@@ -349,15 +349,33 @@ categoria "em aberto, já estourou" era artefato de latência** e se reclassific
 ## SLA Recurso de Glosa - HI — prazo contratual por lote (decisão da OM, 28/09/2026)
 
 O card **60527** aplica um prazo único de 15 dias a todo recurso. O lote do **DASA recebido entre
-21 e 25/09/2026** tem prazo contratual de **30 dias corridos** (corridos confirmado pela OM em
-29/09/2026 — vence entre 21 e 25/10/2026), e sob a régua de 15 ele seria
+21 e 25/09/2026** tem prazo contratual de **30 dias úteis**, e sob a régua de 15 ele seria
 marcado como "fora do prazo" a partir do 15º dia — derrubando a aderência do mês por erro de régua,
 não por atraso da operação.
+
+> **Correção de 29/09/2026.** A OM primeiro confirmou "corridos" e no mesmo dia corrigiu para
+> **dias úteis**. O card 76364 foi implementado com `DATEDIFF(day, ...)` (corridos) e agora usa o
+> índice de dias úteis de `curated.dim_date_public` — a mesma régua dos 15 DU padrão. Se aparecer
+> em algum lugar "30 dias corridos" ou vencimento em 21–25/10, está desatualizado.
+
+**Vencimento do lote, em 30 dias úteis:**
+
+| Recurso recebido em | Vence em | (dias corridos equivalentes) |
+|---|---|---|
+| 21/09/2026 | **04/11/2026** | 44 |
+| 22/09/2026 | **05/11/2026** | 44 |
+| 23/09/2026 | **06/11/2026** | 44 |
+| 24/09/2026 | **09/11/2026** | 46 |
+| 25/09/2026 | **10/11/2026** | 46 |
+
+A mudança de corridos para úteis **não altera nenhum número hoje** — sob as duas réguas o lote
+inteiro ainda está "A vencer". Ela empurra o vencimento de 21–25/10 para 04–10/11, ou seja, dá mais
+duas semanas de folga antes de o lote começar a pesar no indicador.
 
 **Card novo: 76364** — `SLA Recurso de Glosa - HI (prazo contratual por lote)`. Idêntico ao 60527
 em tudo (classificação recurso a recurso, contagem de PEGs distintas por balde, janela de 4 meses
 por `appeal_date`, aderência = Dentro / (Dentro + Fora) com "A vencer" fora do denominador), com
-uma única exceção: o lote DASA da janela recebe o prazo de 30 dias. Parâmetros `dasa_ini`,
+uma única exceção: o lote DASA da janela recebe o prazo de 30 **dias úteis**. Parâmetros `dasa_ini`,
 `dasa_fim` e `prazo_dasa`, editáveis sem mexer no SQL.
 
 **A correção é neutra hoje e protetiva depois.** Medido em 28/09:
@@ -366,7 +384,7 @@ uma única exceção: o lote DASA da janela recebe o prazo de 30 dias. Parâmetr
 |---|---|
 | Card 60527 (atual) | 68,72% |
 | Card 76364 (corrigido) | **68,72%** — idêntico |
-| 76364 em ~10/10, lote no prazo de 30d | 68,72% |
+| 76364 em ~10/10, lote no prazo de 30 DU | 68,72% |
 | 60527 em ~10/10, lote virando "fora do prazo" | **33,09%** |
 
 São **210 PEGs** do lote, contra 195 no denominador atual — por isso a queda seria de 35 pontos.
@@ -376,7 +394,7 @@ semana passada do cálculo **piora** a aderência de hoje, de 68,72% para 66,67%
 foram resolvidos estão todos dentro do prazo e sustentam o número. O que corrige é dar a eles o
 prazo certo, não removê-los.
 
-**Quando o lote expirar** (21–25/10), as PEGs que seguirem sem análise passam a contar como Fora do
+**Quando o lote expirar** (04–10/11), as PEGs que seguirem sem análise passam a contar como Fora do
 SLA normalmente — o prazo é maior, não infinito. Se outro lote com prazo diferenciado chegar,
 ajuste os três parâmetros ou acrescente uma cláusula análoga.
 
