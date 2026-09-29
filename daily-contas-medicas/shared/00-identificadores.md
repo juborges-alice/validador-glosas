@@ -338,6 +338,52 @@ número oficial. Set/26 em 29/09: 58 em aberto já acima de 5 DU, 86 a vencer, 1
 
 **O limiar de 3% continua válido**, porque o número oficial não mudou. Set/26 está em **1,43%** 🟢.
 
+### As duas etapas dos 5 DU — o KPI é a visão geral, o acionável é a etapa 1
+
+Esclarecimento da OM (29/09/2026): os 5 DU se dividem em duas etapas com times diferentes.
+
+| Etapa | Trecho | Prazo | Quem executa |
+|---|---|---|---|
+| **1** | vínculo da NF no eita → **lote PLS** | **2 DU** | **time de Contas Médicas** |
+| **2** | lote PLS → pagamento | 3 DU | Contas a Pagar |
+
+**O KPI não se divide.** Continua sendo a visão geral dos 5 DU, com um dono só e o roteamento que já
+existe — não vira dois indicadores e não muda de responsável. O que a etapa 1 é: **o acionável do
+time quando o KPI desvia**. Por isso o card 76484 expõe as etapas na coluna `motivo`, tanto nas
+faturas pagas (herdado do `check_sla_payment_reason` do 35629) quanto nas em aberto.
+
+Isso também explica o `atraso operacao` que aparece em faturas classificadas como `no prazo`: a
+etapa 1 estourou os 2 DU, mas a etapa 2 absorveu a folga e o total fechou dentro dos 5. **É um aviso
+antecipado, não um erro de classificação** — em Set/26 são 19 faturas assim.
+
+**A etapa 1 é bem pior que o número oficial sugere.** Medido sobre as faturas com NF vinculada:
+
+| Mês | base | dentro de 2 DU | fora (com PLS) | fora (sem PLS) | a vencer | **% fora etapa 1** | % fora oficial |
+|---|---|---|---|---|---|---|---|
+| Mar/26 | 1.112 | 950 | 12 | 150 | 0 | **14,57%** | 1,91% |
+| Abr/26 | 1.135 | 951 | 21 | 163 | 0 | **16,21%** | 2,52% |
+| Mai/26 | 1.167 | 998 | 14 | 154 | 1 | **14,41%** | 2,72% |
+| Jun/26 | 1.198 | 1.004 | 30 | 164 | 0 | **16,19%** | 2,48% |
+| Jul/26 | 1.211 | 1.011 | 35 | 165 | 0 | **16,52%** | 3,85% |
+| Ago/26 | 1.229 | 877 | 190 | 157 | 5 | **28,35%** | 3,30% |
+| Set/26 | 1.189 | 964 | 26 | 163 | 36 | **16,39%** | 1,43% |
+
+A etapa 2 vem absorvendo a folga da etapa 1 — por isso o número oficial fica verde enquanto a etapa
+do time roda a ~16%. **Ago/26 é o mês de atenção: 28,35%**, com 190 faturas que receberam lote PLS
+acima de 2 DU (contra 12 a 35 nos outros meses).
+
+**O que está travado hoje na etapa 1** (Set/26, em 29/09):
+
+- **104 faturas sem lote PLS**, todas **com NF vinculada no eita** — não é falta de nota.
+- **68 já passaram dos 2 DU**, média de **7 DU** desde o vínculo, máximo 16.
+- Cauda longa: **45 faturas paradas há 11 DU ou mais** (11 du: 11 · 13 du: 6 · 14 du: 7 · 15 du: 12 ·
+  16 du: 9). Mais da metade das estouradas está parada há mais de duas semanas úteis.
+- Valor: **R$ 12.817,09** — volume de faturas alto, dinheiro baixo.
+- As outras 36 ainda estão dentro dos 2 DU.
+
+Na etapa 2 há 40 faturas com PLS e sem pagamento, 10 já acima de 3 DU, **R$ 298.245,97** — o dinheiro
+está aqui, mas a ação não é do time.
+
 ### ⚠️ Latência de registro do pagamento — a linha "em aberto" é TETO, não fato
 
 `invoice_payment_date` entra na base com atraso de até **~8 dias úteis**. Medido entre 28 e

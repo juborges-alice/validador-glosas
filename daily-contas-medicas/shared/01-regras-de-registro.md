@@ -149,6 +149,14 @@ no catálogo, e que precisam ser respeitadas:
     `atraso pagamento` = total > 5 DU; `atraso operacao` = vínculo→lote PLS > 2 DU;
     `atraso operacao e pagamento` = as duas. Atenção: `atraso operacao` dispara mesmo quando o total
     ficou dentro dos 5 DU — o motivo diz onde o tempo foi gasto, não substitui o veredito.
+  - **Os 5 DU têm duas etapas, e o acionável do time é a primeira** (esclarecimento da OM,
+    29/09/2026): etapa 1 = vínculo da NF → lote PLS, **2 DU, ação do time de Contas Médicas**;
+    etapa 2 = PLS → pagamento, 3 DU, Contas a Pagar. **O KPI não se divide** — segue sendo a visão
+    geral dos 5 DU, com um dono só e o roteamento que já existe. Quando ele desviar, o deep dive vai
+    para a etapa 1, que o card 76484 expõe na coluna `motivo`. O `atraso operacao` em fatura
+    classificada como `no prazo` é aviso antecipado: a etapa 1 estourou e a etapa 2 absorveu.
+    Contexto: a etapa 1 roda a ~14-17% fora do prazo enquanto o oficial fica em 1,4-3,9%, e Ago/26
+    foi a 28,35%.
   - ❌ **Descartado (erro meu, 29/09/2026):** usar `note_date` (emissão da NF) como marco inicial e
     somar as faturas em aberto dentro do percentual. As duas coisas juntas levaram Set/26 de 1,43%
     para 29,60% — não por piora da operação, mas por troca de régua. Se reaparecer em algum card ou
