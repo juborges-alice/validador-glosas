@@ -60,7 +60,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 6 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | diária |
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | **76805** (fila viva, todos os baldes) | diária ⚠️ |
-| 9 | Contas Médicas - Qnt de guias analisadas por dia | **76259** (Hospital e Clínica, metas separadas) | diária ⚠️ |
+| 9 | Contas Médicas - Qnt de guias analisadas por dia | **65837** (escopo Hospital, com gates) | diária ⚠️ |
 | 10 | Contas Médicas - % PEGs sem NF | 65694 | diária |
 | 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
@@ -80,7 +80,8 @@ o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 Quando um drill for cadastrado, esta nota sai.
 
 **⚠️ `Qnt de guias analisadas por dia`: recalibrado em 28/09/2026 (decisão da OM).** Passou a ter
-**escopo Hospital + Clínica com metas separadas** e **card novo 76259**, com alvo capado pela fila disponível e leitura em 5 dias úteis.
+**escopo apenas Hospital** (card **65837**), com **dois gates** — de SLA e de fila — e **meta sazonal**
+lida no acumulado de 5 dias úteis. Laboratório e Clínica saem do indicador.
 Regra completa na seção "Qnt de guias analisadas por dia" abaixo; o catálogo do Notion é a fonte.
 
 Conferido contra o catálogo em 22/09/2026 (as 19 linhas da tabela acima batem com o `ID Card
@@ -451,7 +452,7 @@ prazo certo, não removê-los.
 SLA normalmente — o prazo é maior, não infinito. Se outro lote com prazo diferenciado chegar,
 ajuste os três parâmetros ou acrescente uma cláusula análoga.
 
-## Qnt de guias analisadas por dia — fila disponível e produtividade (decisão da OM, 28/09/2026)
+## Qnt de guias analisadas por dia — escopo Hospital, dois gates e meta sazonal (decisão da OM, 28/09/2026)
 
 Até 27/09 este KPI comparava o **consolidado** (Hospital + Labs + Clínicas, card 65840) do dia
 contra a `capacidade_esperada`, que **não é meta de negócio**: o SQL a calcula como a média móvel
@@ -460,155 +461,85 @@ processo em lote contra a própria média acende em cerca de metade dos dias por
 em 28/09/2026: **60 de 104 dias úteis vermelhos entre Mai e Set/26**. Não media desvio, media
 oscilação.
 
-**Card novo: 76259** — `Contas Médicas - Produtividade de Análise vs Fila Disponível - HI`,
-criado em 28/09/2026 (collection 3662). Substitui o 65840 e o 65837 na rotina diária.
+**A correção não trocou a fonte: trocou o escopo e acrescentou gates.** A fonte passa a ser o card
+**65837** (escopo Hospital), e o 65840 (consolidado) e o 65839 (Labs+Clínicas) saem da rotina
+diária. Laboratório e Clínica saem do indicador.
 
-### A pergunta que o indicador responde
+### A régua, em quatro partes
 
-"O time analisou tudo o que dava para analisar naquele dia?" — e ela tem duas metades que **não
-compartilham farol**:
+**1. Escopo: apenas Hospital.** Card 65837, que devolve `dia`, `entraram_na_fila`,
+`analisado_pelo_time` e `capacidade_esperada`. Sem parâmetros.
 
-| Pergunta | Grão | Onde vive |
-|---|---|---|
-| **Prazo** — sobrou PEG que não podia sobrar? | PEG | `PEGs por Status de Análise no SLA - HI` (**76805**) — canônico, régua da OM de 22/09 com o recorte de fila viva de 30/09 |
-| **Produtividade** — dado o que havia, o time produziu? | **linha (procedimento)** | **card 76259**, este KPI |
+**2. Gate de SLA.** O KPI **só é avaliado** se `SLA de Análise de conta - HI` (card 65832) estiver
+**abaixo de 100%** no mês corrente. Em 100%, sai ⚪ — sem farol, sem hipótese, sem plano de ação e
+**sem episódio** no Decision Log. A razão é o próprio sentido do indicador: se ninguém está
+perdendo prazo, quanto se analisou por dia é **capacidade**, não **desvio**. É este gate que
+impede o KPI de acender em dia de fila baixa.
 
-O time analisa **linha a linha**, então produtividade é medida em linha. Prazo é por PEG, porque o
-SLA de 7 dias úteis é da PEG. Não misture: o card 76259 **não** recalcula prazo, e a tentativa de
-fazê-lo divergiu do `analysis_on_time` canônico (o fecho por `MAX` das linhas é mais estrito).
+**3. Gate de fila.** Só é avaliado se houver **ao menos 1 PEG em aberto**. Fonte do gate: card
+**76805** (fila viva), que substituiu o 73390 em 30/09/2026. Fila vazia não se cobra.
 
-### Como o 76259 mede
-
-- **Entrada na fila** = `invoice_date`, a chegada da conta — mesma âncora do SLA de PEG.
-- **Saída da fila** = `COALESCE(administrative_analysis_date, invoice_billed_step_date,
-  disallowance_date)`. Fecha sem resíduo: **0% de linha fantasma** nos meses fechados da janela.
-- **Analisadas** = linhas com `administrative_analysis_date` no dia — o trabalho de análise de fato.
-- **Teto diário**, por time = o máximo que aquele time já analisou num dia útil (série
-  Mai/25–Set/26): **Hospital 11.210** (23/02/2026) · **Clínica 4.311**. É a produtividade máxima
-  demonstrada, não a média. Parâmetros `teto_hospital` e `teto_clinica`, editáveis sem mexer no SQL.
-- **ALVO DO DIA = MIN(teto do time, base cobrável)** — não se cobra do time mais do que existe,
-  nem mais do que ele consegue fazer num dia. **A base cobrável é diferente para cada time**
-  (decisão da OM, 28/09/2026):
-  - **Hospital → fila total do dia.** "Analisou tudo o que dava para analisar." Régua original.
-  - **Clínica → só a fila vencida**, ou seja, o que entrou há **3 dias úteis ou mais** e segue em
-    aberto. "Analisou tudo o que já deveria ter saído." Parâmetro `ciclo_du` do card.
-- `capacidade_media_movel` (média móvel de 20 du) fica como **coluna de referência**, fora do farol.
-- **Janela de exibição**: mês corrente + **mês anterior** (decisão da OM, 28/09/2026).
-- **O teto não sai da janela.** Ele vem da série completa e confiável (**Mai/2025 em diante**),
-  porque "o máximo que o time já fez" não deve encolher só porque a tela mostra menos dias. O
-  estoque de abertura da janela também é calculado desde Mai/2025 — sem isso a fila vai a negativo.
-
-### Farol
-
-Leitura no **acumulado de 5 dias úteis**, nunca no dia isolado — a análise é feita em lote e a
-série tem dias de 334 e dias de 8.124 linhas, ambos normais.
-
-**O alvo de 5 du NÃO é a soma dos alvos diários.** Somar `MIN(teto, fila)` de cada dia contaria a
-mesma fila parada cinco vezes e inflaria o alvo. O certo é:
+**4. Meta sazonal, lida em 5 dias úteis.** Com os dois gates abertos:
 
 ```
-disponiveis_5du = fila de abertura do 1º dia da janela + tudo que entrou nos 5 dias
-alvo_5du        = MIN(5 × teto diário, disponiveis_5du)
+meta do dia   = capacidade_esperada × fator da faixa do dia do mês
+meta_5du      = soma das metas dos 5 últimos dias úteis COM dado
+analisadas_5du = soma de analisado_pelo_time nos mesmos 5 dias
 ```
 
-- ⚪ alvo = 0 → **sem fila, não avalia**. Não tinha o que analisar.
-- 🔴 abaixo de **80%** do alvo → abaixo da capacidade **tendo fila disponível**.
+| Faixa do dia do mês | Fator |
+|---|---|
+| 01–07 | 1,0 |
+| 08–14 | 1,0 |
+| 15–21 | 0,9 |
+| 22–24 | 0,3 |
+| 25–fim | 0,3 |
+
+- 🔴 `analisadas_5du < 80% da meta_5du`;
 - 🟢 caso contrário.
 
-**O farol é o `veredito_5du`** — decisão da OM em 28/09/2026. Os números (fila, alvo, aderência)
-são calculados **diariamente**, dia a dia; o que a janela de 5 dias úteis muda é só o momento em
-que o alarme dispara. O card também entrega `veredito_dia`, que fica como leitura de apoio, fora
-do farol.
+**Nunca no dia isolado.** A análise é feita em lote e a série tem dias de 334 e dias de 8.124
+linhas, ambos normais. Dias sem `capacidade_esperada` (fim de semana e feriado) ficam fora da
+janela. O fator sazonal existe porque a fila drena no fim do mês: cobrar capacidade cheia no dia
+28 é cobrar trabalho que não existe.
 
-**Por que o alarme não é diário.** Com o alvo sendo a fila inteira, 80% num único dia é
-inalcançável: o tempo mediano entre a chegada da conta (`invoice_date`) e a análise é de **3 dias**,
-então a fila de qualquer dia carrega cerca de três dias de trabalho, e pedir 80% dela num dia é
-pedir ciclo de um dia. A aderência diária observada tem mediana de **32%** — o time faz cerca de um
-terço da fila por dia, consistente com o ciclo de 3 dias. Em 5 dias úteis, que é mais que o ciclo,
-os 80% passam a ser uma cobrança justa.
+### Roteamento: fixo
 
-| Veredito | Como lê | Dias 🔴 em 84 dias úteis |
-|---|---|---|
-| `veredito_dia` (apoio) | `analisadas < 80% de MIN(teto, fila do dia)` | 94% |
-| **`veredito_5du` (farol)** | `analisadas_5du < 80% do alvo_5du` | **51%** |
+Com escopo Hospital, o responsável é sempre **Alana** `<@U073Z4ENBNW>`. Este KPI **não roteia por
+concentração** e saiu do bloco de KPIs roteáveis por tipo de instituição, que passou de dez para
+nove.
 
-Se a OM quiser menos vermelho, o corte é a alavanca: 80% → 51% dos dias · 70% → 40% · 60% → 31%
-· 50% → 14%.
+### ⚠️ Defasagem de ETL — a armadilha diária deste KPI
 
-**O teto é a trava para pilha grande, e ainda não precisou funcionar.** Medido em 28/09/2026: a
-maior fila disponível numa janela de 5 du foi **30.674 linhas**, contra 5 × 11.210 = 56.050 de
-teto — o teto limitou o alvo em **0 de 84 dias**. Ele existe para o dia em que acumular mais do que
-o time tem como fazer; enquanto isso, quem manda no alvo é a fila.
+O card costuma **não ter a linha do dia corrente** às 06h30. Um dia que entra na janela com
+`entraram_na_fila = 0` **e** `analisado_pelo_time = 0` é carga incompleta, não parada da operação
+— se o time tivesse parado, as entradas teriam continuado a chegar. Aconteceu em 24/09 (o repuxe
+das 09h15 corrigiu 6.436 para 6.954), em 28/09 e em 30/09.
 
-**O alvo capado pela fila resolve a sazonalidade sozinho**, sem tabela de fatores: quando a fila
-drena no fim do mês, o alvo cai junto. Medido — 31/07 alvo 351 em vez de 2.633; 31/08 alvo 450 em
-vez de 1.263; 25/09 alvo 1.520 em vez de 2.722.
+**Leia sempre os 5 últimos dias COM dado**, e reexecute às 09h15 antes de tratar queda como desvio.
 
-**Como a régua se comporta (84 dias úteis, Jun–Set/26, Hospital):** 51% dos dias ficam 🔴 e 49% 🟢.
-É uma régua exigente de propósito — o alvo é limpar a fila disponível a cada 5 dias úteis, e o
-tempo mediano de conta na fila é de 3 dias, então é coerente. Ela discrimina evento real: na série
-recente ficou 🔴 de 15 a 21/09, durante e logo após o pico de 9.989 entradas de 18/09, e voltou a
-🟢 em 22/09 quando o time recuperou — 88,6%, depois 91,2%, 92,5% e 91,8%.
+### ⚠️ Divergência de fontes resolvida em 30/09/2026 — o card 76259 NÃO é a fonte
 
-Se a OM quiser menos vermelho, **o corte é a alavanca, não o teto**: 80% → 51% dos dias · 70% →
-40% · 60% → 31% · 50% → 14%.
+Entre 28 e 30/09 o catálogo de KPIs descrevia uma régua **diferente** da que a OM decidiu: card
+**76259** (`Produtividade de Análise vs Fila Disponível - HI`), grão de linha, escopo Hospital +
+Clínica com tetos e filas separadas (`teto_hospital` 11.210, `teto_clinica` 4.311, `ciclo_du` 3),
+farol pela coluna `veredito_5du` e **sem gate nenhum**.
 
-O caso que motivou a mudança: em 28/09 o report publicou 🔴 com 451 guias contra capacidade de
-15.151 (2,98%); pelo 76259, o acumulado de 5 dias úteis de 25/09 foi de **13.348 linhas contra
-alvo de 14.534 — 91,8%, Dentro do esperado**.
+A OM confirmou em 30/09/2026 que a régua válida é a do **registro do Decision Log** — a que está
+escrita acima — e o catálogo foi corrigido para bater com ela.
 
-### Escopo: Hospital e Clínica, com metas SEPARADAS
+**O que a divergência custou:** no report de 30/09 a rotina seguiu o catálogo e publicou 🔴
+(Hospital em 79,8% do alvo de 5 du pelo 76259). Pela régua correta o KPI era ⚪, por dois motivos
+independentes: o `SLA de Análise de conta - HI` estava em **100,00%** (2.169 de 2.169 PEGs
+finalizadas no prazo), então o gate de SLA fecha e o indicador nem é avaliado; e mesmo com o gate
+aberto o acumulado de 5 du era de **4.069 analisadas contra meta de 3.607,5 — 112,8%**, bem acima
+do corte de 80%. O episódio aberto naquele dia foi encerrado por régua incorreta e o farol do dia,
+corrigido.
 
-**São times diferentes** (decisão da OM, 28/09/2026), então cada um tem a sua fila, o seu teto e o
-seu farol. O card devolve uma linha por dia **e por tipo**.
-
-| Time | Teto diário | Quando | Mediana/dia | Dias 🔴 em 39 du |
-|---|---|---|---|---|
-| Hospital | **11.210** | 23/02/2026 | 1.408 | 56% |
-| Clínica | **4.311** | 13/03/2026 (sexta) | 470 | **79%** |
-
-**Como o teto foi calculado:** maior número de linhas analisadas num único dia útil por aquele
-time, sobre toda a série confiável (Mai/2025 em diante, 344 dias úteis para Hospital e 294 para
-Clínica). Não é pico solto em nenhum dos dois — os maiores dias se agrupam perto do topo:
-Hospital 11.210 · 11.079 · 10.971; Clínica 4.311 · 3.869 · 3.796 · 3.660 · 3.614.
-
-Se algum dia a OM preferir o teto calculado só na janela de 2 meses, os valores seriam
-Hospital 11.079 e Clínica 3.869 — praticamente os mesmos.
-
-**Laboratório está fora** — passou a ser analisado **em massa**, o que torna a leitura de
-produtividade por linha sem sentido para ele. Centro de Diagnósticos nunca entrou (é o fluxo Cassi).
-Os cards 65840, 65837 e 65839 saem da rotina diária.
-
-**Por que Clínica tem régua própria.** Sob a régua da fila total, Clínica acendia em **79%** dos
-dias contra 56% de Hospital, e as três alavancas foram testadas em 28/09 sem resolver:
-
-| Alavanca | Testado | Resultado em Clínica |
-|---|---|---|
-| Janela | 6, 7, 8 e 10 du | 77% · 77% · 77% · 69% — travado |
-| Teto | 3.869 · 3.000 · 2.424 · 2.000 | 79% · 79% · 79% · 74% — o teto só trava o alvo em 3% dos dias |
-| Corte | 70% · 60% · 50% | só empurra o número |
-
-A causa não era nenhuma das três: o alvo "zerar a fila inteira" fica sistematicamente acima do que
-aquele time entrega. Em 5 dias úteis Hospital limpa **76%** da sua fila e Clínica **60%**. Trocando
-a base de Clínica para a fila vencida, o indicador cai para **44%** e volta a discriminar — em
-24/09 a fila vencida era 0 e ele analisou 3.213 (111,9%); em 22/09 a fila vencida era 5.633 e ele
-analisou 634 (19,4%).
-
-**A fila de Clínica não está represada** — a mediana é de 4 dias contra 3 de Hospital.
-
-**A concentração por grupo econômico é normal e esperada — não reportar como achado** (confirmado
-pela OM em 28/09/2026). A quebra da fila de Clínica mostra B-ACTIVE com 30,3% do tempo de fila
-(6.003 linhas em 5 unidades: Paulista, Morumbi, Higienópolis, Chácara Flora e Moema), SALUDIA com
-17,1% e EQUILIBRYUM com 8,4% — 55,8% nos três maiores. É o perfil normal da carteira de Clínica,
-que tem poucos grupos grandes. Fica registrado aqui só para evitar que uma execução futura da
-rotina redescubra isso e abra episódio indevidamente.
-
-### Roteamento: volta a depender do tipo
-
-Com Hospital e Clínica no mesmo KPI, o responsável **não é fixo**: Hospital → Alana
-`<@U073Z4ENBNW>`, Clínica → Fernanda `<@U044N26BETU>`. Como o card já separa por tipo, o
-roteamento sai direto da linha que acendeu — não precisa de drill de concentração.
-
+**Se aparecer em algum lugar** `card 76259`, `teto_hospital`, `teto_clinica`, `ciclo_du`, `fila
+vencida de Clínica` ou `veredito_5du` como régua deste KPI, **está desatualizado.** O 76259 existe
+e continua rodando, mas não é fonte de KPI — fica registrado aqui para que uma execução futura não
+o redescubra e volte a tratá-lo como canônico.
 ### O drill do SLA de análise não enxergava o balde de ≥13 du (decisão da OM, 30/09/2026)
 
 O limiar de `PEGs por Status de Análise no SLA - HI` é **qualquer PEG em aberto com ≥13 dias
@@ -689,7 +620,11 @@ Fila em 28/09 — **63 PEGs em aberto, 0 vencendo hoje**:
 | 4 | Clínica | 4 | R$11.250,00 |
 | 6 | Hospital | 1 | R$36.412,84 |
 
-### Por que a fila não sai do 65837 nem do 65838
+### Por que a FILA não sai do 65837 nem do 65838
+
+Nota de escopo: esta seção é sobre usar esses cards como fonte de **fila disponível**, que é o que
+o card 76259 tentava fazer. Ela **não** contradiz a régua vigente — o 65837 é a fonte do KPI para
+`analisado_pelo_time` e `capacidade_esperada`, e o gate de fila sai do card 76805, não daqui.
 
 Ambos testados em 28/09/2026 e descartados como fonte de fila:
 
@@ -791,9 +726,9 @@ POR TIPO DE INSTITUIÇÃO — Hospital → Alana <@U073Z4ENBNW>
   - PEGs por Status de Análise no SLA - HI
   - Faturamento total acumulado
 
-POR TIPO, SEM DRILL — o card 76259 já separa as linhas por tipo, então o roteamento sai da linha
-que acendeu: Hospital → Alana <@U073Z4ENBNW> · Clínica → Fernanda <@U044N26BETU>
-  - Qnt de guias analisadas por dia   (escopo Hospital + Clínica desde 28/09/2026; Laboratório fora)
+RESPONSÁVEL FIXO — escopo Hospital, não roteia por concentração
+Alana Beckmann  <@U073Z4ENBNW>
+  - Qnt de guias analisadas por dia   (escopo apenas Hospital desde 28/09/2026; Laboratório e Clínica fora)
 ```
 
 **Todos os KPIs têm responsável.** Não existe mais a categoria "sem responsável": todo 🔴 abre
@@ -804,7 +739,7 @@ Marque sempre por ID (`<@U044N26BETU>`), nunca escreva o nome antes ou depois da
 
 ### Como rotear os KPIs "por tipo de instituição"
 
-Nesses **dez** KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
+Nesses **nove** KPIs o responsável **não é fixo**: depende de onde o desvio está concentrado. Você
 só descobre isso **depois de executar o drill**, então o roteamento é a última coisa que se
 decide, não a primeira.
 

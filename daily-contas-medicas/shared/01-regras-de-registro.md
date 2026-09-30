@@ -102,33 +102,35 @@ no catálogo, e que precisam ser respeitadas:
   10% do total em aberto, ou qualquer PEG >7 du), que em 22/09 disparou com 85 de 252 PEGs (33,73%)
   sem nenhuma PEG vencida e com o time analisando a 722% da capacidade esperada; e, antes dela, a
   de ">40% do total em aberto", que disparava com volume normal de início de mês.
-- **Alvo capado pela fila, lido em 5 dias úteis** — `Qnt de guias analisadas por dia`:
-  recalibrado em 28/09/2026 (decisão da OM). Fonte passa a ser o card **76259**, grão **linha
-  (procedimento)**, escopo **Hospital**, janela de mês corrente + mês anterior.
-  - `alvo do dia = MIN(teto do time, base cobrável)`, com **metas e réguas separadas por time**.
-    Teto = máximo que cada um já analisou num dia útil: **11.210** Hospital, **4.311** Clínica.
-    Laboratório está fora do KPI (analisado em massa).
-    - **Hospital**: base cobrável = **fila total** do dia. Régua original, inalterada.
-    - **Clínica**: base cobrável = **fila vencida**, o que entrou há 3 dias úteis ou mais e segue
-      aberto. Sob a fila total ela acendia em 79% dos dias contra 56% de Hospital, e janela, teto
-      e corte foram testados sem resolver — o alvo "zerar a fila inteira" fica acima do que aquele
-      time entrega. Com a fila vencida cai para 44%. Não se cobra mais do que existe para analisar, nem mais do que o
-    time consegue fazer. É o que faz o alvo cair sozinho no fim do mês, sem tabela de sazonalidade.
-  - `alvo_5du = MIN(5 × teto, disponíveis_5du)`, onde `disponíveis_5du` = fila de abertura do 1º dia
-    da janela + entradas dos 5 dias. **Nunca a soma dos alvos diários**, que contaria a mesma fila
-    parada cinco vezes.
-  - ⚪ **sem fila** (`alvo_5du = 0`) → não avalia, sai com número e série, sem farol e sem episódio.
-  - 🔴 `analisadas_5du < 80% do alvo_5du`; 🟢 caso contrário. **O farol é o `veredito_5du`**
-    (decisão da OM, 28/09/2026); o `veredito_dia` do card fica como leitura de apoio, fora do farol.
-    O alarme não é diário porque o tempo mediano entre a chegada da conta e a análise é de 3 dias:
-    a fila de um dia carrega três dias de trabalho, e 80% dela num dia só seria ciclo de um dia.
+- **Escopo Hospital, dois gates e meta sazonal** — `Qnt de guias analisadas por dia`:
+  recalibrado em 28/09/2026 (decisão da OM). Fonte é o card **65837**, escopo **apenas Hospital**
+  (Laboratório e Clínica saem do indicador; o 65840 e o 65839 saem da rotina diária).
+  - **Dois gates antes de avaliar.** Se qualquer um fechar, o KPI sai ⚪ — sem farol, sem hipótese,
+    sem plano de ação e **sem episódio**:
+    1. **Gate de SLA** — só avalia se `SLA de Análise de conta - HI` (card 65832) estiver **abaixo
+       de 100%** no mês corrente. Em 100%, sai ⚪: se ninguém está perdendo prazo, quanto se
+       analisou por dia é capacidade e não desvio.
+    2. **Gate de fila** — só avalia se houver ao menos 1 PEG em aberto (card **76805**, fila viva,
+       que substituiu o 73390 em 30/09/2026).
+  - **Meta sazonal, lida em 5 dias úteis.** `meta do dia = capacidade_esperada × fator da faixa do
+    dia do mês`, com os fatores 01–07: 1,0 · 08–14: 1,0 · 15–21: 0,9 · 22–24: 0,3 · 25–fim: 0,3.
+    Some as metas e as `analisado_pelo_time` dos **5 últimos dias úteis COM dado**.
+  - 🔴 `analisadas_5du < 80% da meta_5du`; 🟢 caso contrário. Nunca leia no dia isolado: a análise é
+    feita em lote e a série tem dias de 334 e dias de 8.124 linhas, ambos normais.
+  - ⚠️ **Defasagem de ETL.** Dia que entra na janela com `entraram_na_fila = 0` E
+    `analisado_pelo_time = 0` é carga incompleta, não parada da operação. Reexecute às 09h15 antes
+    de tratar queda como desvio.
+  - ⚠️ **O card 76259 NÃO é a fonte.** Entre 28 e 30/09/2026 o catálogo descrevia outra régua
+    (76259, Hospital + Clínica, alvo capado por teto e fila, farol por `veredito_5du`, sem gates).
+    A OM confirmou em 30/09 que vale o registro do Decision Log, que é o descrito aqui. Detalhe do
+    episódio e do custo da divergência em `00-identificadores.md`.
+  - **Este KPI não roteia por concentração.** Com escopo Hospital, o responsável é fixo:
+    `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passou de dez
+    para **nove**.
   - **Prazo não entra neste KPI.** PEGs vencendo em 7 du saem do `PEGs por Status de Análise no
     SLA - HI` (card **76805**), que é canônico. Os dois não compartilham farol. A linha diária de
     PEGs vencendo hoje sai do mesmo **76805**, **sem filtro de tipo** — o escopo Hospital vale só
     para a produtividade.
-  - **Este KPI não roteia por concentração.** Com escopo Hospital, o responsável é fixo:
-    `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passa de dez
-    para nove.
   Detalhamento, evidência e o que foi testado e descartado em `00-identificadores.md`.
 - **Mês corrente, e o número oficial é o do 35629** — `SLA de Pagamento de HS`, recalibrado em
   28-29/09/2026 (decisões da OM). Card **35629** é a fonte do percentual; o **76484** reproduz o

@@ -150,7 +150,7 @@ Um sub-toggle por KPI com desvio.
 🔴 **{KPI}** · {contexto curto} · {responsável}
 ```
 
-Responsável = a pessoa do bloco de mapeamento (`00-identificadores.md`). Para os dez KPIs
+Responsável = a pessoa do bloco de mapeamento (`00-identificadores.md`). Para os nove KPIs
 roteados **por tipo de instituição**, o responsável sai da concentração do desvio no drill —
 siga o procedimento de roteamento daquele arquivo e registre a linha
 `Concentração: {tipo} ({%} do desvio) → {responsável}` logo abaixo do título. Enquanto um KPI
