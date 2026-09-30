@@ -91,6 +91,12 @@ no catálogo, e que precisam ser respeitadas:
     du. Havendo alguma, o KPI é 🔴.
   - **PEGs entre 8 e 12 du já perderam o SLA interno** e não são mais salváveis por ação do dia:
     entram no report como contexto do bloco de 13 du, e **não mexem na cor** até chegarem lá.
+  - **Fonte e recorte de fila viva (decisão da OM, 30/09/2026).** O farol sai do card **76805**,
+    que substituiu o 73390 — este filtrava só as PEGs ainda **dentro** da janela de 7 du e, por
+    construção, nunca conseguiria devolver o balde de ≥13 du que o limiar nomeia. E a leitura é
+    **só sobre a fila viva, `invoice_date` a partir de 01/01/2025**: as 764 PEGs com ≥13 du
+    medidas em 30/09/2026 eram todas de 2024, backlog morto que deixaria o KPI vermelho para
+    sempre. Detalhe e evidência em `00-identificadores.md`.
 
   Duas réguas anteriores foram descartadas por acender com fila normal: a de 09/09 (≥5 du acima de
   10% do total em aberto, ou qualquer PEG >7 du), que em 22/09 disparou com 85 de 252 PEGs (33,73%)
@@ -117,8 +123,8 @@ no catálogo, e que precisam ser respeitadas:
     O alarme não é diário porque o tempo mediano entre a chegada da conta e a análise é de 3 dias:
     a fila de um dia carrega três dias de trabalho, e 80% dela num dia só seria ciclo de um dia.
   - **Prazo não entra neste KPI.** PEGs vencendo em 7 du saem do `PEGs por Status de Análise no
-    SLA - HI` (32465 / 73390), que é canônico. Os dois não compartilham farol. A linha diária de
-    PEGs vencendo hoje sai do card **76260**, **sem filtro de tipo** — o escopo Hospital vale só
+    SLA - HI` (card **76805**), que é canônico. Os dois não compartilham farol. A linha diária de
+    PEGs vencendo hoje sai do mesmo **76805**, **sem filtro de tipo** — o escopo Hospital vale só
     para a produtividade.
   - **Este KPI não roteia por concentração.** Com escopo Hospital, o responsável é fixo:
     `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passa de dez

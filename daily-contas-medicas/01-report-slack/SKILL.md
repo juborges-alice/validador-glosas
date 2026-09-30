@@ -374,9 +374,13 @@ Independentemente do farol de `PEGs por Status de Análise no SLA - HI` e de
 PEGs em aberto que estão a **exatamente 7 dias úteis** do `invoice_date` — o último dia útil para
 fechar dentro do SLA interno, e o que ainda dá para salvar hoje.
 
-Sai do card **76260**, **sem filtro de tipo de instituição**: a OM quer ver qualquer PEG vencendo,
-inclusive Laboratório, Clínica e Centro de Diagnósticos. O escopo Hospital vale só para o KPI de
-produtividade. A linha sai **mesmo zerada** — ausência não é informação.
+Sai do card **76805** (fila viva), **sem filtro de tipo de instituição**: a OM quer ver qualquer
+PEG vencendo, inclusive Laboratório, Clínica e Centro de Diagnósticos. O escopo Hospital vale só
+para o KPI de produtividade. A linha sai **mesmo zerada** — ausência não é informação.
+
+O 76805 substituiu o 76260 em 30/09/2026: o 76260 filtrava só as PEGs ainda **dentro** da janela
+de 7 du, então escondia tanto o balde de 8 a 12 du quanto o de ≥13 du. Regra completa em
+`00-identificadores.md`, seção "O drill do SLA de análise não enxergava o balde de ≥13 du".
 
 ```
 ⏱️ *PEGs vencendo hoje (7 du)* — {N} PEGs · R$ {valor}
