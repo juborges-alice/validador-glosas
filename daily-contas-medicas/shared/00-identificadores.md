@@ -130,6 +130,76 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | % Faturas por Status - HS | — sem drill cadastrado |
 | SLA de Pagamento de HS | 35588 (Média de Dias Úteis Entre Etapas de Pagamento) |
 
+## % Glosa Geral - HI — o deep dive compara contra a média do próprio tipo (decisão da OM, 30/09/2026)
+
+**O limiar é agregado e não se segmenta.** Este indicador responde uma pergunta só: somando todos
+os tipos e todas as glosas, qual é o percentual de glosa da operação. A linha de **5% no mês, ou
+crescimento >1pp vs. mês anterior**, vale sobre esse número agregado e não vira limiar por tipo
+(decisão da OM de 28/09/2026, reafirmada em 30/09). A quebra por tipo tem limiar próprio, por
+histórico de cada tipo, e vive no KPI **`% Glosa por Tipo de HI`** — que é um indicador
+**separado**, acompanhado em paralelo, não um sub-item deste.
+
+**Os dois são separados de propósito.** O agregado pode estar dentro do limiar com um tipo
+estourando e outro compensando. É por isso que a quebra é acompanhada mesmo quando este KPI está
+verde, e é por isso que os episódios não se unem (decisão da OM, 25/09/2026).
+
+### Como identificar qual tipo está puxando
+
+Quando este KPI desviar e for preciso dizer **qual tipo** está puxando, a referência é a **média
+histórica daquele tipo** — nunca a linha de 5% do agregado.
+
+1. Card **50815** — % de glosa por tipo no mês corrente e a série dos meses anteriores.
+2. Card **65831** quebrado por tipo — faturado de cada tipo no mês.
+3. Para cada tipo: `desvio_pp = % do mês − média dos 3 meses anteriores do próprio tipo`.
+4. `contribuição em R$ = desvio_pp × faturado do tipo no mês`.
+5. A concentração, e portanto o roteamento, sai da participação de cada tipo na soma das
+   contribuições **positivas**. Tipo com desvio negativo está puxando o agregado **para baixo** e
+   deve ser dito como tal, não omitido.
+
+Janela: **3 meses anteriores**, mesma convenção de `% Glosa Alice por Prestador - HI`,
+`R$ Recurso de Glosa acumulado` e `Faturamento total acumulado`. Reporte também a leitura de 6
+meses quando as duas divergirem — ela expõe o efeito de um mês atípico na baseline.
+
+### ❌ O método aposentado: "excedente acima da linha de 5%"
+
+Até 30/09/2026 a rotina calculava quanto cada tipo estava **acima de 5%** e atribuía a
+concentração por aí. Isso mede o quanto cada tipo está acima de um patamar **que não é o dele**, e
+por construção aponta sempre para o tipo estruturalmente mais glosado: Laboratório glosa 10–12%
+por natureza e apareceria como culpado todo mês, mesmo estando no próprio normal ou abaixo dele.
+
+**Este método nunca esteve escrito em lugar nenhum** — era um hábito da rotina, repetido dia após
+dia, e por isso derivou sem nunca ser revisto. Está documentado aqui justamente para não voltar.
+
+**Quanto a diferença importa**, medido em 30/09/2026 com Set/26 fechado:
+
+| Tipo | Set/26 | Média 3m do tipo | Desvio | Contribuição | Share |
+|---|---|---|---|---|---|
+| Hospital | 4,68% | 3,75% | **+0,93pp** | R$ 365.951 | **93,1%** |
+| Clínica | 0,81% | 0,65% | +0,16pp | R$ 27.025 | 6,9% |
+| Laboratório | 11,27% | 12,37% | **−1,11pp** | −R$ 146.590 | — (puxa para baixo) |
+
+Pelo método antigo a resposta era **"Laboratório 100% do desvio"**. Pelo método correto é
+**Hospital 93,1%, com Laboratório abaixo da própria média.** A atribuição se inverte por completo.
+O método correto também concorda com a decomposição shift-share que a OM conduziu em 23/09/2026,
+que já apontava Hospital à frente (57,6% contra 44,7%) e contrariava a leitura por nível.
+
+### ⚠️ Ponto em aberto — Jun/26 distorce a baseline de Laboratório
+
+Série de Laboratório: Mar 9,18% · Abr 10,65% · Mai 10,65% · **Jun 18,06%** · Jul 8,96% ·
+Ago 10,11%. O pico de Jun infla a média de 3 meses para 12,37%.
+
+| Baseline | Hospital | Laboratório | Roteamento |
+|---|---|---|---|
+| 3m cheio (Jun+Jul+Ago) | +0,93pp · 93,1% | −1,11pp | só Hospital |
+| 3m sem Jun (Mai+Jul+Ago) | +0,71pp · 60,7% | **+1,36pp · 39,3%** | Hospital e Laboratório |
+| 6m (Mar–Ago) | +1,39pp · 100% | −0,00pp | só Hospital |
+
+Hospital lidera nas três janelas, então a conclusão principal é robusta. O que muda é se
+Laboratório entra ou não. **A rotina não exclui Jun por conta própria** — excluir mês de baseline
+é decisão metodológica da OM, como foi a exclusão de mai/26 da baseline do INCOR em 17/08/2026.
+Enquanto não houver decisão, vale a média de 3 meses cheia, e a sensibilidade sai declarada no
+report.
+
 ## KPIs do tipo "alerta de trabalho"
 
 A maioria dos KPIs é termômetro: quando desvia, a rotina levanta hipótese e propõe plano de
@@ -751,6 +821,10 @@ dias sem ser roteado para ninguém. Um KPI roteável que sai sem a linha `Concen
 execução incompleta, mesmo que a cor esteja certa.
 
 1. Execute o drill do KPI (tabela de cards acima) e quebre o desvio **por tipo de instituição**.
+   **A quebra se mede contra a referência própria de cada tipo, não contra o limiar do agregado.**
+   Para `% Glosa Geral - HI` o método está fechado e é obrigatório — ver a seção "% Glosa Geral - HI
+   — o deep dive compara contra a média do próprio tipo". Comparar cada tipo contra a linha do
+   agregado aponta sempre para o tipo estruturalmente mais alto e inverte a atribuição.
 2. Roteie pela concentração:
    - desvio concentrado em **Hospital** → marque **Alana** `<@U073Z4ENBNW>`;
    - desvio concentrado em **Laboratório** ou **Clínica** → marque **Fernanda** `<@U044N26BETU>`;
