@@ -348,41 +348,66 @@ Esclarecimento da OM (29/09/2026): os 5 DU se dividem em duas etapas com times d
 | **2** | lote PLS → pagamento | 3 DU | Contas a Pagar |
 
 **O KPI não se divide.** Continua sendo a visão geral dos 5 DU, com um dono só e o roteamento que já
-existe — não vira dois indicadores e não muda de responsável. O que a etapa 1 é: **o acionável do
-time quando o KPI desvia**. Por isso o card 76484 expõe as etapas na coluna `motivo`, tanto nas
-faturas pagas (herdado do `check_sla_payment_reason` do 35629) quanto nas em aberto.
+existe. A etapa 1 é **o acionável do time quando o KPI desvia**, e o card 76484 a expõe na coluna
+`motivo`.
 
-Isso também explica o `atraso operacao` que aparece em faturas classificadas como `no prazo`: a
-etapa 1 estourou os 2 DU, mas a etapa 2 absorveu a folga e o total fechou dentro dos 5. **É um aviso
-antecipado, não um erro de classificação** — em Set/26 são 19 faturas assim.
+Isso explica o `atraso operacao` em faturas classificadas como `no prazo`: a etapa 1 estourou os
+2 DU mas a etapa 2 absorveu a folga. **É aviso antecipado, não erro de classificação.**
 
-**A etapa 1 é bem pior que o número oficial sugere.** Medido sobre as faturas com NF vinculada:
+> ### ⚠️ `pls_batch_date IS NULL` **não** significa que o lote não foi gerado
+>
+> Correção de 30/09/2026, depois de a OM apontar o card **35588** como fonte da verdade do que tem
+> ou não PLS. Em Set/26 há **96 faturas pagas com `pls_batch_date` nulo, 92 delas dentro dos 5 DU**.
+> Elas fluíram normalmente — o campo simplesmente não está preenchido nessa base. **Contar todo
+> `pls_batch_date IS NULL` como falha de etapa 1 está errado**, e foi o que eu fiz: reportei
+> 14–17% de falha na etapa 1 quando o número real é **8–9%**.
+>
+> **E o 35588 não consegue desmentir nem confirmar isso sozinho**, por duas razões:
+> `working_days_from_binding_to_pls` é **NULL em 100%** das linhas sem `pls_batch_date` (184 de 184
+> em Set/26), e `AVG` ignora nulo — então fatura sem PLS **nunca entra na média**. O 35588 mede a
+> velocidade de quem passou pela etapa, não quantos não passaram. As duas leituras são compatíveis:
+> média de 1,19 DU em Set/26 **e** uma cauda de ~8% fora dos 2 DU.
 
-| Mês | base | dentro de 2 DU | fora (com PLS) | fora (sem PLS) | a vencer | **% fora etapa 1** | % fora oficial |
+**Como medir a etapa 1 corretamente** — grão **fatura** (`eita_code`), não o grão de linha do 35583:
+
+- `e1_dentro` = tem `pls_batch_date` e `working_days_from_binding_to_pls <= 2`
+- `e1_fora` = tem `pls_batch_date` e `> 2 DU`
+- `e1_travada` = **sem PLS e sem pagamento**, há mais de 2 DU do vínculo
+- **não mensurável** = paga sem `pls_batch_date` → fica **fora do numerador e do denominador**
+
+| Mês | base | dentro 2 DU | fora c/ PLS | travada | **% fora etapa 1** | não mensurável | % fora oficial |
 |---|---|---|---|---|---|---|---|
-| Mar/26 | 1.112 | 950 | 12 | 150 | 0 | **14,57%** | 1,91% |
-| Abr/26 | 1.135 | 951 | 21 | 163 | 0 | **16,21%** | 2,52% |
-| Mai/26 | 1.167 | 998 | 14 | 154 | 1 | **14,41%** | 2,72% |
-| Jun/26 | 1.198 | 1.004 | 30 | 164 | 0 | **16,19%** | 2,48% |
-| Jul/26 | 1.211 | 1.011 | 35 | 165 | 0 | **16,52%** | 3,85% |
-| Ago/26 | 1.229 | 877 | 190 | 157 | 5 | **28,35%** | 3,30% |
-| Set/26 | 1.189 | 964 | 26 | 163 | 36 | **16,39%** | 1,43% |
+| Mar/26 | 1.112 | 950 | 12 | 67 | **7,68%** | 83 | 1,91% |
+| Abr/26 | 1.135 | 951 | 21 | 65 | **8,29%** | 98 | 2,52% |
+| Mai/26 | 1.167 | 999 | 14 | 63 | **7,16%** | 91 | 2,72% |
+| Jun/26 | 1.198 | 1.004 | 30 | 68 | **8,89%** | 96 | 2,48% |
+| Jul/26 | 1.211 | 1.011 | 35 | 71 | **9,49%** | 94 | 3,85% |
+| **Ago/26** | 1.229 | 878 | **190** | 65 | **22,51%** | 93 | 3,30% |
+| Set/26 | 1.198 | 987 | 27 | 67 | **8,70%** | 96 | 1,43% |
 
-A etapa 2 vem absorvendo a folga da etapa 1 — por isso o número oficial fica verde enquanto a etapa
-do time roda a ~16%. **Ago/26 é o mês de atenção: 28,35%**, com 190 faturas que receberam lote PLS
-acima de 2 DU (contra 12 a 35 nos outros meses).
+**Ago/26 é o único desvio real**: 190 faturas receberam lote PLS acima de 2 DU, contra 12 a 35 nos
+outros meses. Bate com o 35588, onde Ago/26 tem a maior média de vínculo→PLS dos quatro meses
+(1,75 DU contra 1,17–1,20).
 
-**O que está travado hoje na etapa 1** (Set/26, em 29/09):
+**A cauda de "travadas" é estrutural, não acionável.** Fica em 63 a 71 faturas em todo mês, inclusive
+nos fechados, e nos meses fechados soma **R$ 0,00** de valor em aberto — são faturas zeradas ou
+canceladas que nunca completam o fluxo. Não reportar como achado; só vira assunto se sair dessa faixa.
 
-- **104 faturas sem lote PLS**, todas **com NF vinculada no eita** — não é falta de nota.
-- **68 já passaram dos 2 DU**, média de **7 DU** desde o vínculo, máximo 16.
-- Cauda longa: **45 faturas paradas há 11 DU ou mais** (11 du: 11 · 13 du: 6 · 14 du: 7 · 15 du: 12 ·
-  16 du: 9). Mais da metade das estouradas está parada há mais de duas semanas úteis.
-- Valor: **R$ 12.817,09** — volume de faturas alto, dinheiro baixo.
-- As outras 36 ainda estão dentro dos 2 DU.
+**Situação de Set/26 em 30/09** (grão fatura):
 
-Na etapa 2 há 40 faturas com PLS e sem pagamento, 10 já acima de 3 DU, **R$ 298.245,97** — o dinheiro
-está aqui, mas a ação não é do time.
+| Grupo | Faturas | Acima de 2 DU | Valor em aberto |
+|---|---|---|---|
+| Aberta **sem** PLS | 88 | 67 | R$ 8.952,19 |
+| Aberta **com** PLS | 55 | 53 | R$ 430.340,02 |
+| Paga sem `pls_batch_date` | 96 | — | — (92 dentro dos 5 DU) |
+
+Ou seja: o volume travado na etapa 1 é pequeno em dinheiro (R$ 8,9 mil); o dinheiro aberto está na
+etapa 2, que não é ação do time.
+
+> **Cuidado com o grão.** O 35629 e o 35583 contam linhas de um `SELECT DISTINCT` sobre
+> (`eita_code`, `note_number`, `batch_pls`, datas…), não faturas. Em Set/26 são 104 **linhas** sem
+> PLS para 88 **faturas**. As linhas de complemento do 76484 seguem o grão do card oficial, para o
+> percentual bater; qualquer contagem de **faturas** precisa agrupar por `eita_code` antes.
 
 ### ⚠️ Latência de registro do pagamento — a linha "em aberto" é TETO, não fato
 

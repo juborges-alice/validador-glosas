@@ -155,8 +155,21 @@ no catálogo, e que precisam ser respeitadas:
     geral dos 5 DU, com um dono só e o roteamento que já existe. Quando ele desviar, o deep dive vai
     para a etapa 1, que o card 76484 expõe na coluna `motivo`. O `atraso operacao` em fatura
     classificada como `no prazo` é aviso antecipado: a etapa 1 estourou e a etapa 2 absorveu.
-    Contexto: a etapa 1 roda a ~14-17% fora do prazo enquanto o oficial fica em 1,4-3,9%, e Ago/26
-    foi a 28,35%.
+    Contexto: a etapa 1 roda a **8-9%** fora do prazo enquanto o oficial fica em 1,4-3,9%; **Ago/26
+    é o único desvio real, a 22,51%**, com 190 faturas recebendo PLS acima de 2 DU contra 12-35 nos
+    outros meses.
+  - ⚠️ **`pls_batch_date IS NULL` não significa que o lote não foi gerado.** Em Set/26 há 96 faturas
+    **pagas** com esse campo nulo, 92 dentro dos 5 DU. Para medir a etapa 1: conte como falha só
+    `pls_batch_date` preenchido com > 2 DU, mais as **sem PLS e sem pagamento** há mais de 2 DU; a
+    paga sem `pls_batch_date` é **não mensurável** e fica fora do numerador e do denominador. E
+    agrupe por `eita_code`: o 35629 e o 35583 contam **linhas**, não faturas (104 linhas = 88
+    faturas em Set/26).
+  - O card **35588** não serve para contar o que não tem PLS: `working_days_from_binding_to_pls` é
+    NULL em 100% das linhas sem lote e `AVG` ignora nulo, então essas faturas nunca entram na média.
+    Ele mede a velocidade de quem passou pela etapa, não quantos não passaram.
+  - A cauda de faturas **travadas** (sem PLS, sem pagamento, acima de 2 DU) fica em 63-71 por mês em
+    todos os meses, com R$ 0,00 em aberto nos fechados. É **estrutural, não acionável** — não
+    reportar como achado; só vira assunto se sair dessa faixa.
   - ❌ **Descartado (erro meu, 29/09/2026):** usar `note_date` (emissão da NF) como marco inicial e
     somar as faturas em aberto dentro do percentual. As duas coisas juntas levaram Set/26 de 1,43%
     para 29,60% — não por piora da operação, mas por troca de régua. Se reaparecer em algum card ou
