@@ -192,14 +192,19 @@ Regras desta classe:
    pelo **dia do mês** (em 16/09 usou "média do dia 16").
 3. **O acionável não está aqui, está no ciclo semanal** — seção abaixo.
 
-## SLA de Pagamento de HS — mês corrente, só fatura com NF, e conta o atraso em aberto (decisões da OM, 28 e 29/09/2026)
+## SLA de Pagamento de HS — lê o mês corrente (decisão da OM, 28/09/2026)
 
 Até 27/09 o KPI era lido sobre o **mês fechado**, e era vermelho previsível: o mês fechado não se
 move mais, então não há ação possível sobre ele. Passa a ser lido sobre o **mês corrente**, que é
 onde ainda dá para agir. Card **35629**, inalterado — muda a linha que a rotina lê, não a fonte.
 
-Efeito imediato na leitura de 28/09: Ago/26 fechado dava **3,31%** (38 de 1.148), acima do limiar
-de 3%; Set/26 corrente dá **1,62%** (15 de 927). O KPI sai do 🟡 rebaixado e vai para 🟢.
+Efeito imediato: Ago/26 fechado dá **3,29%** (38 fora de 1.156 classificadas), acima do limiar de
+3%; Set/26 corrente dá **1,42%** (15 de 1.058). O KPI sai do 🟡 rebaixado e vai para 🟢.
+
+> **Correção de 30/09/2026 — grão.** Em 28/09 eu registrei aqui 3,31% e 1,62%, contando
+> `DISTINCT invoice_id`. O card 35629 conta **linhas** de um `SELECT DISTINCT` sobre
+> (`eita_code`, `note_number`, `batch_pls`, datas…). A rotina compara contra o card, então os
+> números desta seção são os do card. A decisão de ler o mês corrente não muda.
 
 **O denominador não é problema.** As faturas HS chegam em lote no início do mês: até o dia 10 o mês
 já tem praticamente todas. Medido (faturas com vínculo, por dia do mês):
@@ -213,11 +218,15 @@ já tem praticamente todas. Medido (faturas com vínculo, por dia do mês):
 | Set/26 | 1.175 | 1.176 | 1.177 |
 
 **Mas a leitura do mês corrente é OTIMISTA por construção, e isso precisa sair no caveat todo dia.**
-O card só classifica a fatura depois que ela tem pagamento apurado. Em 28/09 o Set/26 tinha 1.177
-faturas com vínculo e apenas **927 classificadas (79%)** — as 250 restantes ainda não pagaram, e
-pagamento que atrasa entra como "fora do prazo". Ou seja, o percentual do mês corrente tende a
-**subir** conforme o mês liquida. Mesmo um mês fechado não classifica 100%: Ago/26 tem 1.148
-classificadas de 1.226 com vínculo.
+O card só classifica a fatura depois que ela tem pagamento apurado. Em 30/09 o Set/26 tem 1.198
+faturas com vínculo e **1.058 classificadas (88%)** — as restantes ainda não pagaram, e pagamento que
+atrasa entra como "fora do prazo". Ou seja, o percentual do mês corrente tende a **subir** conforme o
+mês liquida. Mesmo um mês fechado não classifica 100%: Ago/26 tem 1.156 classificadas de 1.229 com
+vínculo.
+
+**E a subida é lenta de enxergar**, porque `invoice_payment_date` entra na base com até ~8 DU de
+atraso (ver aviso abaixo). Entre 28 e 29/09 o Set/26 saltou de 927 para 1.048 classificadas sem que
+nada tenha sido pago naquele dia — era registro chegando.
 
 **Guarda de materialidade:** enquanto o mês corrente tiver **menos de 100 faturas classificadas**,
 não acenda farol — saia ⚪ com o número e cite o mês anterior como contexto. É a janela dos
