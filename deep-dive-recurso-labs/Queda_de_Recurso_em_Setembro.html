@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Queda de Recurso em Setembro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: relatório de investigação em uma coluna. Veredito no topo, depois uma seção por pergunta, hipóteses testadas e próximos passos. */
+:root {
+  --bg: #fbf8f9;
+  --surface: #ffffff;
+  --ink: #40002d;
+  --ink-2: #6b5a64;
+  --ink-3: #94858d;
+  --line: #eee5ea;
+  --line-2: #dfd2d9;
+  --accent: #be0380;
+  --accent-soft: #fbe7f3;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --s-muted: #d9ced4;
+  --good: #0f7b3f; --good-soft: #e3f4ea;
+  --warn: #8a5a00; --warn-soft: #fbf0d9;
+  --bad: #b3261e; --bad-soft: #fbe9e7;
+  --neutral-soft: #f1ecef;
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891;
+    --line: #34282f; --line-2: #45363e; --accent: #e0479f; --accent-soft: #3a1830;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s-muted: #4d3f47;
+    --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891;
+  --line: #34282f; --line-2: #45363e; --accent: #e0479f; --accent-soft: #3a1830;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s-muted: #4d3f47;
+  --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.1; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 15px; font-family: var(--font-body); font-weight: 600; }
+p { margin: 0; max-width: 72ch; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+header, section { display: flex; flex-direction: column; gap: 14px; }
+.scope { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--neutral-soft); color: var(--ink-2); white-space: nowrap; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; }
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.v { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.v .q { font-size: 13px; color: var(--ink-2); }
+.v .a { font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: 1.2; }
+.v p { font-size: 14px; color: var(--ink-2); }
+.pill { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.flat { background: var(--neutral-soft); color: var(--ink-2); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+th:first-child, td:first-child { text-align: left; }
+td.wrap-cell { white-space: normal; min-width: 200px; text-align: left; }
+tr.hl td { background: var(--accent-soft); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
+svg .val { fill: var(--ink); font-weight: 600; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .today { stroke: var(--accent); stroke-width: 2; }
+svg .hit { fill: transparent; }
+svg .hit:hover { fill: var(--ink); fill-opacity: 0.04; }
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; max-width: 280px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.prov { display: flex; flex-direction: column; gap: 10px; }
+.prov h3 { font-family: var(--font-display); font-size: 19px; }
+.prov dl { display: grid; grid-template-columns: 1fr; gap: 2px; margin: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+.prov dt { color: var(--ink-3); font-size: 12px; }
+.prov dd { margin: 0 0 6px; font-weight: 600; }
+.prov p { font-size: 14px; color: var(--ink-2); }
+ol.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+ol.steps li { padding-left: 4px; }
+ol.steps b { color: var(--ink); }
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); }
+code { font-size: 12.5px; background: var(--neutral-soft); padding: 1px 5px; border-radius: 5px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } .panel { padding: 14px; } th, td { padding: 7px 8px; } }
+</style>
+</head>
+<body>
+<div id="tip" hidden></div>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Projeto Recurso de Glosa · Deep dive · v2</span>
+    <h1>Queda de Recurso em Setembro</h1>
+    <p class="muted">A pergunta: a tabela nova reduziu a glosa por autorização não localizada e, com ela, o recurso? Ou a queda de setembro vem de laboratórios represando recurso? As conclusões usam só coortes de glosa já fechadas, até julho. Agosto entra como prévia, comparado ao histórico de tempo de recurso de cada prestador.</p>
+    <div class="scope">
+      <span class="chip">Somente laboratórios</span>
+      <span class="chip">Motivo-alvo: 7DL (até jun) → 7F8 (a partir de jul)</span>
+      <span class="chip">Sem os recursos DASA de 22/09 em diante (excepcional)</span>
+      <span class="chip">Prazo medido da glosa ao recurso</span>
+      <span class="chip">Recursos até 25/09/2026</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Resposta curta</h2>
+    <div class="verdict">
+      <div class="v">
+        <span class="q">A glosa por autorização não localizada caiu?</span>
+        <span class="pill good">Sim, e se manteve</span>
+        <span class="a">R$ 504 mil → R$ 201 mil por mês</span>
+        <p>A média de abr–jun (7DL) caiu 60% em julho, já com o 7F8. Agosto e setembro ficaram em R$ 252–255 mil. Em % do apresentado, o motivo passou de 4,5% para 1,8–1,9%, sem sinal de volta.</p>
+      </div>
+      <div class="v">
+        <span class="q">O recurso desse motivo caiu junto?</span>
+        <span class="pill good">Sim, na proporção esperada</span>
+        <span class="a">33% recursado, R$ 65 mil contra R$ 146 mil</span>
+        <p>Em até 60 dias da glosa, a coorte de julho teve 33% recursado, contra 26–32% em abr–jun. O percentual se manteve. Como a base glosada é menor, o recurso em até 60 dias caiu 55%.</p>
+      </div>
+      <div class="v">
+        <span class="q">Algum prestador está represando recurso?</span>
+        <span class="pill warn">Julho não. Agosto: acompanhar a DASA</span>
+        <span class="a">Coorte de julho dentro do padrão</span>
+        <p>DASA, Fleury e Femme recursaram as glosas de julho no mesmo ritmo do histórico. Na prévia de agosto, só a DASA está abaixo do padrão até aqui, e a janela normal dela (22/09 a 01/10) ainda não está na base.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>1. A glosa por autorização não localizada caiu com a tabela nova</h2>
+    <p class="muted">Em julho, o código 7DL (Autorização de item não localizada) deixou de ser usado. A glosa por falta de autorização encontrada passou a sair como 7F8 (Cobrança de procedimento que exige autorização prévia). O 7F8 é a continuação do mesmo motivo; o projeto registra seu volume como a busca de autorização que não retroage ao código antigo. Senha cancelada (7EY), procedimento não autorizado (7DK), data de autorização posterior (7EZ) e não autorizado pela auditoria (7F9) ficam fora.</p>
+    <div class="panel">
+      <h3 style="margin-bottom:6px">Valor glosado por autorização não localizada, por mês da glosa (R$ mil)</h3>
+      <div class="legend" style="margin-bottom:10px">
+        <span><i style="background:var(--s1)"></i>7DL · tabela antiga</span>
+        <span><i style="background:var(--s2)"></i>7F8 · tabela nova</span>
+      </div>
+      <div id="chAlvo"></div>
+      <div class="tbl-wrap" style="margin-top:14px"><table id="tAlvo"></table></div>
+      <p class="small muted" style="margin-top:10px">% do apresentado por mês da conta. O percentual recursado em até 60 dias só fica completo para glosas com pelo menos 60 dias. Por isso agosto e setembro aparecem como "aberto".</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. O percentual recursado do motivo se manteve; o volume caiu</h2>
+    <div class="panel tbl-wrap">
+      <table>
+        <thead><tr><th>Coorte (mês da glosa)</th><th>Glosado</th><th>% recursado em até 60 dias</th><th>R$ recursado em até 60 dias</th><th>% recursado até hoje</th><th>Acato</th></tr></thead>
+        <tbody id="tRec"></tbody>
+      </table>
+      <p class="small muted" style="margin-top:10px">Julho ainda recebe recurso (idade de 57 a 86 dias em 25/09), e o Fleury costuma recursar entre 57 e 67 dias depois da glosa. O % "até hoje" de julho ainda vai subir. O de 60 dias já é comparável com os meses anteriores.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Quanto tempo cada prestador leva para recursar</h2>
+    <p class="muted">Curva acumulada do valor recursado, em % do valor glosado, pelos dias entre a glosa e o recurso. A linha contínua é a média das coortes de abr–jun, antes da mudança. A tracejada é a coorte de julho, desenhada só até 55 dias, idade que todas as glosas de julho já atingiram.</p>
+    <div class="panel">
+      <div class="legend" style="margin-bottom:10px">
+        <span><i style="background:var(--s1)"></i>DASA</span>
+        <span><i style="background:var(--s2)"></i>Fleury</span>
+        <span><i style="background:var(--s3)"></i>Femme</span>
+        <span>── abr–jun &nbsp; - - julho</span>
+      </div>
+      <div id="chCurva"></div>
+    </div>
+    <div class="panel tbl-wrap">
+      <table>
+        <thead><tr><th>Prestador</th><th>Mediana de dias até o recurso (mar → jul)</th><th>% recursado em até 60 dias (abr · mai · jun)</th><th>Julho em até 60 dias</th><th>Leitura de julho</th></tr></thead>
+        <tbody>
+          <tr><td>DASA</td><td>67 · 52 · 47 · 42 · 42</td><td>48% · 54% · 65%</td><td><b>58%</b></td><td class="wrap-cell"><span class="pill good">No padrão</span> E cada vez mais rápida</td></tr>
+          <tr><td>Fleury</td><td>32 · 82 · 62 · 67 · 57</td><td>0% · 9% · 9%</td><td><b>13%</b></td><td class="wrap-cell"><span class="pill good">No padrão</span> Recursa quase tudo depois dos 60 dias</td></tr>
+          <tr><td>Femme</td><td>42 · 52 · 37 · 52 · 42</td><td>79% · 79% · 87%</td><td><b>82%</b></td><td class="wrap-cell"><span class="pill good">No padrão</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. Por que setembro caiu</h2>
+    <p class="muted">O recurso que chega em um mês vem, quase todo, das glosas dos dois meses anteriores. A tabela mostra quanto cada mês recebeu e quanto isso representa da coorte que o alimentou.</p>
+    <div class="panel tbl-wrap">
+      <table>
+        <thead><tr><th>Mês do recurso</th><th>Recebido (todos os motivos)</th><th>Das glosas de M-1</th><th>% da coorte M-1</th><th>Das glosas de M-2</th><th>% da coorte M-2</th><th>Glosado em M-2</th></tr></thead>
+        <tbody id="tMat"></tbody>
+      </table>
+    </div>
+    <div class="grid2">
+      <div class="panel prov">
+        <span class="pill good">Efeito real</span>
+        <h3>A base que alimenta setembro é menor</h3>
+        <p>Setembro depende das glosas de julho, que somaram R$ 989 mil, contra R$ 2,11 mi em junho (com o pico pontual de 7F6) e R$ 1,10 mi em maio. O motivo-alvo sozinho caiu de R$ 493 mil para R$ 201 mil. Menos glosa gerou menos recurso a receber.</p>
+      </div>
+      <div class="panel prov">
+        <span class="pill flat">Antecipação</span>
+        <h3>Julho foi recursado mais cedo, em agosto</h3>
+        <p>28% da coorte de julho já chegou em agosto. Nos meses anteriores, esse percentual no mês seguinte ficou entre 7% e 24%. A DASA reduziu a mediana de 67 para 42 dias. Por isso sobrou pouco de julho para setembro: 13,5% da coorte.</p>
+      </div>
+      <div class="panel prov">
+        <span class="pill warn">Agosto ainda aberto</span>
+        <h3>As glosas de agosto foram feitas mais tarde no mês</h3>
+        <p>Só 2% do valor de agosto foi glosado entre os dias 1 e 10, contra 14–30% nos meses anteriores. Em 25/09, só R$ 386 mil (29%) tinham 40 dias ou mais. Nessa faixa, agosto está em 0% recursado, contra 1,5–9% no histórico. A diferença esperada é de cerca de R$ 27 mil, quase toda da DASA.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Prévia de agosto por prestador</h2>
+    <div class="grid2">
+      <div class="panel prov">
+        <span class="pill warn">Acompanhar até 01/10</span>
+        <h3>DASA</h3>
+        <dl>
+          <dt>Glosado em agosto · quando</dt><dd>R$ 438 mil · 82% entre 11 e 20/08</dd>
+          <dt>Em até 40 dias da glosa (R$ 328 mil elegíveis)</dt><dd>0%, contra 22% (jun) e 15% (jul)</dd>
+          <dt>Janela típica de recurso (mediana de 42 dias)</dt><dd>22/09 a 01/10</dd>
+        </dl>
+        <p>A DASA recursa as glosas do mês anterior em cerca de 42 dias. As de agosto deveriam começar a chegar de 22/09 em diante, exatamente a semana do lote excepcional e em grande parte depois do último dado da base. Se, em 60 dias da glosa, ela ficar bem abaixo de 48–65%, a mudança de comportamento se confirma.</p>
+      </div>
+      <div class="panel prov">
+        <span class="pill flat">Sem leitura ainda</span>
+        <h3>Fleury</h3>
+        <dl>
+          <dt>Glosado em agosto · quando</dt><dd>R$ 783 mil · 44% entre 21 e 31/08</dd>
+          <dt>Janela típica (mediana de 57 a 67 dias)</dt><dd>07/10 a 06/11</dd>
+          <dt>Recurso com 60 dias ou mais após a glosa</dt><dd>67% do valor recursado</dd>
+        </dl>
+        <p>O Fleury quase nunca recursa antes de 50 dias. A coorte de agosto só terá leitura a partir de meados de outubro.</p>
+      </div>
+      <div class="panel prov">
+        <span class="pill flat">Sem leitura ainda</span>
+        <h3>Femme</h3>
+        <dl>
+          <dt>Glosado em agosto · quando</dt><dd>R$ 83 mil · 78% entre 21 e 31/08</dd>
+          <dt>Janela típica (mediana de 37 a 52 dias)</dt><dd>27/09 a 22/10</dd>
+          <dt>% recursado em até 60 dias, histórico</dt><dd>79–87%</dd>
+        </dl>
+        <p>O Femme recursa quase tudo. Como as glosas de agosto dele foram no fim do mês, a leitura fica para a segunda semana de outubro.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. Hipóteses testadas</h2>
+    <div class="panel tbl-wrap">
+      <table>
+        <thead><tr><th>Hipótese</th><th>Como testei</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td class="wrap-cell"><b>A tabela nova reduziu a glosa por autorização não localizada</b></td><td class="wrap-cell">7DL até junho, 7F8 a partir de julho. Valor glosado e % do apresentado</td><td class="wrap-cell"><span class="pill good">Confirmada</span> −60% em julho (R$ 504 mil → R$ 201 mil) e estável em ago–set</td></tr>
+          <tr><td class="wrap-cell"><b>O % recursado do motivo se manteve, e o volume de recurso caiu</b></td><td class="wrap-cell">% recursado em até 60 dias da glosa, coortes fechadas</td><td class="wrap-cell"><span class="pill good">Confirmada</span> 33% em julho, contra 26–32%. R$ recursado em até 60 dias −55%</td></tr>
+          <tr><td class="wrap-cell"><b>Prestadores deixaram de recursar glosas de julho</b></td><td class="wrap-cell">Curva de dias até o recurso, julho contra abr–jun, por prestador</td><td class="wrap-cell"><span class="pill flat">Descartada</span> DASA, Fleury e Femme dentro da faixa histórica</td></tr>
+          <tr><td class="wrap-cell"><b>A queda de setembro vem de menos glosa e de recurso antecipado</b></td><td class="wrap-cell">Origem do recurso de cada mês por coorte (M-1, M-2)</td><td class="wrap-cell"><span class="pill good">Confirmada</span> Base de julho menor e 28% dela já recursada em agosto</td></tr>
+          <tr><td class="wrap-cell"><b>Algum prestador está represando as glosas de agosto</b></td><td class="wrap-cell">% recursado na mesma idade, só com itens que já atingiram essa idade</td><td class="wrap-cell"><span class="pill warn">Em aberto</span> A DASA está abaixo do padrão em 40 dias. Fleury e Femme ainda não chegaram à janela deles</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. Outro achado: metade do recurso chega depois dos 60 dias</h2>
+    <div class="panel">
+      <p>Nas coortes de jan a jul, <b>51% do valor recursado chegou 60 dias ou mais depois da data da glosa</b>, e foi acatado em 70% dos casos (contra 68% dentro do prazo). No Fleury, isso vale para 67% do valor; na DASA, 42%; no Femme, 17%. Há duas leituras possíveis. Ou o prazo de 60 dias não está sendo aplicado na análise, ou a data de glosa no TOTVS é anterior à data em que a glosa é enviada ao prestador. Vale confirmar qual é a data de referência do prazo antes de usar essa informação na negociação.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>8. O que acompanhar</h2>
+    <div class="panel">
+      <ol class="steps">
+        <li><b>Até 01–03/10: DASA.</b> As glosas de agosto dela entram na janela normal de recurso. Se o recurso em 60 dias ficar bem abaixo de 48–65%, abrir contato.</li>
+        <li><b>Segunda quinzena de outubro: Femme e Fleury.</b> Ler a coorte de agosto com a mesma curva de dias até o recurso.</li>
+        <li><b>Fechar a coorte em M+2.</b> Medir o recurso sempre pela coorte de glosa, em até 60 dias. A coorte de julho fecha em 30/09, a de agosto em 30/10 e a de setembro em 30/11. O recurso recebido no mês mistura coortes e oscila com o ritmo de cada prestador.</li>
+        <li><b>Prazo de 60 dias.</b> Confirmar a data de referência e se recursos fora do prazo devem ser negados.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Método</h2>
+    <div class="panel">
+      <ul class="plain">
+        <li>Base: <code>curated.totvs_procedure_invoice</code>, laboratórios, Health Institution, totvs-alice, fases 1 a 4.</li>
+        <li>Motivo-alvo: descritivo contém "7DL -" (Autorização de item não localizada) ou "7F8 -" (Cobrança de procedimento que exige autorização prévia), incluindo motivos combinados.</li>
+        <li>DASA: recursos com data de 22/09/2026 em diante foram tratados como não recursados (excepcional).</li>
+        <li>Dias até o recurso = <code>appeal_date</code> − <code>disallowance_date</code>. Em cada comparação por idade, só entram glosas que já tinham essa idade em 25/09.</li>
+        <li>Acato = autorizado ÷ analisado (autorizado, parcial e negado), em valor.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+const D = {"alvo": [{"m": "2026-01", "glos": 365932.82999999996, "itens": 1984, "rec60": 42741.71000000001, "rect": 223825.7, "ac": 76355.76, "an": 223825.7}, {"m": "2026-02", "glos": 371536.47000000003, "itens": 2592, "rec60": 99626.97000000002, "rect": 215092.8, "ac": 84421.9, "an": 215092.8}, {"m": "2026-03", "glos": 351163.95000000007, "itens": 2684, "rec60": 22646.460000000003, "rect": 128025.18000000001, "ac": 90957.96, "an": 128025.18000000001}, {"m": "2026-04", "glos": 412375.8000000001, "itens": 3019, "rec60": 115222.82, "rect": 227747.52999999997, "ac": 100006.86999999998, "an": 227747.52999999997}, {"m": "2026-05", "glos": 607559.07, "itens": 3702, "rec60": 195113.98, "rect": 358676.91, "ac": 140025.1, "an": 358676.91}, {"m": "2026-06", "glos": 493656.3999999999, "itens": 4292, "rec60": 127519.46, "rect": 281686.98, "ac": 242743.43, "an": 281686.98}, {"m": "2026-07", "glos": 201877.27000000002, "itens": 1133, "rec60": 65939.35999999999, "rect": 86416.98, "ac": 57219.06, "an": 86319.7}, {"m": "2026-08", "glos": 252705.84999999998, "itens": 1693, "rec60": 0, "rect": 0, "ac": 0.0, "an": 0.0}, {"m": "2026-09", "glos": 255704.97000000003, "itens": 1719, "rec60": 0, "rect": 0, "ac": 0.0, "an": 0.0}], "curves": {"DASA_base": [[0, 0.0], [5, 0.0], [10, 0.0], [15, 0.0], [20, 0.0], [25, 0.0], [30, 0.0], [35, 0.0], [40, 2.4329556149601532], [45, 27.83310616216453], [50, 45.90334091876734], [55, 53.11515984748697], [60, 56.527267107287166], [65, 57.691742770166755], [70, 58.90904563606657], [75, 59.679832633922544], [80, 63.20022991119574], [85, 66.66444989043616], [90, 66.72291611698212], [95, 66.72291611698212], [100, 66.72291611698212], [105, 66.72291611698212], [110, 66.72291611698212], [115, 66.72291611698212], [120, 66.72291611698212]], "DASA_jul": [[0, 0.0], [5, 0.0], [10, 0.0], [15, 0.0], [20, 0.0], [25, 0.0], [30, 0.0], [35, 4.006119844719547], [40, 13.808326797554033], [45, 42.40134881977515], [50, 57.05661347052297], [55, 58.05304469345719], [60, 58.295310564932905], [65, 58.71989548926549], [70, 59.05242758571266], [75, 59.05242758571266], [80, 59.147253422627905], [85, 59.147253422627905], [90, 59.147253422627905], [95, 59.147253422627905], [100, 59.147253422627905], [105, 59.147253422627905], [110, 59.147253422627905], [115, 59.147253422627905], [120, 59.147253422627905]], "FLEURY_base": [[0, 0.0], [5, 0.0], [10, 0.0], [15, 0.0], [20, 0.0], [25, 0.0], [30, 0.0], [35, 0.0], [40, 0.0], [45, 0.03248067011796262], [50, 0.516346832763277], [55, 0.5442119030284417], [60, 5.816808100642411], [65, 17.54072141212437], [70, 31.475233102720637], [75, 34.62024272664979], [80, 36.46975231997235], [85, 41.45112756764327], [90, 42.661293871740575], [95, 42.661293871740575], [100, 42.661293871740575], [105, 42.661293871740575], [110, 42.661293871740575], [115, 42.661293871740575], [120, 42.661293871740575]], "FLEURY_jul": [[0, 0.0], [5, 0.0], [10, 0.0], [15, 0.0], [20, 0.0], [25, 0.0], [30, 0.0], [35, 0.0], [40, 0.0], [45, 3.2089510442162013], [50, 3.37937025257433], [55, 3.5236539263638558], [60, 12.528277743546614], [65, 12.528277743546614], [70, 20.841745184427285], [75, 22.289131556865787], [80, 22.3604514173525], [85, 22.3604514173525], [90, 22.3604514173525], [95, 22.3604514173525], [100, 22.3604514173525], [105, 22.3604514173525], [110, 22.3604514173525], [115, 22.3604514173525], [120, 22.3604514173525]], "FEMME_base": [[0, 0.0], [5, 0.0], [10, 2.7640371346456853], [15, 5.251761332004549], [20, 8.620386087533337], [25, 9.178616934155837], [30, 10.1920385271157], [35, 11.16168650684617], [40, 34.11315146986128], [45, 36.0837743491866], [50, 41.0014671623574], [55, 63.33385077785436], [60, 80.354816663192], [65, 88.72271094464615], [70, 92.2576693380857], [75, 92.87700656476258], [80, 95.5981352014299], [85, 95.5981352014299], [90, 95.5981352014299], [95, 95.5981352014299], [100, 95.5981352014299], [105, 95.5981352014299], [110, 95.5981352014299], [115, 95.5981352014299], [120, 95.5981352014299]], "FEMME_jul": [[0, 0.0], [5, 0.0], [10, 0.0], [15, 0.0], [20, 0.0], [25, 0.0], [30, 0.0], [35, 3.4562669340413645], [40, 31.85119958552583], [45, 71.55734679374604], [50, 81.72314070574639], [55, 81.72314070574639], [60, 81.72314070574639], [65, 81.72314070574639], [70, 81.72314070574639], [75, 81.72314070574639], [80, 81.72314070574639], [85, 81.72314070574639], [90, 81.72314070574639], [95, 81.72314070574639], [100, 81.72314070574639], [105, 81.72314070574639], [110, 81.72314070574639], [115, 81.72314070574639], [120, 81.72314070574639]]}, "mat": [{"m": "2026-04", "tot": 507571.7400000001, "m1": 56914.08, "p1": 6.734335078762995, "m2": 412163.46000000014, "p2": 43.517098937356984, "g1": 845132.8800000005, "g2": 947129.91}, {"m": "2026-05", "tot": 542125.3999999999, "m1": 94793.68, "p1": 8.012640055472797, "m2": 254019.88, "p2": 30.056797695529234, "g1": 1183051.7700000012, "g2": 845132.8800000005}, {"m": "2026-06", "tot": 456040.95, "m1": 261637.27000000005, "p1": 23.841444864224542, "m2": 191686.13999999998, "p2": 16.202684012720745, "g1": 1097405.2600000002, "g2": 1183051.7700000012}, {"m": "2026-07", "tot": 992647.0800000001, "m1": 421047.38000000006, "p1": 19.93738405508005, "m2": 354173.9199999999, "p2": 32.27375819211946, "g1": 2111848.67, "g2": 1097405.2600000002}, {"m": "2026-08", "tot": 1096747.8299999998, "m1": 279465.30999999994, "p1": 28.243448442350218, "m2": 792284.33, "p2": 37.51615071926532, "g1": 989487.210000001, "g2": 2111848.67}, {"m": "2026-09", "tot": 140286.21000000002, "m1": 0.0, "p1": 0.0, "m2": 133431.02000000002, "p2": 13.484865559808487, "g1": 1317875.0899999992, "g2": 989487.210000001}]};
+const AP = {"2026-01":5.48,"2026-02":3.99,"2026-03":3.81,"2026-04":3.69,"2026-05":5.78,"2026-06":4.01,"2026-07":1.78,"2026-08":1.92,"2026-09":1.93};
+const MES = { "01":"jan","02":"fev","03":"mar","04":"abr","05":"mai","06":"jun","07":"jul","08":"ago","09":"set" };
+const lab = (m) => MES[m.slice(5,7)];
+const pct = (v, d=1) => v.toLocaleString("pt-BR", {minimumFractionDigits:d, maximumFractionDigits:d}) + "%";
+const brl = (v) => "R$ " + Math.round(v/1e3).toLocaleString("pt-BR") + " mil";
+const tip = document.getElementById("tip");
+function bindTips(root) {
+  root.querySelectorAll("[data-tip]").forEach(el => {
+    el.addEventListener("mousemove", e => { tip.innerHTML = el.getAttribute("data-tip"); tip.hidden = false; tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (e.clientY + 14) + "px"; });
+    el.addEventListener("mouseleave", () => tip.hidden = true);
+  });
+}
+function barPath(x, y, w, h, r=4) { if (h <= 0) return ""; r = Math.min(r, h, w/2); return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`; }
+
+(function alvo() {
+  const A = D.alvo, W = 640, H = 240, L = 44, R = 10, T = 22, B = 28, pw = W-L-R, ph = H-T-B, max = 700;
+  const y = v => T + ph - v/max*ph, band = pw/A.length, bw = Math.min(36, band*0.55);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Glosado por autorização não localizada por mês">`;
+  for (let i=0;i<=7;i++){ const v=i*100; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`; }
+  A.forEach((a,i) => {
+    const cx = L + band*i + band/2, v = a.glos/1e3, col = a.m >= "2026-07" ? "var(--s2)" : "var(--s1)";
+    s += `<path d="${barPath(cx-bw/2, y(v), bw, y(0)-y(v))}" fill="${col}"/>`;
+    s += `<text class="val" x="${cx}" y="${y(v)-7}" text-anchor="middle">${Math.round(v)}</text><text x="${cx}" y="${H-8}" text-anchor="middle">${lab(a.m)}</text>`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="<b>${lab(a.m)}/26 · ${a.m >= '2026-07' ? '7F8' : '7DL'}</b><br>Glosado: ${brl(a.glos)}<br>Itens glosados: ${a.itens.toLocaleString('pt-BR')}<br>% do apresentado: ${pct(AP[a.m],2)}"/>`;
+  });
+  const xs = L + band*6; s += `<line x1="${xs}" x2="${xs}" y1="${T-6}" y2="${T+ph}" stroke="var(--ink-3)" stroke-width="1"/><text x="${xs+6}" y="${T+4}" class="val">tabela nova</text></svg>`;
+  const el = document.getElementById("chAlvo"); el.innerHTML = s; bindTips(el);
+  const open = m => m >= "2026-08";
+  document.getElementById("tAlvo").innerHTML = `<thead><tr><th></th>${A.map(a=>`<th>${lab(a.m)}</th>`).join("")}</tr></thead><tbody>
+    <tr><td>Código</td>${A.map(a=>`<td>${a.m >= "2026-07" ? "7F8" : "7DL"}</td>`).join("")}</tr>
+    <tr><td>Glosado (R$ mil)</td>${A.map(a=>`<td>${Math.round(a.glos/1e3)}</td>`).join("")}</tr>
+    <tr><td>Itens glosados</td>${A.map(a=>`<td>${a.itens.toLocaleString("pt-BR")}</td>`).join("")}</tr>
+    <tr><td>% do apresentado</td>${A.map(a=>`<td>${pct(AP[a.m],2)}</td>`).join("")}</tr>
+    <tr><td>% recursado em até 60 dias</td>${A.map(a=>`<td>${open(a.m) ? '<span class="muted">aberto</span>' : pct(100*a.rec60/a.glos)}</td>`).join("")}</tr></tbody>`;
+  document.getElementById("tRec").innerHTML = A.filter(a => a.m >= "2026-03" && a.m <= "2026-07").map(a => `<tr${a.m==="2026-07"?' class="hl"':''}><td>${lab(a.m)}/26 · ${a.m >= "2026-07" ? "7F8" : "7DL"}</td><td>${brl(a.glos)}</td><td><b>${pct(100*a.rec60/a.glos)}</b></td><td>${brl(a.rec60)}</td><td>${pct(100*a.rect/a.glos)}${a.m==="2026-07"?" *":""}</td><td>${a.an>1000?pct(100*a.ac/a.an,0):"–"}</td></tr>`).join("") +
+    `<tr><td><b>Média abr–jun</b></td><td>${brl((A[3].glos+A[4].glos+A[5].glos)/3)}</td><td><b>${pct((100*A[3].rec60/A[3].glos+100*A[4].rec60/A[4].glos+100*A[5].rec60/A[5].glos)/3)}</b></td><td>${brl((A[3].rec60+A[4].rec60+A[5].rec60)/3)}</td><td>${pct((100*A[3].rect/A[3].glos+100*A[4].rect/A[4].glos+100*A[5].rect/A[5].glos)/3)}</td><td>–</td></tr>`;
+})();
+
+(function curva() {
+  const W = 640, H = 280, L = 44, R = 16, T = 16, B = 30, pw = W-L-R, ph = H-T-B, maxX = 120, maxY = 100;
+  const x = d => L + d/maxX*pw, y = v => T + ph - v/maxY*ph;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Curva acumulada de recurso por dias desde a glosa">`;
+  for (let v=0; v<=100; v+=25) s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}%</text>`;
+  for (let d=0; d<=120; d+=20) s += `<text x="${x(d)}" y="${H-10}" text-anchor="middle">${d}d</text>`;
+  s += `<line x1="${x(60)}" x2="${x(60)}" y1="${T}" y2="${T+ph}" stroke="var(--accent)" stroke-width="1.5"/><text x="${x(60)+5}" y="${T+10}" class="val">prazo 60 dias</text>`;
+  const cols = { DASA:"var(--s1)", FLEURY:"var(--s2)", FEMME:"var(--s3)" };
+  const names = { DASA:"DASA", FLEURY:"Fleury", FEMME:"Femme" };
+  Object.keys(cols).forEach(g => {
+    const b = D.curves[g+"_base"], j = D.curves[g+"_jul"].filter(p => p[0] <= 55);
+    s += `<polyline fill="none" stroke="${cols[g]}" stroke-width="2" stroke-linejoin="round" points="${b.map(p=>x(p[0])+","+y(p[1])).join(" ")}"/>`;
+    s += `<polyline fill="none" stroke="${cols[g]}" stroke-width="2" stroke-dasharray="5 4" points="${j.map(p=>x(p[0])+","+y(p[1])).join(" ")}"/>`;
+    const last = b[b.length-1]; s += `<circle cx="${x(last[0])}" cy="${y(last[1])}" r="4" fill="${cols[g]}" stroke="var(--surface)" stroke-width="2"/>`;
+    s += `<text x="${x(last[0])-6}" y="${y(last[1])-8}" text-anchor="end" class="val">${names[g]} ${pct(last[1],0)}</text>`;
+  });
+  [20,40,55,60,80,100].forEach(d => {
+    const tx = ["DASA","FLEURY","FEMME"].map(g => { const b = D.curves[g+"_base"].find(p=>p[0]===d), j = D.curves[g+"_jul"].find(p=>p[0]===d); return `${names[g]}: ${pct(b[1])}${d<=55?` · jul ${pct(j[1])}`:''}`; }).join("<br>");
+    s += `<rect class="hit" x="${x(d)-18}" y="${T}" width="36" height="${ph}" data-tip="<b>${d} dias após a glosa</b><br>${tx}"/>`;
+  });
+  s += `</svg>`;
+  const el = document.getElementById("chCurva"); el.innerHTML = s; bindTips(el);
+})();
+
+document.getElementById("tMat").innerHTML = D.mat.map(r => `<tr${r.m==="2026-09"?' class="hl"':''}><td>${lab(r.m)}/26${r.m==="2026-09"?" (até 25/09)":""}</td><td><b>${brl(r.tot)}</b></td><td>${brl(r.m1)}</td><td>${pct(r.p1)}</td><td>${brl(r.m2)}</td><td>${pct(r.p2)}</td><td>${brl(r.g2)}</td></tr>`).join("");
+</script>
+
+</body>
+</html>
