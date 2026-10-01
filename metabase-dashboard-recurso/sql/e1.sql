@@ -25,18 +25,25 @@ WITH base AS (
     [[AND {{tipo_inst}}]]
     [[AND {{grupo}}]]
 )
-, rec AS (
-  SELECT grupo, DATE_TRUNC('month', appeal_date)::date AS mes_recurso, (appeal_date - disallowance_date) AS dias
+, ei AS (
+  SELECT
+    DATE_TRUNC('month', appeal_date)::date AS mes_recurso,
+    TRIM(COALESCE(SPLIT_PART(motivo, '|', 1), '(sem motivo)')) AS motivo_glosa,
+    COUNT(DISTINCT invoice_guide_item_key) AS itens
   FROM base
-  WHERE appeal_value IS NOT NULL AND excluido = 0 AND appeal_date >= '2026-04-01' AND disallowance_date IS NOT NULL
+  WHERE appeal_value IS NOT NULL AND excluido = 0
+    AND appeal_status IN ('Autorizado', 'Autorizado Parcialmente') AND tipo_erro = 'EI'
+    AND appeal_date >= '2026-03-01'
+  GROUP BY 1, 2
+),
+rk AS (
+  SELECT motivo_glosa, RANK() OVER (ORDER BY SUM(itens) DESC) AS r FROM ei GROUP BY motivo_glosa
 )
 SELECT
-  grupo AS grupo_prestador,
-  mes_recurso,
-  COUNT(*) AS itens_recursados,
-  MEDIAN(dias) AS mediana_dias_glosa_ate_recurso,
-  SUM(CASE WHEN dias > 60 THEN 1 ELSE 0 END)::float / COUNT(*) AS pct_itens_apos_60_dias
-FROM rec
+  e.mes_recurso,
+  CASE WHEN k.r <= 8 THEN e.motivo_glosa ELSE 'Outros motivos' END AS motivo_glosa,
+  SUM(e.itens) AS itens_acatados_ei
+FROM ei e
+JOIN rk k ON k.motivo_glosa = e.motivo_glosa
 GROUP BY 1, 2
-HAVING COUNT(*) >= 30
-ORDER BY 2 DESC, 3 DESC
+ORDER BY 1, 3 DESC

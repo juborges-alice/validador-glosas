@@ -22,7 +22,6 @@ WITH base AS (
   WHERE system_source = 'totvs-alice'
     AND provider_class = 'Health Institution'
     AND invoice_step IN ('1-Digitacao', '2-Conferencia', '3-Pronta', '4-Faturada')
-    AND (institution_type ILIKE '%Clinica%' OR institution_type ILIKE '%Laboratorio%')
     [[AND {{tipo_inst}}]]
     [[AND {{grupo}}]]
 )

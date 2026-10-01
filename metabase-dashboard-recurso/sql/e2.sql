@@ -24,19 +24,25 @@ WITH base AS (
     AND invoice_step IN ('1-Digitacao', '2-Conferencia', '3-Pronta', '4-Faturada')
     [[AND {{tipo_inst}}]]
     [[AND {{grupo}}]]
+    [[AND {{periodo}}]]
 )
 , rec AS (
-  SELECT grupo, DATE_TRUNC('month', appeal_date)::date AS mes_recurso, (appeal_date - disallowance_date) AS dias
+  SELECT
+    TRIM(COALESCE(SPLIT_PART(motivo, '|', 1), '(sem motivo)')) AS motivo_glosa,
+    COUNT(DISTINCT invoice_guide_item_key) AS itens_recursados,
+    COUNT(DISTINCT CASE WHEN appeal_status IN ('Autorizado', 'Autorizado Parcialmente') AND tipo_erro = 'EI' THEN invoice_guide_item_key END) AS itens_acatados_ei
   FROM base
-  WHERE appeal_value IS NOT NULL AND excluido = 0 AND appeal_date >= '2026-04-01' AND disallowance_date IS NOT NULL
+  WHERE appeal_value IS NOT NULL AND excluido = 0
+  GROUP BY 1
 )
 SELECT
-  grupo AS grupo_prestador,
-  mes_recurso,
-  COUNT(*) AS itens_recursados,
-  MEDIAN(dias) AS mediana_dias_glosa_ate_recurso,
-  SUM(CASE WHEN dias > 60 THEN 1 ELSE 0 END)::float / COUNT(*) AS pct_itens_apos_60_dias
+  motivo_glosa,
+  itens_acatados_ei,
+  itens_acatados_ei::float / NULLIF(SUM(itens_acatados_ei) OVER (), 0) AS pct_do_total_ei,
+  SUM(itens_acatados_ei) OVER (ORDER BY itens_acatados_ei DESC, motivo_glosa ROWS UNBOUNDED PRECEDING)::float
+    / NULLIF(SUM(itens_acatados_ei) OVER (), 0) AS pct_acumulado,
+  itens_recursados,
+  itens_acatados_ei::float / NULLIF(itens_recursados, 0) AS pct_recursados_acatados_ei
 FROM rec
-GROUP BY 1, 2
-HAVING COUNT(*) >= 30
-ORDER BY 2 DESC, 3 DESC
+WHERE itens_acatados_ei > 0
+ORDER BY itens_acatados_ei DESC, motivo_glosa
