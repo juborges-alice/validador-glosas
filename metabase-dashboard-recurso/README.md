@@ -28,7 +28,7 @@ Exclusões: recursos 7F6 recebidos em jul-ago/26 e recursos DASA de 22 a 30/09/2
 
 ## Aba 2 - Esforço operacional e eficiência
 Exclusão: recursos DASA de 22 a 30/09/26. Item analisado = Autorizado, Autorizado Parcialmente ou Negado com data de análise.
-SLA = 7 dias úteis do recebimento até a análise (campo `appeal_analysis_on_time`).
+SLA = 15 dias úteis do recebimento até a análise, calculado por `working_days_from_appeal_to_analysis` (o campo `appeal_analysis_on_time` usa 7 dias úteis e não é usado).
 
 | Card | SQL |
 |---|---|
