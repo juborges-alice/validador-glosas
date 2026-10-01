@@ -12,7 +12,7 @@ Filtros: tipo de instituição e grupo do prestador.
 |---|---|
 | KPIs (mês atual, baseline) e itens recursados por mês vs baseline | sql/c1.sql |
 | Acumulado no mês vs média de 3 meses | sql/c2.sql |
-| % de itens recursados em até 60 dias, por mês da glosa | sql/c3.sql |
+| % de itens glosados que foram recursados (sem limite de prazo), por mês da glosa | sql/c3.sql |
 | Autorização não localizada (7DL/7F8) | sql/c4.sql |
 | Itens recursados por grupo | sql/c5.sql |
 | Itens por guia | sql/c6.sql |
