@@ -32,7 +32,7 @@ WITH base AS (
 SELECT
   DATE_TRUNC('month', b.disallowance_date)::date AS mes_glosa,
   CASE WHEN DATE_TRUNC('month', b.disallowance_date) < '2026-07-01' THEN '7DL' ELSE '7F8' END AS codigo,
-  CASE WHEN DATEADD(day, 90, LAST_DAY(b.disallowance_date)) <= MAX(r.ult_recurso) THEN 'Madura' ELSE 'Em maturacao' END AS situacao_coorte,
+  CASE WHEN DATEADD(day, 60, LAST_DAY(b.disallowance_date)) <= MAX(r.ult_recurso) THEN 'Madura' ELSE 'Em maturacao' END AS situacao_coorte,
   COUNT(DISTINCT b.invoice_guide_item_key) AS itens_glosados,
   SUM(b.disallowance_value) AS valor_glosado,
   COUNT(DISTINCT CASE WHEN b.appeal_value IS NOT NULL AND b.excluido = 0 THEN b.invoice_guide_item_key END) AS itens_recursados,
