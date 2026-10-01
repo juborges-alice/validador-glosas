@@ -17,13 +17,17 @@ WITH base AS (
     AND NOT (COALESCE(provider_economic_group, '') = 'DASA' AND appeal_date >= '2026-09-22' AND appeal_date < '2026-10-01')
     [[AND {{tipo_inst}}]]
     [[AND {{grupo}}]]
-    [[AND {{periodo}}]]
+    [[AND {{mes}}]]
+)
+, ref AS (
+  SELECT DATE_TRUNC('month', MAX(appeal_analysis_date))::date AS mes_ref FROM base WHERE analisado = 1
 )
 SELECT
   appeal_analysis_date AS dia_analise,
   COUNT(DISTINCT invoice_guide_item_key) AS itens_analisados
 FROM base
 WHERE analisado = 1
-  AND appeal_analysis_date >= '2026-03-01'
+  AND appeal_analysis_date >= (SELECT mes_ref FROM ref)
+  AND appeal_analysis_date < DATEADD(month, 1, (SELECT mes_ref FROM ref))
 GROUP BY 1
 ORDER BY 1

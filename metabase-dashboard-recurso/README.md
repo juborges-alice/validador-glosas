@@ -6,7 +6,7 @@ Coleção: Recurso de Glosa - Acompanhamento (sandbox de Juliana Borges)
 Escopo: Health Institution, totvs-alice, fases 1 a 4. Filtro "Tipo de instituição" com padrão Clínica + Laboratório
 (limpe o filtro para incluir hospitais). Unidade: item (`invoice_guide_item_key`).
 
-Filtros do painel: Tipo de instituição, Grupo do prestador, Período (cards diários, pareto EI e tabela por analista),
+Filtros do painel: Tipo de instituição, Grupo do prestador, Período (pareto EI e tabela por analista), Mês das análises diárias,
 Horas de trabalho por dia (padrão 8) e % do tempo em recurso (padrão 50).
 
 ## Aba 1 - Volume de recurso
@@ -32,12 +32,13 @@ SLA = 7 dias úteis do recebimento até a análise, pelo status do TOTVS (`appea
 
 | Card | SQL |
 |---|---|
-| Itens analisados por dia | sql/t1.sql |
+| Itens analisados por dia (um mês; filtro Mês das análises diárias) | sql/t1.sql |
 | Itens por dia com análise, média mensal vs baseline | sql/t2.sql |
 | Distribuição das análises ao longo do mês | sql/t3.sql |
 | Dias entre receber e analisar | sql/t4.sql |
 | SLA por PEG (pior status entre os itens) | sql/t5.sql |
 | SLA por item | sql/t6.sql |
+| % de itens dentro do SLA por mês (mesma consulta do SLA por item, em %) | sql/t6.sql |
 | Itens analisados por analista | sql/t7.sql |
 | Tabela por analista (itens/dia, % no prazo, minutos estimados) | sql/t8.sql |
 | Tempo estimado por item, por mês | sql/t9.sql |
