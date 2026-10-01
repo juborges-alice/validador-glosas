@@ -59,8 +59,8 @@ agrupamento** de exibição, nunca meta nem card.
 | 5 | Contas Médicas - SLA Recurso de Glosa - HI | **76364** (prazo contratual por lote) | diária ⚠️ |
 | 6 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | diária |
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
-| 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
-| 9 | Contas Médicas - Qnt de guias analisadas por dia | **76259** (Hospital e Clínica, metas separadas) | diária ⚠️ |
+| 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | **76805** (fila viva, 2025+) | diária ⚠️ |
+| 9 | Contas Médicas - Qnt de guias analisadas por dia | **65837** (só Hospital, dois gates) | diária ⚠️ |
 | 10 | Contas Médicas - % PEGs sem NF | 65694 | diária |
 | 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
@@ -79,9 +79,19 @@ o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 `segunda cláusula do limiar (crítica > 10 dias) não verificável — sem card de drill`.
 Quando um drill for cadastrado, esta nota sai.
 
-**⚠️ `Qnt de guias analisadas por dia`: recalibrado em 28/09/2026 (decisão da OM).** Passou a ter
-**escopo Hospital + Clínica com metas separadas** e **card novo 76259**, com alvo capado pela fila disponível e leitura em 5 dias úteis.
+**⚠️ `Qnt de guias analisadas por dia`: fonte é o card 65837, escopo só Hospital, com dois gates.**
+Recalibrado em 28/09/2026 (decisão da OM) e **corrigido em 30/09/2026**, quando a OM confirmou que a
+régua válida é a do registro do Decision Log e não a que este arquivo e o catálogo descreviam.
+O KPI sai ⚪ se qualquer gate fechar: **gate de SLA** (só é avaliado com `SLA de Análise de conta - HI`
+abaixo de 100% no mês) e **gate de fila** (≥1 PEG em aberto no card 76805). Com os dois abertos, o farol
+sai do acumulado de 5 dias úteis contra `capacidade_esperada × fator sazonal`, corte de 80%.
 Regra completa na seção "Qnt de guias analisadas por dia" abaixo; o catálogo do Notion é a fonte.
+
+**⚠️ `PEGs por Status de Análise no SLA - HI`: fonte é o card 76805 desde 30/09/2026** (decisão da OM).
+Ele substitui o 73390 e o 76260, que filtravam só o balde "Não finalizado **dentro** do SLA (7 du)" e
+por isso tornavam a condição de 🔴 (PEG com ≥13 du) **inalcançável pela própria fonte**. O 76805 aceita
+os dois baldes e restringe a `invoice_date >= 2025-01-01` (fila viva), deixando de fora o backlog morto
+de 2024. O 32465 segue útil só para reconciliar o total em aberto — não entra no farol.
 
 Conferido contra o catálogo em 22/09/2026 (as 19 linhas da tabela acima batem com o `ID Card
 metabase` do Notion). A única divergência encontrada era o card do `SLA Recurso de Glosa - HI`,
@@ -485,7 +495,37 @@ prazo certo, não removê-los.
 SLA normalmente — o prazo é maior, não infinito. Se outro lote com prazo diferenciado chegar,
 ajuste os três parâmetros ou acrescente uma cláusula análoga.
 
-## Qnt de guias analisadas por dia — fila disponível e produtividade (decisão da OM, 28/09/2026)
+## Qnt de guias analisadas por dia — card 65837, escopo Hospital, dois gates (decisão da OM, 28/09/2026, corrigida em 30/09/2026)
+
+> ### ⛔ LEIA ANTES DO RESTO DESTA SEÇÃO — O CARD 76259 FOI DESCARTADO
+>
+> Em 30/09/2026 a OM (Juliana Borges) confirmou por escrito que a régua válida deste KPI é a do
+> **registro do Decision Log**, não a que este arquivo e o catálogo de KPIs descreviam entre 28 e
+> 30/09. Tudo o que vem abaixo sobre **card 76259**, **teto_hospital 11.210**, **teto_clinica 4.311**,
+> **fila vencida de Clínica**, **ciclo_du** e **veredito_5du** está **DESATUALIZADO** e fica aqui
+> apenas como histórico do que foi construído e descartado.
+>
+> **A régua vigente, em quatro linhas:**
+> 1. **Fonte: card 65837**, escopo **apenas Hospital**. Laboratório e Clínica estão fora do KPI.
+> 2. **Gate de SLA** — só avalia se `SLA de Análise de conta - HI` (card 65832) estiver **abaixo de
+>    100%** no mês corrente. Em 100%, o KPI sai **⚪**, sem farol, sem hipótese e **sem episódio**.
+>    Se ninguém está perdendo prazo, quanto se analisou por dia é capacidade e não desvio.
+> 3. **Gate de fila** — só avalia se houver ao menos 1 PEG em aberto, pelo card **76805**.
+> 4. Com os dois gates abertos, o farol sai do **acumulado de 5 dias úteis**: 🔴 se
+>    `analisado_pelo_time` acumulado < **80%** da meta acumulada, onde meta diária =
+>    `capacidade_esperada × fator sazonal` (dias 01–14: 1,0 · 15–21: 0,9 · 22 ao fim do mês: 0,3).
+>    Dias sem `capacidade_esperada` (fim de semana e feriado) ficam fora da janela.
+>
+> **Roteamento fixo:** com escopo Hospital, o responsável é sempre Alana `<@U073Z4ENBNW>`. Este KPI
+> **não** roteia por concentração.
+>
+> **Defasagem de ETL:** o 65837 costuma não ter a linha do dia corrente às 06h30, e um dia que entra
+> na janela com `entraram_na_fila = 0` **E** `analisado_pelo_time = 0` é carga incompleta, não parada
+> da operação. Leia sempre os 5 últimos dias **com dado**.
+>
+> **O que esse erro custou:** em 30/09/2026 a rotina seguiu o 76259 e publicou 🔴 (Hospital em 79,8%
+> do alvo). Pela régua correta o KPI era ⚪ — o SLA estava em 100,00% e o gate fechava — e, mesmo com
+> o gate aberto, seria 🟢 (112,8% da meta). O episódio aberto naquele dia foi cancelado pela OM.
 
 Até 27/09 este KPI comparava o **consolidado** (Hospital + Labs + Clínicas, card 65840) do dia
 contra a `capacidade_esperada`, que **não é meta de negócio**: o SQL a calcula como a média móvel
@@ -504,7 +544,7 @@ compartilham farol**:
 
 | Pergunta | Grão | Onde vive |
 |---|---|---|
-| **Prazo** — sobrou PEG que não podia sobrar? | PEG | `PEGs por Status de Análise no SLA - HI` (32465 / 73390) — canônico, régua da OM de 22/09 |
+| **Prazo** — sobrou PEG que não podia sobrar? | PEG | `PEGs por Status de Análise no SLA - HI` (**76805**) — canônico, régua da OM de 22/09 com o recorte de fila viva de 30/09 |
 | **Produtividade** — dado o que havia, o time produziu? | **linha (procedimento)** | **card 76259**, este KPI |
 
 O time analisa **linha a linha**, então produtividade é medida em linha. Prazo é por PEG, porque o
@@ -651,8 +691,10 @@ interno, e é o que ainda dá para salvar.
 
 **SEM filtro de tipo de instituição.** O escopo Hospital vale só para a produtividade; para prazo,
 a OM quer ver **qualquer PEG vencendo**, inclusive Laboratório, Clínica e Centro de Diagnósticos.
-Fonte: card **76260** (`PEGs em Aberto por Dias Úteis e Tipo de Instituição - HI`), criado em
-28/09/2026, mesmo universo do 73390 e com a quebra por tipo e o valor em R$.
+Fonte: card **76805** (`PEGs em Aberto por Dias Úteis e Tipo de Instituição - HI (fila viva)`),
+criado em 30/09/2026. Ele substituiu o 76260 e o 73390, que filtravam só o balde "Não finalizado
+**dentro** do SLA (7 du)" e por isso nunca devolviam as PEGs de 8 du em diante. Mesma quebra por tipo
+e valor em R$, restrito a `invoice_date >= 2025-01-01`.
 
 Fila em 28/09 — **63 PEGs em aberto, 0 vencendo hoje**:
 
@@ -770,9 +812,9 @@ POR TIPO DE INSTITUIÇÃO — Hospital → Alana <@U073Z4ENBNW>
   - PEGs por Status de Análise no SLA - HI
   - Faturamento total acumulado
 
-POR TIPO, SEM DRILL — o card 76259 já separa as linhas por tipo, então o roteamento sai da linha
-que acendeu: Hospital → Alana <@U073Z4ENBNW> · Clínica → Fernanda <@U044N26BETU>
-  - Qnt de guias analisadas por dia   (escopo Hospital + Clínica desde 28/09/2026; Laboratório fora)
+ROTEAMENTO FIXO, SEM DRILL — escopo só Hospital, então o responsável não depende de concentração:
+Hospital → Alana <@U073Z4ENBNW>
+  - Qnt de guias analisadas por dia   (card 65837; Laboratório e Clínica fora desde 28/09/2026)
 ```
 
 **Todos os KPIs têm responsável.** Não existe mais a categoria "sem responsável": todo 🔴 abre
@@ -819,7 +861,7 @@ que dependem deles marcam **as duas** e escrevem a frase do passo 5:
 |---|---|---|
 | **73490** | Recursos de Glosa Próximos do Vencimento | `institution_name`, `provider_economic_group` |
 | **32465** | PEGs por Status de Análise no SLA - HI | status e contagem, sem dimensão de prestador |
-| **73390** | PEGs Abertas por Dias Úteis (drill do 32465) | aging, sem dimensão de prestador |
+| **76805** | PEGs em Aberto por Dias Úteis (fila viva, canônico desde 30/09) | aging e tipo de instituição, sem dimensão de prestador |
 
 Verificado em 17/09/2026. Quando qualquer um passar a devolver o tipo, tire a linha da tabela.
 
