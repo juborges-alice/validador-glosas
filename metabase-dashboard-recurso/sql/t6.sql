@@ -6,13 +6,7 @@ WITH base AS (
     appeal_date,
     appeal_analysis_date,
     working_days_from_appeal_to_analysis AS dias_uteis_ate_analise,
-    CASE
-      WHEN working_days_from_appeal_to_analysis IS NULL THEN 'Sem informacao'
-      WHEN appeal_analysis_date IS NOT NULL AND working_days_from_appeal_to_analysis <= 15 THEN 'Dentro do SLA'
-      WHEN appeal_analysis_date IS NOT NULL THEN 'Fora do SLA'
-      WHEN working_days_from_appeal_to_analysis <= 15 THEN 'A vencer'
-      ELSE 'Fora do SLA'
-    END AS status_sla,
+    TRIM(appeal_analysis_on_time) AS status_prazo,
     appeal_status,
     CASE WHEN appeal_status IN ('Autorizado', 'Autorizado Parcialmente', 'Negado') AND appeal_analysis_date IS NOT NULL THEN 1 ELSE 0 END AS analisado
   FROM curated.totvs_procedure_invoice
@@ -26,7 +20,9 @@ WITH base AS (
 )
 SELECT
   DATE_TRUNC('month', appeal_date)::date AS mes_recurso,
-  status_sla,
+  CASE WHEN status_prazo IN ('fora do prazo', 'vencido') THEN 'Fora do SLA'
+       WHEN status_prazo = 'a vencer' THEN 'A vencer'
+       ELSE 'Dentro do SLA' END AS status_sla,
   COUNT(DISTINCT invoice_guide_item_key) AS itens
 FROM base
 WHERE appeal_date >= '2026-03-01'
