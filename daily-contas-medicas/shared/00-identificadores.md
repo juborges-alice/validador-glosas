@@ -52,7 +52,7 @@ agrupamento** de exibição, nunca meta nem card.
 
 | # | KPI (nome completo no Notion) | Card | Cadência |
 |---|---|---|---|
-| 1 | Contas Médicas - % Glosa Geral - HI | 65942 | diária |
+| 1 | Contas Médicas - % Glosa Geral - HI | **65942** (série por mês desde 02/10/2026) | diária ⚠️ |
 | 2 | Contas Médicas - % Glosa por Tipo de HI | 50815 | diária |
 | 3 | Contas Médicas - % Glosa Alice por Prestador - HI | 65700 | diária |
 | 4 | Contas Médicas - R$ Recurso de Glosa acumulado | 65834 | diária |
@@ -142,6 +142,42 @@ histórico de cada tipo, e vive no KPI **`% Glosa por Tipo de HI`** — que é u
 **Os dois são separados de propósito.** O agregado pode estar dentro do limiar com um tipo
 estourando e outro compensando. É por isso que a quebra é acompanhada mesmo quando este KPI está
 verde, e é por isso que os episódios não se unem (decisão da OM, 25/09/2026).
+
+### ⚠️ O card 65942 lia o histórico inteiro — corrigido em 02/10/2026
+
+O card tinha `{{data_filter}}` obrigatório na prática mas sem default, e a rotina o executava
+**sem parâmetro** — o que devolvia **todo o histórico** em vez do mês. O número publicado como
+"% de glosa do mês" era o acumulado de todos os tempos.
+
+Passou despercebido porque os dois valores calhavam de ser quase iguais: **5,2307%** (histórico,
+idêntico ao range 2020–2026) contra **5,2583%** de Set/26 real. O sinal que deveria ter levantado
+suspeita estava no próprio report — o número "congelado entre 5,25% e 5,26% por seis dias úteis",
+reportado como achado quando era sintoma. **Acumulado do mês se move quando entra mais um dia;
+acumulado histórico não.**
+
+**Correção:** o card passa a devolver **uma linha por mês** (`mes`, `apresentado`, `glosado`,
+`pct_glosa`), janela de 12 meses. Execute sem parâmetros e **leia a linha do mês em questão**; nos
+primeiros dias úteis do mês, quando a linha do mês corrente ainda está com glosa zerada, leia o mês
+anterior fechado e diga isso na `Referência`. A métrica não mudou — mesmo numerador, denominador e
+filtros. Detalhe em `02-metabase.md`.
+
+**Nenhum farol publicado mudou de cor**: em 30/09 o histórico (5,25%) e o Set/26 real (5,26%)
+estavam ambos acima da linha de 5%. O que estava errado era a magnitude, a cláusula de crescimento
+vs. mês anterior e a leitura de estabilidade da série.
+
+**A série real, que o número achatado escondia:**
+
+| Mês | % glosa |   | Mês | % glosa |
+|---|---|---|---|---|
+| Nov/25 | 2,95% | | Mai/26 | 4,58% |
+| Dez/25 | 3,16% | | Jun/26 | 5,51% |
+| Jan/26 | 3,26% | | Jul/26 | 4,30% |
+| Fev/26 | 2,89% | | Ago/26 | 4,86% |
+| Mar/26 | 2,90% | | Set/26 | **5,26%** |
+| Abr/26 | 4,47% | | | |
+
+Tendência de alta ao longo de 2026, de ~2,9% para 5,26%. É exatamente o que a expectativa de
+"estabilizar ou reduzir" existe para capturar, e o que o número histórico tornava invisível.
 
 ### Como identificar qual tipo está puxando — duas pontas
 

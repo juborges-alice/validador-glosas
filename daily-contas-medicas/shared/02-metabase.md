@@ -121,6 +121,33 @@ parâmetro de data; no 65700 o erro é **não passar**. Não existe regra única
 |---|---|---|
 | 65831 · 65834 | **NÃO passe** | zera a baseline de 3 meses |
 | 65700 | **PASSE** (`invoice_date_filter = "thismonth"`) | omitir devolve o histórico inteiro |
+| 65942 | **não precisa mais** | corrigido em 02/10/2026: devolve uma linha por mês. Ver abaixo |
+
+#### O caso 65942 — a mesma armadilha, achada tarde demais (02/10/2026)
+
+O card **65942** (`% Glosa Geral - HI`) tinha exatamente o mesmo defeito do 65700: `{{data_filter}}`
+obrigatório na prática, sem default. A rotina o executava **sem parâmetro** e recebia **o histórico
+inteiro** em vez do mês — e publicava esse número como "% de glosa do mês".
+
+**Por que ficou invisível por semanas, e é a lição que importa:** no 65700 o erro gritava (SIRIO com
+R$7,6 milhões em vez de R$1 milhão, dez vezes maior). Aqui não. O acumulado histórico e o mês
+corrente calhavam de ser quase iguais — 5,2307% contra 5,2583% de Set/26, diferença de 0,03pp. O
+teste de sanidade de ordem de grandeza, que pegou o 65700, **não pega um caso assim**.
+
+O que deveria ter levantado suspeita foi outro sinal, e ele estava no report há dias: o número
+ficou "congelado entre 5,25% e 5,26% por seis dias úteis seguidos", e isso foi reportado como
+**achado** em vez de como **sintoma**. Um acumulado do mês se move quando entra mais um dia; um
+acumulado de todos os tempos quase não se move. **Estabilidade excessiva de um KPI acumulado é
+suspeita de janela errada, não notícia.**
+
+**A correção foi estrutural, não de parâmetro:** o 65942 passa a devolver **uma linha por mês**
+(`mes`, `apresentado`, `glosado`, `pct_glosa`), janela de 12 meses. Não existe mais execução "sem
+janela" — o modo de falha deixou de existir em vez de depender de alguém lembrar do parâmetro.
+Quando der para corrigir um card assim, prefira isso a documentar mais uma exceção nesta tabela.
+
+**Leia a linha do mês em questão.** Nos primeiros dias úteis do mês, quando a linha do mês corrente
+ainda está com glosa zerada porque a glosa não foi aplicada às contas novas, leia o **mês anterior
+fechado** e diga isso na linha de `Referência` do report.
 
 **Teste de sanidade obrigatório, todo dia, em qualquer card de prestador:** olhe a ordem de
 grandeza do faturamento antes de calcular o percentual. Faturamento de um prestador grande num
