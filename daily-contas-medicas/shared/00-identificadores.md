@@ -61,7 +61,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
 | 9 | Contas Médicas - Qnt de guias analisadas por dia | **76259** (Hospital e Clínica, metas separadas) | diária ⚠️ |
-| 10 | Contas Médicas - % PEGs sem NF | 65694 | diária |
+| 10 | Contas Médicas - % PEGs sem NF | **77275** (piso de idade pós-PLS) | diária ⚠️ |
 | 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
 | 13 | Contas Médicas - % Resumos Criticados - HS | 30858 | diária |
@@ -78,6 +78,12 @@ cadastrado, **só a média mensal é apurável** — a segunda cláusula nunca p
 o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 `segunda cláusula do limiar (crítica > 10 dias) não verificável — sem card de drill`.
 Quando um drill for cadastrado, esta nota sai.
+
+**⚠️ `% PEGs sem NF`: fonte trocada em 06/10/2026 para o card 77275.** O card 65694 não
+implementa a régua que a OM decidiu em 02/10 — contar como "sem NF" só PEGs que já têm lote PLS
+gerado, com piso de idade de 7 DU a partir da geração do PLS. Sem piso, o KPI acende vermelho nos
+primeiros dias úteis de todo mês por construção (74,38% em Out/26 no dia 06/10 contra 2,55% em
+Set/26 fechado). Regra completa na seção "% PEGs sem NF" abaixo; o catálogo do Notion é a fonte.
 
 **⚠️ `Qnt de guias analisadas por dia`: recalibrado em 28/09/2026 (decisão da OM).** Passou a ter
 **escopo Hospital + Clínica com metas separadas** e **card novo 76259**, com alvo capado pela fila disponível e leitura em 5 dias úteis.
@@ -755,6 +761,79 @@ Ambos testados em 28/09/2026 e descartados como fonte de fila:
 
 **Quando reavaliar:** se a operação mudar a janela de recebimento de contas, ou se Laboratório
 voltar a ser analisado linha a linha, revisite o escopo e o corte de 80%.
+
+## % PEGs sem NF — piso de idade pós-PLS (decisão da OM, 02/10/2026, instrumentada em 06/10/2026)
+
+Até 05/10 o KPI saía do card **65694**, que divide as PEGs sem NF do mês pelo mês inteiro, sem
+piso de idade. Nos primeiros dias úteis de cada mês quase toda PEG do mês entrou ontem e ainda não
+tem nota, então o indicador acendia vermelho **por construção** — 74,38% em Out/26 medido em 06/10
+contra 2,55% em Set/26 fechado, sem nada ter acontecido na operação. Era o único KPI de estoque da
+operação sem piso: `% Faturas por Status - HS` tem piso de 7 dias no status desde 11/08,
+`% Glosa Alice por Prestador - HI` tem piso de R$50 mil desde 11/08, e `SLA de Pagamento de HS` tem
+guarda de 100 faturas classificadas desde 28/09.
+
+**A régua vigente**, decidida por Juliana Borges em 02/10 após alinhamento com Fernanda Jerônimo:
+
+> contar como "sem NF" apenas PEGs que **já possuem PLS gerado** — PEG sem PLS não entra na conta do
+> que precisa ter NF — com **piso de idade de 7 dias úteis a partir da geração do PLS**.
+
+**Card novo: 77275** — `Contas Médicas - % PEGs sem NF (piso de idade pós-PLS)`, criado em
+06/10/2026 na collection 3662. Substitui o 65694 na rotina diária. O PLS sai de `batch_pls` /
+`batch_date` de `curated.totvs_procedure_invoice`, e os dias úteis saem do índice de
+`curated.dim_date_public` — a mesma régua do card 76364.
+
+Colunas: `mes` · `total_pegs` · `pegs_sem_pls` · `pegs_elegiveis` · `pegs_sem_nf` · `valor_sem_nf` ·
+**`pct_pegs_sem_nf`** (oficial) · `pegs_sem_nf_regua_antiga` · `pct_regua_antiga` (reproduz o 65694
+sobre a mesma base, só para comparabilidade na troca).
+
+### ⚪ Sem base elegível — o caso do começo do mês
+
+Quando `pegs_elegiveis` = 0, `pct_pegs_sem_nf` vem **nulo** e o KPI sai **⚪, sem farol — não 🟢**.
+É a janela dos primeiros dias úteis do mês, em que nenhuma PEG do mês corrente alcançou o piso de
+7 DU ainda. Publicar 0% nesses dias seria afirmar ausência de estoque sem ter medido. Nesses dias o
+sinal operacional é o **estoque elegível dos meses anteriores** (`pegs_sem_nf` e `valor_sem_nf` das
+linhas anteriores) — em 06/10, Set/26 com 31 PEGs e R$473.787,61.
+
+### Efeito da troca na série
+
+Medido em 06/10/2026, régua nova contra régua antiga:
+
+| Mês | Régua vigente (77275) | Régua antiga (65694) |
+|---|---|---|
+| Abr/26 | 1,19% | 1,19% |
+| Mai/26 | 0,98% | 0,98% |
+| Jun/26 | 1,45% | 1,45% |
+| Jul/26 | 0,97% | 0,97% |
+| Ago/26 | 0,31% | 0,31% |
+| Set/26 | **1,61%** | 2,54% |
+| Out/26 | **sem base elegível** | 74,45% |
+
+Os meses fechados há mais de 7 DU não se movem, porque lá toda PEG já passou do piso. A régua só
+muda o mês corrente e o recém-fechado — exatamente onde o alerta falso nascia.
+
+### ⚠️ O 77275 também corrige um defeito de grão, e isso move o denominador
+
+O 65694 lê o card base **68915**, que escolhe UMA linha por PEG com
+`ROW_NUMBER() OVER (PARTITION BY peg_code ORDER BY invoice_date DESC)`. Todos os itens de uma PEG
+têm o mesmo `invoice_date`, então o desempate é **arbitrário e muda a cada execução**. Isso não
+afeta `invoice_number` nem `institution_code` (verificado: não divergem dentro da PEG), mas afeta
+`payment_value`, que diverge em **3.653 PEGs** da janela — e o filtro `payment_value != 0` do 65694
+cai sobre a linha sorteada.
+
+Consequência: o **denominador do card oficial oscilava entre execuções** sem nada ter mudado no
+banco. Medido em 06/10/2026, duas rodadas do 65694 com ~15 minutos de intervalo: Jun/26 1.632 e
+depois 1.619; Out/26 317 e depois 320; Abr/26 1.609 e depois 1.611.
+
+No 77275 a decisão é tomada **no grão da PEG** — a PEG entra se qualquer item dela tiver
+`payment_value` diferente de zero, e tem NF se qualquer item tiver `invoice_number` preenchido — e o
+resultado é determinístico (três execuções consecutivas idênticas). O denominador sobe cerca de 4%
+(Abr/26 1.683 contra ~1.611) e o numerador passa a bater com o drill do 49800 (Out/26 239, Set/26
+51, contra 238 e 49 do 65694). O percentual quase não se move.
+
+**Entre 02/10 e 06/10 o KPI foi publicado sob duas réguas.** A decisão é de 02/10, mas o card só foi
+instrumentado em 06/10: em 02/10 e 05/10 a rotina publicou 🔴 com o número do 65694 (82,46% e
+87,18%), e em 06/10 aplicou a régua à mão a partir do drill 49800 e publicou 🟢. A coluna
+`pct_regua_antiga` existe para reconstruir a leitura antiga quando for preciso.
 
 ## Ciclo de processamento Cassi — o indicador acionável (decisão da OM, 22/09/2026)
 

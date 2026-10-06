@@ -158,6 +158,10 @@ explicitamente — sumiu da lista não é o mesmo que voltou ao normal.
 Verificado em 16/09/2026 pela API (`parameters: []` no nível superior da resposta):
 **30863 · 35629 · 32465 · 65694 · 30858 · 66766 · 48840 · 73490**.
 
+O **77275**, que substituiu o 65694 em `% PEGs sem NF` desde 06/10/2026, **aceita** um parâmetro
+(`piso_du`, number, default 7). Execute-o **sem parâmetro**: o default é a régua vigente. O
+parâmetro existe para sensibilidade, não para a leitura diária.
+
 Para esses, o `Parâmetro metabase` do Notion é decorativo — execute o card sem parâmetros e siga.
 **Não registre isso como observação de qualidade de dados no report do dia**: já é sabido e está
 aqui. Registrar todo dia vira ruído. Só reporte se a lista acima estiver desatualizada, isto é,
