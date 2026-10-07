@@ -34,8 +34,9 @@ erro nenhum.
 
 As cores respondem **"alguém precisa agir"**, não "está dentro da meta".
 
-Para cada KPI com valor, primeiro determine a direção ("maior é melhor" ou "menor é melhor")
-a partir da `Definição` / `Meta atual` / `Tipo de métrica`. Depois aplique:
+Para cada KPI com valor, primeiro leia a direção ("maior é melhor", "menor é melhor" ou
+"bidirecional") **na tabela de direção de `00-identificadores.md`**. A direção é **declarada,
+nunca inferida** — ver a regra de direção mais abaixo. Depois aplique:
 
 - **🟢 Verde** — atinge ou supera a `Meta atual`.
 - **🟡 Amarelo** — não atinge a meta, mas **não** cruzou o `Limiar de alerta`.
@@ -63,8 +64,45 @@ Casos de borda:
   exceção saiu e o KPI voltou a ter 🟡 normal. A meta de 90% de aderência não se perdeu: ela vive
   em `SLA de Análise de conta - HI`, que é quem mede % de PEGs finalizadas dentro do SLA.
 
-**Regra de direção.** Variação na direção boa de um KPI "menor é melhor" nunca gera 🟡 nem 🔴 —
-confirma 🟢, qualquer que seja a magnitude.
+### Regra de direção — a direção é DECLARADA, nunca inferida
+
+**A direção de cada KPI está na tabela "Direção de cada KPI" de `00-identificadores.md`. Leia-a.**
+Não deduza a direção da `Definição`, do nome do KPI nem do seu próprio raciocínio sobre o que
+seria bom para a operação. Se o KPI não estiver na tabela, ele é **bidirecional** até a OM
+declarar — isto é, cruza o limiar para cima e para baixo.
+
+Com a direção em mãos:
+
+- **"menor é melhor"** — variação **para cima** cruza o limiar. Variação **para baixo** é a
+  direção boa e nunca gera 🟡 nem 🔴: confirma 🟢, qualquer que seja a magnitude.
+- **"maior é melhor"** — o inverso: variação **para baixo** cruza; variação para cima confirma 🟢.
+- **"bidirecional"** — cruza nos dois sentidos, conforme o texto do limiar.
+
+> #### ⚠️ Incidente de 07/10/2026 — por que esta regra foi reescrita
+>
+> Em 07/10 o `R$ Recurso de Glosa acumulado` marcou **R$826.363,99 no dia 7 contra média de 3
+> meses de R$361.433,89, +128,65%**, e **saiu 🟢**. Deveria ter saído 🔴. A execução classificou
+> o KPI como "maior é melhor" por conta própria — raciocinando que recursar mais seria recuperar
+> mais dinheiro — e aplicou a regra de direção para suprimir o vermelho.
+>
+> **A OM corrigiu no mesmo dia: este indicador NUNCA é "quanto maior melhor". Ele é "quanto
+> MENOR melhor".** O valor recursado é o que os prestadores contestam das glosas da Alice; volume
+> subindo é mais contestação, mais trabalho e mais risco de devolver glosa, não conquista.
+>
+> Dois agravantes que esta reescrita fecha:
+> 1. A rotina já havia disparado 🔴 para este KPI em 30/09 (−20,54%) e 05/10 (−25,50%), lendo o
+>    limiar nos dois sentidos — e em 07/10 leu só para baixo. Incoerência com a própria série.
+>    Sob a direção correta, **aqueles dois vermelhos eram falsos**: queda é a direção boa.
+> 2. O histórico do episódio `R$ Recurso de Glosa acumulado · desvio desde 05/10` registra, em
+>    06/10, que o episódio foi encerrado por o KPI estar "59,4% ACIMA da média de 3 meses", como
+>    se subir fosse resolução. **Essa nota está errada e não deve ser usada como precedente.**
+>    Este arquivo manda; a nota da página, não.
+>
+> **Nenhuma decisão vigente rebaixa um desvio para cima deste KPI.** Os episódios de 21/09, 30/09
+> e 05/10 explicam desvios **para baixo** (déficit de volume, efeito de calendário de dia útil
+> contra dia do mês). Guard-rail 2 do rebaixamento: a decisão precisa cobrir ESTE desvio. Desvio
+> de sinal oposto e mecanismo oposto não é o mesmo desvio — **não cite esses episódios para
+> rebaixar uma alta, e abra episódio novo.**
 
 ### O texto do limiar é a regra — leia-o inteiro
 

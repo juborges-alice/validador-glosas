@@ -594,6 +594,14 @@ conferindo contra a fonte.
 | 4 | **KPI de "alerta de trabalho" traz os dois horizontes**, mesmo com um deles zerado. | Execute o card inteiro, não só a faixa de ≤3 dias. |
 | 5 | **Nenhum Top N foi avaliado só pelos nomes conhecidos** — todas as linhas passaram pelo limiar. | Reavalie a lista inteira. |
 | 6 | **Antes de abrir entrada nova no Decision Log**, a busca por episódio aberto daquele KPI foi feita de fato (`01-regras-de-registro.md` §3). | Acrescente a linha de histórico ao episódio existente em vez de criar outra página. |
+| 7 | **Todo KPI que saiu 🟢 por "direção boa" teve a direção LIDA na tabela de `00-identificadores.md`**, não inferida. Liste, antes de publicar, quais KPIs foram poupados do farol por esse argumento e qual linha da tabela sustenta cada um. | Se a tabela diz outra coisa, ou se o KPI não está nela, refaça o farol: sem direção declarada o KPI é bidirecional e o limiar vale nos dois sentidos. |
+
+**Sobre o item 7.** Em 07/10/2026 o `R$ Recurso de Glosa acumulado` saiu 🟢 com **+128,65%** sobre
+a média de 3 meses porque a execução decidiu sozinha que o KPI era "maior é melhor". A OM corrigiu
+no mesmo dia: ele é **"quanto MENOR melhor"**, e alta cruza o limiar. O argumento de "direção boa"
+é o único da rotina que apaga um vermelho sem citar decisão nenhuma — por isso ele agora exige
+citar a linha da tabela, do mesmo jeito que o rebaixamento 🔴→🟡 exige citar o link da decisão.
+Regra completa em `01-regras-de-registro.md` §1 e tabela em `00-identificadores.md`.
 
 **Sobre o item 6.** Está documentado desde 16/09 e continuou não sendo executado: em 17/09 havia
 uma página nova por dia, por KPI, praticamente sem falha desde 14/07 em `SLA Recurso de Glosa`,

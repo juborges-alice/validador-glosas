@@ -104,6 +104,57 @@ completo, exiba sem o prefixo.
 KPI priorizado que apareça no Notion e **não** esteja nesta lista: inclua ao final da tabela
 e avise `<@U03A4SS2P1Q>` numa resposta na thread da Mensagem 1, pedindo posição e responsável.
 
+## Direção de cada KPI — declarada, nunca inferida
+
+Esta tabela existe porque a execução de 07/10/2026 **inferiu** a direção do
+`R$ Recurso de Glosa acumulado` como "maior é melhor" e usou a regra de direção de
+`01-regras-de-registro.md` §1 para suprimir um 🔴 de **+128,65%** sobre a média de 3 meses.
+A OM corrigiu no mesmo dia. Direção não se deduz do nome do KPI, da `Definição` nem de
+raciocínio sobre o que seria bom para a operação: **lê-se aqui**.
+
+| # | KPI | Direção | O que cruza o limiar |
+|---|---|---|---|
+| 1 | % Glosa Geral - HI | menor é melhor | alta |
+| 2 | % Glosa por Tipo de HI | menor é melhor | alta |
+| 3 | % Glosa Alice por Prestador - HI | menor é melhor | alta |
+| 4 | **R$ Recurso de Glosa acumulado** | **menor é melhor** | **alta** |
+| 5 | SLA Recurso de Glosa - HI (aderência %) | maior é melhor | queda |
+| 6 | Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | menor é melhor | alta |
+| 7 | SLA de Análise de conta - HI | maior é melhor | queda |
+| 8 | PEGs por Status de Análise no SLA - HI | menor é melhor | alta |
+| 9 | Qnt de guias analisadas por dia | maior é melhor | queda |
+| 10 | % PEGs sem NF | menor é melhor | alta |
+| 11 | Faturamento total acumulado | **bidirecional** | alta e queda (o limiar diz "para cima ou para baixo") |
+| 12 | R$ Faturado Cassi | bidirecional | alta e queda, e só nos dois checkpoints do mês (classe monitoramento) |
+| 13 | % Resumos Criticados - HS | menor é melhor | alta |
+| 14 | Status das Críticas (por fatura) - HS | menor é melhor | alta |
+| 15 | Tempo para Resolução de Críticas - HS | menor é melhor | alta |
+| 16 | % Faturas por Status - HS | menor é melhor | alta |
+| 17 | SLA de Pagamento de HS (% fora do prazo) | menor é melhor | alta |
+
+**A linha 4 é declaração direta da OM (Juliana Borges, 07/10/2026):** *"esse indicador nunca é
+'quanto maior melhor'. Esse indicador é 'quanto MENOR melhor'."* O valor recursado é o que os
+prestadores contestam das glosas aplicadas pela Alice — volume subindo é mais contestação, mais
+trabalho e mais risco de devolver glosa. Não reinterprete.
+
+**Consequência imediata para a próxima execução:** com a direção correta, o
+`R$ Recurso de Glosa acumulado` em **+128,65% sobre a média de 3 meses** (R$826.363,99 no dia 7
+de Out/26 contra R$361.433,89) **é 🔴**, e nenhum episódio vigente o rebaixa — os de 21/09, 30/09
+e 05/10 tratam de desvio para baixo, de sinal e mecanismo opostos. Abra episódio novo.
+O drill de 07/10 já está levantado e deve ser reaproveitado: Hospital +105,29% (R$564.307,88
+contra R$274.880,31, 59,6% do excedente) e Laboratório +253,50% (R$273.359,27 contra R$77.328,95,
+40,4%) — nenhum tipo passa de 70%, então roteia para as duas. Por motivo, o destaque é o
+**7EL — código cobrado diferente do autorizado, R$86.448,03 em 7 dias úteis contra média mensal
+de R$11.086,42 em Jul–Set**, quase 8× a média de um mês inteiro em uma semana; mais 7G4
+duplicidade R$94.716,94 (média R$54.924,56) e dois motivos sem histórico nenhum no trimestre,
+7F7 cobrança fora do prazo contratual R$32.477,09 e 7G1 sem cobertura pelo plano R$24.125,29.
+Por prestador, é pulverizado: CIP Pacaembu Fleury 20,0%, Associação dos Médicos Einstein 14,0%
+e HCOR 13,6% somam 47,7% de 32 prestadores no mês.
+
+**Os demais KPIs desta tabela foram derivados do texto do `Limiar de alerta` do catálogo, não
+declarados pela OM.** Se alguma linha estiver errada, a correção é aqui e vale na execução
+seguinte — do mesmo jeito que a linha 4.
+
 ## Cards de drill por KPI (KPIs de processo)
 
 A relation `KPIs operação <> processos` no catálogo é a fonte. A tabela abaixo é o atalho
