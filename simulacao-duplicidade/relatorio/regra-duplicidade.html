@@ -1,0 +1,354 @@
+<title>Regra de Duplicidade</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: relatório em uma coluna. Resposta curta, depois valor, itens, PEG, motivos, prestadores, setembro x outubro, projeção e próximos passos. */
+:root {
+  --bg: #fbf8f9; --surface: #ffffff; --ink: #40002d; --ink-2: #6b5a64; --ink-3: #94858d;
+  --line: #eee5ea; --accent: #be0380; --accent-soft: #fbe7f3;
+  --s1: #2a78d6; --s2: #eb6834;
+  --good: #0f7b3f; --good-soft: #e3f4ea; --warn: #8a5a00; --warn-soft: #fbf0d9; --bad: #b3261e; --bad-soft: #fbe9e7; --neutral-soft: #f1ecef;
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891; --line: #34282f; --accent: #e0479f; --accent-soft: #3a1830;
+  --s1: #3987e5; --s2: #d95926; --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891; --line: #34282f; --accent: #e0479f; --accent-soft: #3a1830;
+  --s1: #3987e5; --s2: #d95926; --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.1; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 15px; font-family: var(--font-body); font-weight: 600; }
+p { margin: 0; max-width: 72ch; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--ink-2); } .small { font-size: 13px; }
+header, section { display: flex; flex-direction: column; gap: 14px; }
+.scope { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--neutral-soft); color: var(--ink-2); white-space: nowrap; }
+a { color: var(--accent); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.v { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+.v .q { font-size: 13px; color: var(--ink-2); }
+.v .a { font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: 1.2; }
+.v p { font-size: 14px; color: var(--ink-2); }
+.pill { align-self: flex-start; display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); } .pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); } .pill.flat { background: var(--neutral-soft); color: var(--ink-2); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+th:first-child, td:first-child { text-align: left; }
+td.wrap-cell { white-space: normal; min-width: 220px; text-align: left; }
+tr.hl td { background: var(--accent-soft); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend i.proj { background-image: repeating-linear-gradient(135deg, var(--ink-3) 0 2px, transparent 2px 5px); border: 1px solid var(--ink-3); }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
+svg .val { fill: var(--ink); font-weight: 600; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .hit { fill: transparent; } svg .hit:hover { fill: var(--ink); fill-opacity: 0.05; }
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; max-width: 300px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.prov { display: flex; flex-direction: column; gap: 10px; }
+.prov h3 { font-family: var(--font-display); font-size: 19px; }
+.prov p { font-size: 14px; color: var(--ink-2); }
+ol.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); }
+code { font-size: 12.5px; background: var(--neutral-soft); padding: 1px 5px; border-radius: 5px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } .panel { padding: 14px; } th, td { padding: 7px 8px; } }
+</style>
+
+<div id="tip" hidden></div>
+<div class="wrap">
+
+<style>.v .pill, .chip { white-space: normal; }</style>
+<header>
+  <span class="eyebrow">Projeto Recurso de Glosa · Regra de duplicidade · Laboratórios e clínicas</span>
+  <h1>Regra de Duplicidade: vale flexibilizar?</h1>
+  <p class="muted">A glosa por duplicidade (7G4 desde julho, 7DX e 7DY antes) gera muito recurso, e a maior parte dele é acatada. Este relatório mede quanto a regra rende de fato e simula quanto se perderia ao deixar de glosar os casos que hoje quase sempre voltam, contando também o que nunca foi recursado.</p>
+  <div class="scope">
+    <span class="chip">Laboratório + Clínica · Health Institution · totvs-alice · fases 1 a 4</span>
+    <span class="chip">Coortes de glosa de mai, jun e jul/26 (maduras)</span>
+    <span class="chip">Dados até 06/10/2026</span>
+    <span class="chip">Execuções (N) = quantidade do procedimento para o mesmo membro no mesmo dia</span>
+  </div>
+</header>
+
+<section>
+  <h2>Resposta curta</h2>
+  <div class="verdict">
+    <div class="v">
+      <span class="q">A regra funciona?</span>
+      <span class="pill warn">Quando o procedimento aparece 2 vezes, sim. A partir de 3, quase nunca</span>
+      <span class="a">Acato de 4% com N = 2, de 95–100% com N ≥ 3</span>
+      <p>Com duas execuções no dia, a glosa quase sempre se sustenta: 288 recursos negados e 12 acatados. A partir de três, são procedimentos cobrados por unidade (IgE por alérgeno, marcadores tumorais, RM por articulação) e o recurso volta acatado em quase todos os casos.</p>
+    </div>
+    <div class="v">
+      <span class="q">Quanto a regra rende hoje?</span>
+      <span class="pill flat">Saving real de ~R$ 101 mil por mês</span>
+      <span class="a">R$ 610 mil glosados, R$ 304 mil de saving em 3 meses</span>
+      <p>Metade do que é glosado por duplicidade volta acatado. De mai a jul, R$ 307 mil foram devolvidos e 1.846 itens passaram pela análise de recurso.</p>
+    </div>
+    <div class="v">
+      <span class="q">Quanto custaria flexibilizar?</span>
+      <span class="pill good">Pouco, com a regra certa</span>
+      <span class="a">~R$ 16–32 mil de saving por mês</span>
+      <p>Deixar de glosar N ≥ 3 nos 42 procedimentos com acato alto (cenário D) custaria R$ 48 mil em três meses, 16% do saving. Em troca, sairiam ~1.050 recursos da fila e R$ 208 mil que hoje são glosados e devolvidos.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>1. O acato depende de quantas vezes o procedimento aparece</h2>
+  <p class="muted">% acatado do recurso analisado, por número de execuções do procedimento para o mesmo membro no mesmo dia. Coortes de mai a jul.</p>
+  <div class="panel">
+    <div id="chN"></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>N no dia</th><th>Itens glosados</th><th>Glosado</th><th>Acatados</th><th>Negados</th><th>Acato</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>2</td><td>1.923</td><td>R$ 195 mil</td><td>12</td><td>288</td><td><b>4%</b></td></tr>
+        <tr><td>3</td><td>783</td><td>R$ 161 mil</td><td>583</td><td>13</td><td>98%</td></tr>
+        <tr><td>4</td><td>302</td><td>R$ 60 mil</td><td>208</td><td>3</td><td>99%</td></tr>
+        <tr><td>5</td><td>221</td><td>R$ 25 mil</td><td>127</td><td>7</td><td>95%</td></tr>
+        <tr><td>6</td><td>249</td><td>R$ 58 mil</td><td>159</td><td>1</td><td>99%</td></tr>
+        <tr><td>7 a 9</td><td>265</td><td>R$ 48 mil</td><td>154</td><td>0</td><td>100%</td></tr>
+        <tr><td>10 ou mais</td><td>377</td><td>R$ 56 mil</td><td>242</td><td>9</td><td>96%</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small muted">Itens com N = 1 (76, R$ 9 mil) ficaram de fora do gráfico: são casos em que a repetição está fora do mesmo dia.</p>
+  </div>
+  <div class="grid2">
+    <div class="panel prov"><span class="pill good">Duplicidade real</span><h3>Dois itens iguais no mesmo dia</h3>
+      <p>1.017 itens e R$ 139 mil. Pouco recursado (248) e quase sempre negado (238). Também entra aqui a quantidade 2 dentro do próprio item: 982 itens, R$ 65 mil, 88 de 92 recursos negados.</p></div>
+    <div class="panel prov"><span class="pill bad">Glosa que volta</span><h3>Três ou mais itens no mesmo dia</h3>
+      <p>2.114 itens e R$ 369 mil. 1.504 foram recursados e 1.473 acatados (98%). É aqui que está o retrabalho da regra.</p></div>
+    <div class="panel prov"><span class="pill flat">Exceção</span><h3>Quantidade alta dentro de um item só</h3>
+      <p>83 itens com N ≥ 3 em um único item (R$ 39 mil). Só 2 foram recursados, e os dois foram negados. A glosa se sustenta.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Cenários de flexibilização</h2>
+  <p class="muted">Em cada cenário, o item deixa de ser glosado. O saving perdido inclui tudo: o que nunca foi recursado, o que foi negado e a parte esperada dos recursos ainda em análise. O que hoje volta acatado não é perda.</p>
+  <div class="panel tbl-wrap">
+    <table>
+      <thead><tr><th>Cenário (mai–jul)</th><th>Deixa de glosar</th><th>Já voltava acatado</th><th>Saving perdido</th><th>Por mês</th><th>% do saving</th><th>Recursos evitados</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td class="wrap-cell"><b>D) Não glosar N ≥ 3 nos 42 procedimentos com acato ≥ 80% (mín. 5 analisados)</b></td><td>R$ 256 mil</td><td>R$ 208 mil</td><td><b>R$ 48 mil</b></td><td>~R$ 16 mil</td><td>16%</td><td>1.046 de 1.846</td></tr>
+        <tr><td class="wrap-cell">B) Teto por procedimento: não glosar de N = 3 até o maior N já acatado</td><td>R$ 371 mil</td><td>R$ 307 mil</td><td>R$ 64 mil</td><td>~R$ 21 mil</td><td>21%</td><td>1.506 de 1.846</td></tr>
+        <tr><td class="wrap-cell">Não glosar nenhum N ≥ 3</td><td>R$ 408 mil</td><td>R$ 307 mil</td><td>R$ 101 mil</td><td>~R$ 34 mil</td><td>33%</td><td>1.506 de 1.846</td></tr>
+        <tr><td class="wrap-cell">Teto por procedimento incluindo N = 2 (proposta inicial)</td><td colspan="6" class="wrap-cell">Perde 64% do saving de julho: o teto de quase todo procedimento fica em 3 ou mais, então a regra deixa de pegar também a duplicidade real.</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">Não glosar nenhum N ≥ 3 libera casos que hoje estão corretos, como sessões de psicologia e consultas de nutrição (R$ 23 mil de um único prestador) e TC de crânio.</p>
+  </div>
+</section>
+
+<section>
+  <h2>3. Cenário D mês a mês</h2>
+  <div class="panel">
+    <div class="legend"><span><i style="background:var(--s1)"></i>Já voltava acatado</span><span><i style="background:var(--s2)"></i>Saving perdido</span></div>
+    <div id="chD"></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Mês da glosa</th><th>Deixa de glosar</th><th>Já voltava acatado</th><th>Não recursado</th><th>Saving perdido</th><th>Saving do mês</th><th>Recursos evitados</th></tr></thead>
+      <tbody>
+        <tr><td>Mai (7DX/7DY)</td><td>87 itens · R$ 23,6 mil</td><td>R$ 20,0 mil</td><td>6 itens · R$ 2,2 mil</td><td><b>R$ 3,6 mil</b></td><td>R$ 64,9 mil (6%)</td><td>81 de 269</td></tr>
+        <tr><td>Jun (7DX/7DY)</td><td>454 itens · R$ 82,1 mil</td><td>R$ 69,5 mil</td><td>64 itens · R$ 11,4 mil</td><td><b>R$ 12,6 mil</b></td><td>R$ 126,4 mil (10%)</td><td>390 de 767</td></tr>
+        <tr class="hl"><td>Jul (7G4)</td><td>662 itens · R$ 150,6 mil</td><td>R$ 118,7 mil</td><td>87 itens · R$ 31,0 mil</td><td><b>R$ 31,9 mil</b></td><td>R$ 112,4 mil (28%)</td><td>575 de 810</td></tr>
+        <tr><td><b>Total</b></td><td><b>1.203 itens · R$ 256 mil</b></td><td><b>R$ 208 mil</b></td><td><b>157 itens · R$ 44,7 mil</b></td><td><b>R$ 48,1 mil</b></td><td><b>R$ 303,7 mil (16%)</b></td><td><b>1.046 de 1.846</b></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="panel">
+    <h3>Previsão</h3>
+    <p>Julho é o único mês já com a regra 7G4, que tem o dobro do volume dos códigos antigos. Com o 7G4 glosando R$ 200–270 mil por mês (jul–set), o cenário D deve custar <b>R$ 25–32 mil de saving por mês</b>. Em troca, tira <b>~550–600 itens por mês</b> da fila de recurso e deixa de glosar ~R$ 115 mil por mês que hoje voltam acatados.</p>
+  </div>
+</section>
+
+<section>
+  <h2>4. Onde está o impacto</h2>
+  <div class="grid2">
+    <div class="panel prov"><span class="pill warn">Maior impacto</span><h3>DASA</h3><p>R$ 340 mil glosados por duplicidade e R$ 143 mil de saving em mai–jul. No cenário D, perderia R$ 37,8 mil de saving.</p></div>
+    <div class="panel prov"><span class="pill flat">Impacto menor</span><h3>Fleury</h3><p>R$ 181 mil glosados e R$ 117 mil de saving. No cenário D, perderia R$ 10,1 mil.</p></div>
+    <div class="panel prov"><span class="pill good">Quase nada a perder</span><h3>Femme</h3><p>R$ 41 mil glosados, mas só R$ 3,7 mil de saving: recursa e tem acato em quase tudo. No cenário D, perderia R$ 0,2 mil.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>5. Os 42 procedimentos do cenário D</h2>
+  <p class="muted">Procedimentos com acato de pelo menos 80% em pelo menos 5 recursos analisados, em mai–jul. "Teto" é o maior N já acatado; serve de referência para o cenário B. Ordenados pelo valor que deixaria de ser glosado.</p>
+  <div class="panel tbl-wrap">
+    <table>
+      <thead><tr><th>Código</th><th>Procedimento</th><th>Prestadores</th><th>Itens glosados</th><th>Glosado (R$ mil)</th><th>Acato</th><th>Teto (N)</th><th>Deixa de glosar (R$ mil)</th><th>Saving perdido (R$ mil)</th></tr></thead>
+      <tbody>
+<tr><td>40901386</td><td class="wrap-cell">Doppler Colorido De Orgao Ou Estrutura Isolada</td><td>Dasa, Fleury</td><td>85</td><td>33,2</td><td>94%</td><td>16</td><td>29,4</td><td><b>4,5</b></td></tr>
+<tr><td>41101316</td><td class="wrap-cell">Rm - Articular (Por Articulacao)</td><td>Dasa, Fleury</td><td>29</td><td>34,6</td><td>100%</td><td>8</td><td>27,7</td><td><b>0,0</b></td></tr>
+<tr><td>40316378</td><td class="wrap-cell">Marcadores Tumorais (Ca 19,9, Ca 125, Ca 72-4, C</td><td>Dasa, Femme</td><td>123</td><td>27,6</td><td>96%</td><td>10</td><td>26,9</td><td><b>3,4</b></td></tr>
+<tr><td>40307263</td><td class="wrap-cell">Ige, Por Alergeno (Cada) - Pesquisa E/Ou Dosagem</td><td>Dasa, Fleury</td><td>161</td><td>26,1</td><td>100%</td><td>94</td><td>26,1</td><td><b>3,4</b></td></tr>
+<tr><td>41101227</td><td class="wrap-cell">Rm - Coluna Cervical Ou Dorsal Ou Lombar</td><td>Dasa</td><td>17</td><td>25,9</td><td>96%</td><td>6</td><td>22,8</td><td><b>6,1</b></td></tr>
+<tr><td>40601226</td><td class="wrap-cell">Procedimento Diagnostico Em Grupos De Linfonodos</td><td>Dasa</td><td>38</td><td>15,5</td><td>96%</td><td>12</td><td>15,5</td><td><b>9,9</b></td></tr>
+<tr><td>98172264</td><td class="wrap-cell">Outros Agentes Por Pcr</td><td>Femme</td><td>179</td><td>14,3</td><td>97%</td><td>15</td><td>14,0</td><td><b>0,1</b></td></tr>
+<tr><td>98070002</td><td class="wrap-cell">Anatomopatologico, Peca Pequena, Varios Materiai</td><td>Fleury</td><td>82</td><td>14,8</td><td>98%</td><td>20</td><td>13,6</td><td><b>9,3</b></td></tr>
+<tr><td>40601200</td><td class="wrap-cell">Procedimento Diagnostico Em Peca Anatomica Ou Ci</td><td>Dasa</td><td>30</td><td>18,8</td><td>100%</td><td>52</td><td>12,8</td><td><b>6,0</b></td></tr>
+<tr><td>98172262</td><td class="wrap-cell">Captura Hibrida Hpv - Alto E Baixo Risco</td><td>Femme</td><td>56</td><td>9,6</td><td>98%</td><td>11</td><td>9,4</td><td><b>0,0</b></td></tr>
+<tr><td>40601110</td><td class="wrap-cell">Procedimento Diagnostico Em Biopsia Simples Impr</td><td>Dasa</td><td>68</td><td>10,7</td><td>96%</td><td>16</td><td>9,3</td><td><b>1,3</b></td></tr>
+<tr><td>98010097</td><td class="wrap-cell">Ultrassonografia, Com Doppler Venoso De, Membro </td><td>Fleury</td><td>80</td><td>13,7</td><td>97%</td><td>4</td><td>6,2</td><td><b>0,0</b></td></tr>
+<tr><td>40307255</td><td class="wrap-cell">Ige, Grupo Especifico, Cada - Pesquisa E/Ou Dosa</td><td>Dasa</td><td>65</td><td>4,8</td><td>100%</td><td>16</td><td>4,8</td><td><b>0,8</b></td></tr>
+<tr><td>40901211</td><td class="wrap-cell">Us - Estruturas Superficiais (Cervical Ou Axilas</td><td>Dasa, Femme</td><td>24</td><td>4,6</td><td>100%</td><td>6</td><td>4,3</td><td><b>0,8</b></td></tr>
+<tr><td>98100004</td><td class="wrap-cell">Ressonancia Magnetica, Joelho</td><td>Fleury</td><td>30</td><td>11,9</td><td>88%</td><td>4</td><td>3,6</td><td><b>0,0</b></td></tr>
+<tr><td>40901220</td><td class="wrap-cell">Us - Articular (Por Articulacao)</td><td>Dasa</td><td>19</td><td>3,1</td><td>100%</td><td>12</td><td>3,0</td><td><b>0,3</b></td></tr>
+<tr><td>98172292</td><td class="wrap-cell">Doppler Colorido De Orgaos Ou Estrutura Isolada</td><td>Femme</td><td>16</td><td>3,2</td><td>81%</td><td>3</td><td>2,6</td><td><b>0,0</b></td></tr>
+<tr><td>40901459</td><td class="wrap-cell">Doppler Colorido Arterial De Membro Superior - U</td><td>Dasa</td><td>5</td><td>2,5</td><td>100%</td><td>4</td><td>2,5</td><td><b>0,0</b></td></tr>
+<tr><td>98172298</td><td class="wrap-cell">Doppler Colorido Venoso De Membro Inferior - Uni</td><td>Femme</td><td>11</td><td>2,2</td><td>100%</td><td>3</td><td>2,2</td><td><b>0,0</b></td></tr>
+<tr><td>98100007</td><td class="wrap-cell">Ressonancia Magnetica, Ombro</td><td>Fleury</td><td>12</td><td>4,9</td><td>100%</td><td>3</td><td>2,1</td><td><b>0,0</b></td></tr>
+<tr><td>40313190</td><td class="wrap-cell">Metais Al, As, Cd, Cr, Mn, Hg, Ni, Zn, Co, Outro</td><td>Dasa, Femme</td><td>18</td><td>1,9</td><td>98%</td><td>7</td><td>1,9</td><td><b>0,7</b></td></tr>
+<tr><td>40306259</td><td class="wrap-cell">Anticorpos Antiendomisio - Igg, Igm, Iga (Cada) </td><td>Dasa, Femme</td><td>17</td><td>1,8</td><td>92%</td><td>6</td><td>1,7</td><td><b>0,2</b></td></tr>
+<tr><td>98040107</td><td class="wrap-cell">Cultura, Streptococcus Beta Hemolitico Do Grupo </td><td>Fleury</td><td>56</td><td>3,4</td><td>97%</td><td>4</td><td>1,6</td><td><b>0,1</b></td></tr>
+<tr><td>40316190</td><td class="wrap-cell">Cortisol - Pesquisa E/Ou Dosagem</td><td>Dasa</td><td>28</td><td>1,7</td><td>89%</td><td>8</td><td>1,4</td><td><b>0,3</b></td></tr>
+<tr><td>98010041</td><td class="wrap-cell">Ultrassonografia, Inguinal</td><td>Fleury</td><td>12</td><td>2,1</td><td>94%</td><td>3</td><td>1,4</td><td><b>0,0</b></td></tr>
+<tr><td>98010077</td><td class="wrap-cell">Raios X, Joelho, F+P</td><td>Fleury</td><td>10</td><td>1,7</td><td>100%</td><td>3</td><td>1,4</td><td><b>0,0</b></td></tr>
+<tr><td>98010175</td><td class="wrap-cell">Ultrassonografia, Com Doppler Arterial E Venoso </td><td>Fleury</td><td>11</td><td>2,8</td><td>100%</td><td>3</td><td>1,3</td><td><b>0,0</b></td></tr>
+<tr><td>98010069</td><td class="wrap-cell">Raios X, Articulacao Coxofemural, F+Obliquas</td><td>Fleury</td><td>16</td><td>2,3</td><td>100%</td><td>3</td><td>1,2</td><td><b>0,2</b></td></tr>
+<tr><td>98041572</td><td class="wrap-cell">Cultura, Para Fungos Simplificada, Varios Materi</td><td>Fleury</td><td>21</td><td>1,5</td><td>100%</td><td>4</td><td>1,1</td><td><b>0,4</b></td></tr>
+<tr><td>98010049</td><td class="wrap-cell">Raios X, Pe Ou Pododactilos, F+Obliquas</td><td>Fleury</td><td>16</td><td>2,2</td><td>100%</td><td>3</td><td>1,1</td><td><b>0,0</b></td></tr>
+<tr><td>98010067</td><td class="wrap-cell">Ultrassonografia, Punho</td><td>Fleury</td><td>13</td><td>1,6</td><td>100%</td><td>3</td><td>0,9</td><td><b>0,0</b></td></tr>
+<tr><td>98010061</td><td class="wrap-cell">Raios X, Mao</td><td>Fleury</td><td>8</td><td>1,1</td><td>100%</td><td>4</td><td>0,7</td><td><b>0,0</b></td></tr>
+<tr><td>98010040</td><td class="wrap-cell">Ultrassonografia, De Partes Moles</td><td>Fleury</td><td>7</td><td>0,8</td><td>100%</td><td>7</td><td>0,6</td><td><b>0,1</b></td></tr>
+<tr><td>98110004</td><td class="wrap-cell">Micologico, Direto, Varios Materiais</td><td>Fleury</td><td>23</td><td>0,6</td><td>90%</td><td>5</td><td>0,4</td><td><b>0,1</b></td></tr>
+<tr><td>40901203</td><td class="wrap-cell">Us - Orgaos Superficiais (Tireoide Ou Escroto Ou</td><td>Dasa</td><td>10</td><td>0,5</td><td>80%</td><td>6</td><td>0,3</td><td><b>0,0</b></td></tr>
+<tr><td>40304086</td><td class="wrap-cell">Cd,,, (Antigeno De Dif, Celular, Cada Determinac</td><td>Dasa</td><td>6</td><td>0,3</td><td>100%</td><td>4</td><td>0,2</td><td><b>0,0</b></td></tr>
+<tr><td>40316513</td><td class="wrap-cell">Testosterona Total - Pesquisa E/Ou Dosagem</td><td>Dasa, Femme</td><td>9</td><td>0,3</td><td>86%</td><td>4</td><td>0,2</td><td><b>0,0</b></td></tr>
+<tr><td>40301400</td><td class="wrap-cell">Calcio - Pesquisa E/Ou Dosagem</td><td>Dasa, Femme</td><td>25</td><td>0,2</td><td>82%</td><td>5</td><td>0,1</td><td><b>0,0</b></td></tr>
+<tr><td>40310221</td><td class="wrap-cell">Estreptococos - A, Teste Rapido</td><td>Femme</td><td>5</td><td>0,1</td><td>100%</td><td>3</td><td>0,1</td><td><b>0,0</b></td></tr>
+<tr><td>40301630</td><td class="wrap-cell">Creatinina - Pesquisa E/Ou Dosagem</td><td>Dasa</td><td>18</td><td>0,2</td><td>93%</td><td>6</td><td>0,1</td><td><b>0,0</b></td></tr>
+<tr><td>40307301</td><td class="wrap-cell">Igm - Pesquisa E/Ou Dosagem</td><td>Femme</td><td>5</td><td>0,1</td><td>80%</td><td>3</td><td>0,0</td><td><b>0,0</b></td></tr>
+<tr><td>40301150</td><td class="wrap-cell">Acido Urico - Pesquisa E/Ou Dosagem</td><td>Dasa</td><td>11</td><td>0,1</td><td>100%</td><td>4</td><td>0,0</td><td><b>0,0</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>6. Cuidados antes de mudar a regra</h2>
+  <div class="panel">
+    <ul class="plain">
+      <li><b>Mesma base para definir e testar.</b> A lista de procedimentos e os tetos saem dos mesmos dados usados na simulação. O número de recursos evitados tende a ser otimista.</li>
+      <li><b>Adaptação dos prestadores.</b> Com a regra mais flexível, a cobrança pode subir até o limite. Vale acompanhar o N médio por procedimento depois da mudança.</li>
+      <li><b>Prazo de recurso.</b> As coortes de mai a jul têm de 69 a 150 dias. Alguns prestadores ainda recursam tarde, então o "não recursado" pode diminuir um pouco e a perda seria menor.</li>
+      <li><b>Premissas da conta.</b> Parcialmente acatado conta como acatado. Recursos ainda em análise entram com 89% de acato, a taxa do período. Hospitais e o 7G3 (duplicidade de conta parcial) ficaram de fora.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>7. Próximos passos sugeridos</h2>
+  <div class="panel">
+    <ol class="steps">
+      <li><b>Validar a lista com o time de regras:</b> confirmar que os 42 procedimentos são cobrados por unidade (alérgeno, marcador, articulação, segmento).</li>
+      <li><b>Implementar o cenário D,</b> mantendo a glosa para N = 2 e para quantidade alta dentro de um item só.</li>
+      <li><b>Medir por 2–3 meses</b> o saving, a glosa e o volume de recurso de duplicidade, comparando com esta linha de base (~R$ 101 mil de saving e ~615 recursos por mês).</li>
+    </ol>
+  </div>
+  <p class="small muted">Relatórios relacionados: <a href="https://claude.ai/artifact/9mDGecRHioDCKkpKHeFFhc" target="_blank" rel="noopener">Recurso de Glosa em Outubro: Laboratórios e Clínicas</a> · <a href="https://claude.ai/artifact/72dEyR4iKQ9AdHxZpncSBT" target="_blank" rel="noopener">Recurso de Glosa em Outubro: Hospitais</a>. Fonte: <code>curated.totvs_procedure_invoice</code>.</p>
+</section>
+
+</div>
+
+<script>
+const MES = {"01":"jan","02":"fev","03":"mar","04":"abr","05":"mai","06":"jun","07":"jul","08":"ago","09":"set","10":"out"};
+const lab = m => MES[m.slice(5,7)];
+const nf = (v, d=0) => v.toLocaleString("pt-BR", {minimumFractionDigits:d, maximumFractionDigits:d});
+const brl = v => "R$ " + nf(v) + " mil";
+const tip = document.getElementById("tip");
+function bindTips(root) {
+  root.querySelectorAll("[data-tip]").forEach(el => {
+    el.addEventListener("mousemove", e => { tip.innerHTML = el.getAttribute("data-tip"); tip.hidden = false;
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (e.clientY + 14) + "px"; });
+    el.addEventListener("mouseleave", () => tip.hidden = true);
+  });
+}
+function rpath(x, y, w, h, r) { if (h <= 0.5) return ""; r = Math.min(r, h, w/2);
+  return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`; }
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1,1.2,1.5,2,2.5,3,4,5,6,8,10]) if (m*p >= v) return m*p; return 10*p; }
+// rows: [{m, a, o, pa, po}] a/o = real; pa/po = projected (only last). fmt for labels.
+function stacked(id, rows, unit, fmt) {
+  const W = 680, H = 270, L = 52, R = 10, T = 24, B = 30, pw = W-L-R, ph = H-T-B;
+  const tot = r => r.a + r.o + (r.pa||0) + (r.po||0);
+  const max = niceMax(Math.max(...rows.map(tot)) * 1.08);
+  const y = v => T + ph - v/max*ph, band = pw/rows.length, bw = Math.min(44, band*0.56);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${unit} por mês, autorização e demais motivos"><defs>
+    <pattern id="h${id}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--surface)"/><rect width="2.2" height="5" fill="var(--ink-3)"/></pattern></defs>`;
+  for (let i=0;i<=4;i++){ const v=max*i/4; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`; }
+  rows.forEach((r,i) => {
+    const x = L + band*i + band/2 - bw/2; let base = 0;
+    const segs = [["o", r.o, "var(--s1)"], ["a", r.a, "var(--s2)"]];
+    if (r.pa || r.po) { segs.push(["po", r.po||0, `url(#h${id})`]); segs.push(["pa", r.pa||0, `url(#h${id})`]); }
+    const drawn = segs.filter(sg => sg[1] > 0);
+    drawn.forEach((sg, k) => {
+      const top = k === drawn.length-1; const y0 = y(base), y1 = y(base+sg[1]);
+      const h = Math.max(0, y0 - y1 - (k>0 ? 2 : 0));
+      s += top ? `<path d="${rpath(x, y1, bw, h, 4)}" fill="${sg[2]}"${sg[0].startsWith("p")?' stroke="var(--ink-3)" stroke-width="1"':''}/>`
+               : `<rect x="${x}" y="${y1}" width="${bw}" height="${h}" fill="${sg[2]}"${sg[0].startsWith("p")?' stroke="var(--ink-3)" stroke-width="1"':''}/>`;
+      base += sg[1];
+    });
+    s += `<text class="val" x="${x+bw/2}" y="${y(tot(r))-7}" text-anchor="middle">${fmt(tot(r))}</text>`;
+    s += `<text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${r.label || lab(r.m)}</text>`;
+    const pct = r.a + r.o + (r.pa||0) + (r.po||0) > 0 ? 100*(r.a+(r.pa||0))/tot(r) : 0;
+    let t = `<b>${r.label || lab(r.m)+'/26'}</b><br>Autorização (7DL/7F8): ${fmt(r.a)}<br>Demais motivos: ${fmt(r.o)}`;
+    if (r.pa || r.po) t += `<br>Projeção 07–31/10: ${fmt((r.pa||0)+(r.po||0))} (autorização ${fmt(r.pa||0)})`;
+    t += `<br>Total: ${fmt(tot(r))} · autorização ${nf(pct)}%`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="${t}"/>`;
+  });
+  s += `</svg>`;
+  const el = document.getElementById(id); el.innerHTML = s; bindTips(el);
+}
+// simple bars: rows [{label, v, pv, tipx}]
+function bars(id, rows, fmt, aria, col) {
+  col = col || "var(--accent)";
+  const W = 680, H = 230, L = 52, R = 10, T = 24, B = 30, pw = W-L-R, ph = H-T-B;
+  const max = niceMax(Math.max(...rows.map(r => r.v + (r.pv||0))) * 1.08);
+  const y = v => T + ph - v/max*ph, band = pw/rows.length, bw = Math.min(44, band*0.56);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}"><defs><pattern id="h${id}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--surface)"/><rect width="2.2" height="5" fill="var(--ink-3)"/></pattern></defs>`;
+  for (let i=0;i<=4;i++){ const v=max*i/4; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`; }
+  rows.forEach((r,i) => {
+    const x = L + band*i + band/2 - bw/2, tot = r.v + (r.pv||0);
+    if (r.pv) { s += `<rect x="${x}" y="${y(r.v)}" width="${bw}" height="${y(0)-y(r.v)}" fill="${col}"/>`;
+      s += `<path d="${rpath(x, y(tot), bw, y(r.v)-y(tot)-2, 4)}" fill="url(#h${id})" stroke="var(--ink-3)" stroke-width="1"/>`; }
+    else s += `<path d="${rpath(x, y(r.v), bw, y(0)-y(r.v), 4)}" fill="${col}"/>`;
+    s += `<text class="val" x="${x+bw/2}" y="${y(tot)-7}" text-anchor="middle">${fmt(tot)}</text><text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${r.label}</text>`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="${r.tipx}"/>`;
+  });
+  s += `</svg>`; const el = document.getElementById(id); el.innerHTML = s; bindTips(el);
+}
+</script>
+
+<script>
+
+const N = [["2",4,12,288],["3",98,583,13],["4",99,208,3],["5",95,127,7],["6",99,159,1],["7–9",100,154,0],["10+",96,242,9]];
+bars("chN", N.map(n => ({label: "N = " + n[0], v: n[1], tipx: `<b>N = ${n[0]}</b><br>Acatados: ${n[2]}<br>Negados: ${n[3]}<br>Acato: ${n[1]}%`})), v => nf(v) + "%", "Acato do recurso por número de execuções no dia", "var(--s2)");
+(function(){
+  const M = [["mai",20.0,3.6],["jun",69.5,12.6],["jul",118.7,31.9]];
+  const W = 680, H = 230, L = 52, R = 10, T = 24, B = 30, pw = W-L-R, ph = H-T-B, max = 160;
+  const y = v => T + ph - v/max*ph, band = pw/M.length, bw = Math.min(64, band*0.5);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cenário D por mês: acatado e saving perdido">`;
+  for (let i=0;i<=4;i++){ const v=max*i/4; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${nf(v)}</text>`; }
+  M.forEach((m,i) => {
+    const x = L + band*i + band/2 - bw/2, t = m[1]+m[2];
+    s += `<rect x="${x}" y="${y(m[1])}" width="${bw}" height="${y(0)-y(m[1])}" fill="var(--s1)"/>`;
+    s += `<path d="${rpath(x, y(t), bw, y(m[1])-y(t)-2, 4)}" fill="var(--s2)"/>`;
+    s += `<text class="val" x="${x+bw/2}" y="${y(t)-7}" text-anchor="middle">R$ ${nf(m[2],1)} mil perdido</text><text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${m[0]}</text>`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="<b>${m[0]}/26</b><br>Deixa de glosar: R$ ${nf(t,1)} mil<br>Já voltava acatado: R$ ${nf(m[1],1)} mil<br>Saving perdido: R$ ${nf(m[2],1)} mil"/>`;
+  });
+  s += `</svg>`; const el = document.getElementById("chD"); el.innerHTML = s; bindTips(el);
+})();
+
+</script>
