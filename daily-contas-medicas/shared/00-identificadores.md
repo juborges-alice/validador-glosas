@@ -61,7 +61,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
 | 9 | Contas Médicas - Qnt de guias analisadas por dia | **76259** (Hospital e Clínica, metas separadas) | diária ⚠️ |
-| 10 | Contas Médicas - % PEGs sem NF | **77275** (piso de idade pós-PLS) | diária ⚠️ |
+| 10 | Contas Médicas - % PEGs sem NF | **77507** (três horizontes) · drill **77508** | diária ⚠️ |
 | 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
 | 13 | Contas Médicas - % Resumos Criticados - HS | 30858 | diária |
@@ -79,11 +79,11 @@ o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 `segunda cláusula do limiar (crítica > 10 dias) não verificável — sem card de drill`.
 Quando um drill for cadastrado, esta nota sai.
 
-**⚠️ `% PEGs sem NF`: fonte trocada em 06/10/2026 para o card 77275.** O card 65694 não
-implementa a régua que a OM decidiu em 02/10 — contar como "sem NF" só PEGs que já têm lote PLS
-gerado, com piso de idade de 7 DU a partir da geração do PLS. Sem piso, o KPI acende vermelho nos
-primeiros dias úteis de todo mês por construção (74,38% em Out/26 no dia 06/10 contra 2,55% em
-Set/26 fechado). Regra completa na seção "% PEGs sem NF" abaixo; o catálogo do Notion é a fonte.
+**⚠️ `% PEGs sem NF`: fonte trocada em 07/10/2026 para o card 77507, com drill no 77508.** O KPI
+passou a sair em **três horizontes** sobre o ano corrente, e **só o mês corrente acende farol** — os
+dois horizontes do passado são fila de trabalho. Antes disso, em 06/10, o 77275 já tinha trocado o
+65694 para instrumentar o piso de idade pós-PLS. Regra completa na seção "% PEGs sem NF" abaixo; o
+catálogo do Notion é a fonte.
 
 **⚠️ `Qnt de guias analisadas por dia`: recalibrado em 28/09/2026 (decisão da OM).** Passou a ter
 **escopo Hospital + Clínica com metas separadas** e **card novo 76259**, com alvo capado pela fila disponível e leitura em 5 dias úteis.
@@ -212,6 +212,12 @@ correndo), não há o que investigar, e o que o time precisa é a **lista para a
 | KPI | Card | Classe |
 |---|---|---|
 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | **Alerta de trabalho** |
+
+**Caso híbrido — `% PEGs sem NF` (desde 07/10/2026).** Este KPI não entra inteiro na classe: o
+horizonte do **mês corrente** é termômetro normal e acende farol; os **dois horizontes do passado**
+(mais de 60 dias, e dois meses anteriores) seguem as regras desta classe — saem como fila, com
+lista e dono, rolam todo dia até zerar, não abrem episódio no Decision Log e não entram na contagem
+do farol. Detalhe na seção "% PEGs sem NF — três horizontes".
 
 Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
 
@@ -762,78 +768,105 @@ Ambos testados em 28/09/2026 e descartados como fonte de fila:
 **Quando reavaliar:** se a operação mudar a janela de recebimento de contas, ou se Laboratório
 voltar a ser analisado linha a linha, revisite o escopo e o corte de 80%.
 
-## % PEGs sem NF — piso de idade pós-PLS (decisão da OM, 02/10/2026, instrumentada em 06/10/2026)
+## % PEGs sem NF — três horizontes (decisões da OM, 02/10 e 07/10/2026)
 
-Até 05/10 o KPI saía do card **65694**, que divide as PEGs sem NF do mês pelo mês inteiro, sem
-piso de idade. Nos primeiros dias úteis de cada mês quase toda PEG do mês entrou ontem e ainda não
-tem nota, então o indicador acendia vermelho **por construção** — 74,38% em Out/26 medido em 06/10
-contra 2,55% em Set/26 fechado, sem nada ter acontecido na operação. Era o único KPI de estoque da
-operação sem piso: `% Faturas por Status - HS` tem piso de 7 dias no status desde 11/08,
-`% Glosa Alice por Prestador - HI` tem piso de R$50 mil desde 11/08, e `SLA de Pagamento de HS` tem
-guarda de 100 faturas classificadas desde 28/09.
+O KPI responde a duas perguntas diferentes e por isso sai em **três horizontes**, todos exigindo as
+mesmas duas condições: a PEG **já tem lote PLS gerado** e **não tem nenhuma NF atrelada**. A janela
+é o **ano corrente**.
 
-**A régua vigente**, decidida por Juliana Borges em 02/10 após alinhamento com Fernanda Jerônimo:
+| # | Horizonte | Período (em Out/26) | Piso de idade | Tratamento |
+|---|---|---|---|---|
+| 1 | Mais de 60 dias | Jan a Jul/26 | não se aplica | **Fila de trabalho** — não acende 🔴 |
+| 2 | Dois meses anteriores | Ago e Set/26 | não se aplica | **Fila de trabalho** — não acende 🔴 |
+| 3 | Mês corrente | Out/26 | **7 DU após o PLS** | **Controle** — é este que acende o farol |
 
-> contar como "sem NF" apenas PEGs que **já possuem PLS gerado** — PEG sem PLS não entra na conta do
-> que precisa ter NF — com **piso de idade de 7 dias úteis a partir da geração do PLS**.
+**Card: 77507** (`Contas Médicas - % PEGs sem NF por horizonte`) · **drill: 77508**
+(`... lista item-a-item`), os dois criados em 07/10/2026. O PLS sai de `batch_pls` / `batch_date` de
+`curated.totvs_procedure_invoice`, e os dias úteis do índice de `curated.dim_date_public` — a mesma
+régua do card 76364. Parâmetro `piso_du` (number, default 7) nos dois; execute sem parâmetro.
 
-**Card novo: 77275** — `Contas Médicas - % PEGs sem NF (piso de idade pós-PLS)`, criado em
-06/10/2026 na collection 3662. Substitui o 65694 na rotina diária. O PLS sai de `batch_pls` /
-`batch_date` de `curated.totvs_procedure_invoice`, e os dias úteis saem do índice de
-`curated.dim_date_public` — a mesma régua do card 76364.
+O piso de 7 DU **só vale no horizonte 3**. Nos horizontes 1 e 2 entram todas as PEGs com PLS e sem
+NF, porque àquela altura o piso já foi ultrapassado por construção.
 
-Colunas: `mes` · `total_pegs` · `pegs_sem_pls` · `pegs_elegiveis` · `pegs_sem_nf` · `valor_sem_nf` ·
-**`pct_pegs_sem_nf`** (oficial) · `pegs_sem_nf_regua_antiga` · `pct_regua_antiga` (reproduz o 65694
-sobre a mesma base, só para comparabilidade na troca).
+### Por que o passado não acende vermelho
+
+Palavras da OM em 07/10/2026: *"eu não tenho ação sobre para mudar o indicador dos meses anteriores,
+mas [é] um alerta de operação que precisa ser tratado"*. Mês fechado não se move mais, então cobrar
+o percentual dele é cobrar o impagável — mas as PEGs continuam lá, com PLS gerado e sem nota, e isso
+é trabalho.
+
+**Tratamento no report:** os horizontes 1 e 2 saem como **fila**, com contagem, valor, concentração
+por grupo econômico e dono, rolando todo dia até zerar — o mesmo formato de `Recursos de Glosa
+Próximos do Vencimento`. **Não abrem episódio no Decision Log** e **não entram na contagem do
+farol**. O farol do KPI sai exclusivamente do horizonte 3, contra o limiar de 10%.
 
 ### ⚪ Sem base elegível — o caso do começo do mês
 
-Quando `pegs_elegiveis` = 0, `pct_pegs_sem_nf` vem **nulo** e o KPI sai **⚪, sem farol — não 🟢**.
-É a janela dos primeiros dias úteis do mês, em que nenhuma PEG do mês corrente alcançou o piso de
-7 DU ainda. Publicar 0% nesses dias seria afirmar ausência de estoque sem ter medido. Nesses dias o
-sinal operacional é o **estoque elegível dos meses anteriores** (`pegs_sem_nf` e `valor_sem_nf` das
-linhas anteriores) — em 06/10, Set/26 com 31 PEGs e R$473.787,61.
+Quando `pegs_com_pls` do horizonte 3 é zero, `pct_sem_nf` vem **nulo** e o KPI sai **⚪, sem farol —
+não 🟢**. É a janela dos primeiros dias úteis do mês, em que nenhuma PEG do mês corrente alcançou o
+piso de 7 DU ainda. Publicar 0% nesses dias seria afirmar ausência de estoque sem ter medido. A
+coluna `pegs_dentro_do_piso` diz quantas estão esperando o piso.
 
-### Efeito da troca na série
+### A janela de ano corrente não é arbitrária
 
-Medido em 06/10/2026, régua nova contra régua antiga:
+Fora dela o número não é fila, é **artefato de base**: `invoice_number` só passa a ser preenchido de
+fato em **Mar/2025**. Medido em 07/10/2026, PEGs com PLS e sem NF por mês:
 
-| Mês | Régua vigente (77275) | Régua antiga (65694) |
+| Mês | sem NF / com PLS | % |
 |---|---|---|
-| Abr/26 | 1,19% | 1,19% |
-| Mai/26 | 0,98% | 0,98% |
-| Jun/26 | 1,45% | 1,45% |
-| Jul/26 | 0,97% | 0,97% |
-| Ago/26 | 0,31% | 0,31% |
-| Set/26 | **1,61%** | 2,54% |
-| Out/26 | **sem base elegível** | 74,45% |
+| Nov/24 | 728 / 728 | 100,0% |
+| Dez/24 | 720 / 720 | 100,0% |
+| Jan/25 | 693 / 702 | 98,7% |
+| Fev/25 | 744 / 793 | 93,8% |
+| **Mar/25** | **24 / 819** | **2,9%** |
+| Abr/25 em diante | — | 0,8% a 5,4% |
 
-Os meses fechados há mais de 7 DU não se movem, porque lá toda PEG já passou do piso. A régua só
-muda o mês corrente e o recém-fechado — exatamente onde o alerta falso nascia.
+Somando 2023 e 2024 inteiros seriam **12.496 PEGs e R$308 milhões** de estoque fantasma. Se a janela
+for ampliada algum dia, **o piso é 01/03/2025, nunca antes**.
 
-### ⚠️ O 77275 também corrige um defeito de grão, e isso move o denominador
+### Leitura de 07/10/2026, a primeira sob esta régua
+
+- **Horizonte 1** (Jan a Jul/26): 113 PEGs · R$1.397.629,54 · 1,02% de 11.025 com PLS
+- **Horizonte 2** (Ago e Set/26): 50 PEGs · R$546.584,61 · 1,28% de 3.916 com PLS
+- **Horizonte 3** (Out/26): sem base elegível — 269 PEGs ainda dentro do piso ⚪
+- **Fila total do passado: 163 PEGs · R$1.944.214,15**
+
+**Concentração da fila, e é o acionável:** CAEN com 66 PEGs e R$990.810,00 é sozinho **51%** do
+valor; ABA ABC LTDA com 24 PEGs e R$314.093,60 é **16%**. Os dois somam 67%.
+
+### ⚠️ Histórico de fonte — três saltos em três dias
+
+A série publicada no canal **não é comparável ponta a ponta**:
+
+- **até 05/10** — card 65694, sem piso de idade. Out/26 marcava 82,46% em 02/10 e 87,18% em 05/10,
+  vermelho por construção no começo do mês.
+- **06/10** — card 77275, piso de 7 DU pós-PLS, série mensal. Out/26 passa a sair sem base elegível
+  e Set/26 cai de 2,54% para 1,61%.
+- **07/10** — cards 77507 e 77508, três horizontes sobre o ano corrente. O grão deixa de ser o mês e
+  passa a ser o horizonte.
+
+O 77275 e o 65694 seguem existindo; **nenhum dos dois é mais a fonte deste KPI**.
+
+### ⚠️ O defeito de grão do 65694, corrigido desde o 77275
 
 O 65694 lê o card base **68915**, que escolhe UMA linha por PEG com
 `ROW_NUMBER() OVER (PARTITION BY peg_code ORDER BY invoice_date DESC)`. Todos os itens de uma PEG
 têm o mesmo `invoice_date`, então o desempate é **arbitrário e muda a cada execução**. Isso não
 afeta `invoice_number` nem `institution_code` (verificado: não divergem dentro da PEG), mas afeta
-`payment_value`, que diverge em **3.653 PEGs** da janela — e o filtro `payment_value != 0` do 65694
-cai sobre a linha sorteada.
+`payment_value`, que diverge em **3.653 PEGs** — e o filtro `payment_value != 0` do 65694 cai sobre
+a linha sorteada. O denominador do card oficial oscilava entre execuções sem nada mudar no banco
+(medido em 06/10/2026, duas rodadas com ~15 min de intervalo: Jun/26 1.632 e depois 1.619; Out/26
+317 e depois 320).
 
-Consequência: o **denominador do card oficial oscilava entre execuções** sem nada ter mudado no
-banco. Medido em 06/10/2026, duas rodadas do 65694 com ~15 minutos de intervalo: Jun/26 1.632 e
-depois 1.619; Out/26 317 e depois 320; Abr/26 1.609 e depois 1.611.
-
-No 77275 a decisão é tomada **no grão da PEG** — a PEG entra se qualquer item dela tiver
+Nos cards 77507 e 77508 a decisão é tomada **no grão da PEG** — a PEG entra se qualquer item tiver
 `payment_value` diferente de zero, e tem NF se qualquer item tiver `invoice_number` preenchido — e o
-resultado é determinístico (três execuções consecutivas idênticas). O denominador sobe cerca de 4%
-(Abr/26 1.683 contra ~1.611) e o numerador passa a bater com o drill do 49800 (Out/26 239, Set/26
-51, contra 238 e 49 do 65694). O percentual quase não se move.
+resultado é determinístico.
 
-**Entre 02/10 e 06/10 o KPI foi publicado sob duas réguas.** A decisão é de 02/10, mas o card só foi
-instrumentado em 06/10: em 02/10 e 05/10 a rotina publicou 🔴 com o número do 65694 (82,46% e
-87,18%), e em 06/10 aplicou a régua à mão a partir do drill 49800 e publicou 🟢. A coluna
-`pct_regua_antiga` existe para reconstruir a leitura antiga quando for preciso.
+### Nota de escopo de collection
+
+O 77275 foi criado em 06/10 na collection **3662**; em 07/10 o escopo de escrita do perfil passou
+para a collection **3609**, onde o 77507 e o 77508 foram criados. O 77275 não é mais editável por
+esta rotina e ficou órfão — arquivá-lo depende de quem tem escopo na 3662.
 
 ## Ciclo de processamento Cassi — o indicador acionável (decisão da OM, 22/09/2026)
 
