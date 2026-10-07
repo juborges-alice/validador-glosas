@@ -272,6 +272,31 @@ Para não poluir o panorama, a legenda **não** fecha a Mensagem 1. String liter
 🟢 Dentro da meta · 🟡 Atenção, sem acionamento: dentro da meta com variação a monitorar, ou fora do limiar com o desvio já explicado por decisão vigente do OM · 🔴 Fora do limiar sem explicação vigente — acionamento imediato · ⚪ Sem dado ou sem meta — acompanhar tendência
 ```
 
+### Variação favorável atípica — resposta na thread da Mensagem 1 (condicional)
+
+Para cada KPI que saiu 🟡 pela regra da **variação favorável atípica**
+(`01-regras-de-registro.md` §1). Não havendo nenhum, não poste.
+
+É **resposta na thread**, nunca mensagem solta no canal: mensagem solta é reservada ao 🔴, e
+tratar melhoria como acionamento gasta a atenção que o vermelho precisa ter. Mas também não fica
+só na página — a OM pediu visibilidade no canal (07/10/2026).
+
+```
+📉 *Variação favorável fora do padrão* — {N} KPI(s)
+• _{KPI}_ — {valor} vs {baseline}, {variação} na direção boa (limiar {limiar})
+  Sanidade: denominador {ok/alterado} · carga do dia {ok/zerada} · drill {reconcilia/não reconcilia}
+  Leitura: {melhoria real, com a evidência} OU {a confirmar — o que falta checar}
+```
+
+A linha `Sanidade` sai sempre, com as três checagens explícitas, mesmo quando todas passam. Ela é
+o que separa melhoria de carga incompleta, e sem ela a mensagem vira elogio sem lastro.
+
+Se alguma checagem falhar, o KPI **não** entra aqui: sai ⚪ na tabela e a falha vira item de bug
+de dado na Mensagem 4, com dono.
+
+Não peça plano de ação e não marque ninguém para responder — isto não é cobrança. Marque o
+responsável do KPI **apenas** quando a leitura ficar "a confirmar" e a confirmação depender dele.
+
 ### Mensagem 2 — uma mensagem solta por KPI 🔴 (condicional)
 
 Mensagens **separadas no canal**, não em thread. **Todo 🔴 gera mensagem** — não existe mais
@@ -595,13 +620,22 @@ conferindo contra a fonte.
 | 5 | **Nenhum Top N foi avaliado só pelos nomes conhecidos** — todas as linhas passaram pelo limiar. | Reavalie a lista inteira. |
 | 6 | **Antes de abrir entrada nova no Decision Log**, a busca por episódio aberto daquele KPI foi feita de fato (`01-regras-de-registro.md` §3). | Acrescente a linha de histórico ao episódio existente em vez de criar outra página. |
 | 7 | **Todo KPI que saiu 🟢 por "direção boa" teve a direção LIDA na tabela de `00-identificadores.md`**, não inferida. Liste, antes de publicar, quais KPIs foram poupados do farol por esse argumento e qual linha da tabela sustenta cada um. | Se a tabela diz outra coisa, ou se o KPI não está nela, refaça o farol: sem direção declarada o KPI é bidirecional e o limiar vale nos dois sentidos. |
+| 8 | **Toda variação na direção boa com a magnitude do limiar virou 🟡, com o teste de sanidade rodado.** Direção boa só confirma 🟢 quando a variação é menor que o limiar, ou quando decisão vigente citada por link explica exatamente ela. | Reclassifique para 🟡 e poste a linha na thread da Mensagem 1. Se o teste de sanidade falhar, o KPI é ⚪ e a falha vira bug de dado na Mensagem 4. |
 
-**Sobre o item 7.** Em 07/10/2026 o `R$ Recurso de Glosa acumulado` saiu 🟢 com **+128,65%** sobre
-a média de 3 meses porque a execução decidiu sozinha que o KPI era "maior é melhor". A OM corrigiu
-no mesmo dia: ele é **"quanto MENOR melhor"**, e alta cruza o limiar. O argumento de "direção boa"
-é o único da rotina que apaga um vermelho sem citar decisão nenhuma — por isso ele agora exige
-citar a linha da tabela, do mesmo jeito que o rebaixamento 🔴→🟡 exige citar o link da decisão.
-Regra completa em `01-regras-de-registro.md` §1 e tabela em `00-identificadores.md`.
+**Sobre os itens 7 e 8.** Em 07/10/2026 o `R$ Recurso de Glosa acumulado` saiu 🟢 com **+128,65%**
+sobre a média de 3 meses porque a execução decidiu sozinha que o KPI era "maior é melhor". A OM
+corrigiu no mesmo dia: ele é **"quanto MENOR melhor"**, e alta cruza o limiar. O argumento de
+"direção boa" é o único da rotina que apaga um vermelho sem citar decisão nenhuma — por isso o
+item 7 agora exige citar a linha da tabela, do mesmo jeito que o rebaixamento 🔴→🟡 exige citar o
+link da decisão.
+
+O item 8 fecha a outra metade do mesmo buraco. Mesmo com a direção certa, a regra antiga mandava
+confirmar 🟢 "qualquer que seja a magnitude" na direção boa — o que teria silenciado uma queda de
+90% do dia para a noite, que é exatamente a assinatura de ETL que não rodou. A OM pediu
+visibilidade disso em 07/10: *"é bom mas é um sinal de desvio do padrão... para entender se é um
+potencial erro estrutural ou se de fato é melhoria."* Daí a classe 🟡 de variação favorável
+atípica, com teste de sanidade obrigatório. Regra completa em `01-regras-de-registro.md` §1 e
+tabela de direção em `00-identificadores.md`.
 
 **Sobre o item 6.** Está documentado desde 16/09 e continuou não sendo executado: em 17/09 havia
 uma página nova por dia, por KPI, praticamente sem falha desde 14/07 em `SLA Recurso de Glosa`,

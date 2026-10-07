@@ -73,10 +73,70 @@ declarar — isto é, cruza o limiar para cima e para baixo.
 
 Com a direção em mãos:
 
-- **"menor é melhor"** — variação **para cima** cruza o limiar. Variação **para baixo** é a
-  direção boa e nunca gera 🟡 nem 🔴: confirma 🟢, qualquer que seja a magnitude.
-- **"maior é melhor"** — o inverso: variação **para baixo** cruza; variação para cima confirma 🟢.
-- **"bidirecional"** — cruza nos dois sentidos, conforme o texto do limiar.
+- **"menor é melhor"** — variação **para cima** cruza o limiar e gera 🔴. Variação **para baixo**
+  é a direção boa e **nunca** gera 🔴, mas pode gerar 🟡 — ver a regra da variação favorável
+  atípica, logo abaixo.
+- **"maior é melhor"** — o inverso: variação **para baixo** cruza e gera 🔴; variação para cima é
+  a direção boa, sujeita à mesma regra de 🟡.
+- **"bidirecional"** — cruza nos dois sentidos e gera 🔴 nos dois, conforme o texto do limiar.
+
+### Variação favorável atípica — direção boa não é motivo para ficar calado
+
+Decisão da OM, 07/10/2026: *"quando a variação para baixo é grande, também deveria apontar. É bom
+mas é um sinal de desvio do padrão que gostaria de ter visibilidade para entender se é um
+potencial erro estrutural ou se de fato é melhoria."*
+
+Variação na direção boa não é acionamento — ninguém precisa corrigir nada hoje —, mas é anomalia.
+O lugar dela no farol é **🟡**, que a própria legenda do canal define como "atenção, sem
+acionamento: dentro da meta com variação a monitorar".
+
+**Gatilho.** O KPI sai 🟡 quando a variação na direção boa tem **a mesma magnitude do próprio
+`Limiar de alerta`**. Não existe número novo para calibrar: se o limiar é "desvio > 20% vs média
+histórica", uma melhora de mais de 20% dispara. A régua é espelhada de propósito — recalibrar o
+limiar move os dois lados juntos, e ninguém precisa lembrar de um segundo parâmetro.
+
+**Só vale com comparação homogênea.** A regra compara coisas comparáveis, e isso é pré-requisito,
+não detalhe:
+
+- **Vale** quando a baseline é casada pelo mesmo ponto da série — acumulado do dia 7 contra a
+  média do dia 7 dos 3 meses anteriores (cards 65831 e 65834), mês fechado contra mês fechado,
+  fila de hoje contra fila de ontem. É aqui que a OM quer o sinal.
+- **Não vale** quando o mês corrente parcial é lido contra um mês fechado. `% Glosa Geral - HI` a
+  1,84% no 5º dia útil contra 5,26% de Set/26 fechado não é melhoria de 3,41 p.p.: é um mês em
+  que a glosa ainda não foi aplicada. Diferença de maturidade não é variação de desempenho, e
+  publicar isso como anomalia enche a primeira semana de todo mês de falso positivo. Nesses
+  casos o KPI sai 🟢 e a incompletude vai no Caveat, como já vai hoje.
+
+Na dúvida sobre a homogeneidade, pergunte: *se eu congelasse a operação, os dois lados da conta
+teriam o mesmo tamanho?* Se não, a comparação não é homogênea.
+
+**Nunca vira 🔴.** Variação favorável não abre episódio no Decision Log, não gera mensagem solta
+no canal e não pede plano de ação. Ela gera **uma linha na thread da Mensagem 1** (formato no
+Passo 8 de `01-report-slack/SKILL.md`) e o detalhamento na página.
+
+**A pergunta é obrigatória e é sempre a mesma:** erro estrutural ou melhoria real? Antes de
+publicar, rode o **teste de sanidade** — são três checagens e todas saem de dados que a execução
+já tem na mão:
+
+1. **O denominador/volume existe?** Queda do numerador com denominador intacto é melhoria
+   candidata; os dois caindo juntos é carga incompleta.
+2. **O dia tem carga?** Entradas e saídas zeradas ao mesmo tempo, na mesma data, é assinatura de
+   ETL que não rodou — não de operação que parou.
+3. **O drill reconcilia com o agregado?** Se a soma do drill não bate, o número de cima não está
+   descrevendo o que parece descrever.
+
+**Se qualquer uma das três falhar, não é melhoria: é falha de fonte.** Nesse caso o KPI sai **⚪**
+(sem dado confiável), com o que foi tentado e o que falhou escrito na linha, e a falha entra como
+item de **bug de dado na Mensagem 4**, com dono — não como desvio de operação. Publicar um número
+que a fonte não sustenta é pior do que publicar ⚪.
+
+**Supressão segue os mesmos guard-rails do rebaixamento 🔴→🟡 (§1, Etapa 2).** O 🟡 favorável só
+vira 🟢 quando existe decisão vigente que explica **exatamente esta** variação, citada por link e
+com a página aberta. O caso vigente hoje é o artefato de calendário dos KPIs acumulados, que
+comparam o acumulado do mês contra uma média casada **pelo dia do mês** e não pelo dia útil: a OM
+examinou em 05/10 e decidiu manter a régua ("isso é normal do mês, não tem nada demais"). Essa
+decisão cobre a janela de início de mês que ela examinou — **não** cobre uma queda equivalente no
+dia 25, que é outro desvio e volta a ser 🟡. Guard-rail 2 vale igual nos dois sentidos.
 
 > #### ⚠️ Incidente de 07/10/2026 — por que esta regra foi reescrita
 >
@@ -92,7 +152,9 @@ Com a direção em mãos:
 > Dois agravantes que esta reescrita fecha:
 > 1. A rotina já havia disparado 🔴 para este KPI em 30/09 (−20,54%) e 05/10 (−25,50%), lendo o
 >    limiar nos dois sentidos — e em 07/10 leu só para baixo. Incoerência com a própria série.
->    Sob a direção correta, **aqueles dois vermelhos eram falsos**: queda é a direção boa.
+>    Sob a direção correta, **aqueles dois vermelhos eram falsos como vermelho**, porque queda é
+>    a direção boa — mas não eram ruído: pela regra da variação favorável atípica eram **🟡**, com
+>    a pergunta de erro estrutural × melhoria real. O erro foi de classe, nos dois sentidos.
 > 2. O histórico do episódio `R$ Recurso de Glosa acumulado · desvio desde 05/10` registra, em
 >    06/10, que o episódio foi encerrado por o KPI estar "59,4% ACIMA da média de 3 meses", como
 >    se subir fosse resolução. **Essa nota está errada e não deve ser usada como precedente.**

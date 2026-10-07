@@ -112,7 +112,12 @@ Esta tabela existe porque a execução de 07/10/2026 **inferiu** a direção do
 A OM corrigiu no mesmo dia. Direção não se deduz do nome do KPI, da `Definição` nem de
 raciocínio sobre o que seria bom para a operação: **lê-se aqui**.
 
-| # | KPI | Direção | O que cruza o limiar |
+A coluna **"O que gera 🔴"** diz em que sentido o desvio é acionamento. O sentido oposto nunca
+gera 🔴, mas gera **🟡 de variação favorável atípica** quando tem a mesma magnitude do limiar —
+regra completa em `01-regras-de-registro.md` §1. Nos KPIs bidirecionais os dois sentidos são 🔴 e
+a regra de variação favorável não se aplica.
+
+| # | KPI | Direção | O que gera 🔴 |
 |---|---|---|---|
 | 1 | % Glosa Geral - HI | menor é melhor | alta |
 | 2 | % Glosa por Tipo de HI | menor é melhor | alta |
@@ -136,6 +141,12 @@ raciocínio sobre o que seria bom para a operação: **lê-se aqui**.
 'quanto maior melhor'. Esse indicador é 'quanto MENOR melhor'."* O valor recursado é o que os
 prestadores contestam das glosas aplicadas pela Alice — volume subindo é mais contestação, mais
 trabalho e mais risco de devolver glosa. Não reinterprete.
+
+**Direção boa não é silêncio.** Na mesma conversa a OM definiu que queda grande também aparece:
+*"é bom mas é um sinal de desvio do padrão que gostaria de ter visibilidade para entender se é um
+potencial erro estrutural ou se de fato é melhoria."* Daí a classe **🟡 de variação favorável
+atípica** — mesma magnitude do limiar, no sentido bom, com teste de sanidade e pergunta
+obrigatória. Ela nunca vira 🔴 e nunca abre episódio.
 
 **Consequência imediata para a próxima execução:** com a direção correta, o
 `R$ Recurso de Glosa acumulado` em **+128,65% sobre a média de 3 meses** (R$826.363,99 no dia 7
