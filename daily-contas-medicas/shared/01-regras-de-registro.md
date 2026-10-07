@@ -150,15 +150,23 @@ dia 25, que é outro desvio e volta a ser 🟡. Guard-rail 2 vale igual nos dois
 > subindo é mais contestação, mais trabalho e mais risco de devolver glosa, não conquista.
 >
 > Dois agravantes que esta reescrita fecha:
-> 1. A rotina já havia disparado 🔴 para este KPI em 30/09 (−20,54%) e 05/10 (−25,50%), lendo o
->    limiar nos dois sentidos — e em 07/10 leu só para baixo. Incoerência com a própria série.
->    Sob a direção correta, **aqueles dois vermelhos eram falsos como vermelho**, porque queda é
->    a direção boa — mas não eram ruído: pela regra da variação favorável atípica eram **🟡**, com
->    a pergunta de erro estrutural × melhoria real. O erro foi de classe, nos dois sentidos.
-> 2. O histórico do episódio `R$ Recurso de Glosa acumulado · desvio desde 05/10` registra, em
->    06/10, que o episódio foi encerrado por o KPI estar "59,4% ACIMA da média de 3 meses", como
->    se subir fosse resolução. **Essa nota está errada e não deve ser usada como precedente.**
->    Este arquivo manda; a nota da página, não.
+> 1. **Havia decisão vigente da OM mandando disparar nos dois sentidos, e ela foi ignorada.** O
+>    episódio `· desvio desde 30/09` registra decisão Vigente de 22/09: *"recusada a recalibração
+>    do limiar para disparar só para cima; mantém-se o disparo nas duas direções até a operação
+>    confirmar estabilidade do volume de recursos."* Os 🔴 de 30/09 (−20,54%) e 05/10 (−25,50%)
+>    seguiam essa decisão e estavam **certos para a régua da época**. A régua de 07/10 a refina,
+>    não a contradiz: alta vira 🔴 e queda vira 🟡 de variação favorável atípica. O que nunca foi
+>    autorizado foi o silêncio — e foi exatamente o silêncio que a execução de 07/10 produziu.
+> 2. **O erro começou em 06/10, não em 07/10, e custou o episódio.** O histórico do episódio
+>    `· desvio desde 05/10` fecha o registro com: *"+59,39%, ou seja o mês está ACIMA da baseline
+>    e não abaixo. Desvio encerrado. (...) Variação na direção boa de um KPI em que mais recursado
+>    é melhor não gera farol (§1, regra de direção), então o KPI sai 🟢 e o episódio fecha um dia
+>    depois de aberto."* A direção está invertida na própria justificativa do fechamento. Sob a
+>    direção correta, **06/10 em +59,39% já era 🔴** — o episódio foi encerrado no dia em que
+>    deveria ter sido escalado, e o KPI acumulou **dois dias de vermelho não reportado** (06/10 e
+>    07/10). **Essa nota está errada e não deve ser usada como precedente.** Este arquivo manda;
+>    a nota da página, não — a correção dela está na lista de pendências do Passo 7 do
+>    `01-report-slack/SKILL.md`.
 >
 > **Nenhuma decisão vigente rebaixa um desvio para cima deste KPI.** Os episódios de 21/09, 30/09
 > e 05/10 explicam desvios **para baixo** (déficit de volume, efeito de calendário de dia útil

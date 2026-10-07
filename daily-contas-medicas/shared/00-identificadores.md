@@ -152,6 +152,12 @@ obrigatória. Ela nunca vira 🔴 e nunca abre episódio.
 `R$ Recurso de Glosa acumulado` em **+128,65% sobre a média de 3 meses** (R$826.363,99 no dia 7
 de Out/26 contra R$361.433,89) **é 🔴**, e nenhum episódio vigente o rebaixa — os de 21/09, 30/09
 e 05/10 tratam de desvio para baixo, de sinal e mecanismo opostos. Abra episódio novo.
+
+**O episódio novo abre com dois dias de história, não um.** A alta começou em **06/10**, quando o
+KPI marcou +59,39% e a execução daquele dia fechou o episódio tratando a subida como resolução.
+Sob a direção correta aquele dia já era 🔴. O `Contexto / problema` do episódio novo precisa
+registrar os dois dias: 06/10 em +59,39% (não reportado) e 07/10 em +128,65% (não reportado), com
+a nota de que a lacuna foi de leitura e não de dado.
 O drill de 07/10 já está levantado e deve ser reaproveitado: Hospital +105,29% (R$564.307,88
 contra R$274.880,31, 59,6% do excedente) e Laboratório +253,50% (R$273.359,27 contra R$77.328,95,
 40,4%) — nenhum tipo passa de 70%, então roteia para as duas. Por motivo, o destaque é o
