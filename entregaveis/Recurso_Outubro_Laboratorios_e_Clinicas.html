@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}</style>
+</head>
+<body>
+<title>Recurso Laboratórios Outubro</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: relatório em uma coluna. Resposta curta, depois valor, itens, PEG, motivos, prestadores, setembro x outubro, projeção e próximos passos. */
+:root {
+  --bg: #fbf8f9; --surface: #ffffff; --ink: #40002d; --ink-2: #6b5a64; --ink-3: #94858d;
+  --line: #eee5ea; --accent: #be0380; --accent-soft: #fbe7f3;
+  --s1: #2a78d6; --s2: #eb6834;
+  --good: #0f7b3f; --good-soft: #e3f4ea; --warn: #8a5a00; --warn-soft: #fbf0d9; --bad: #b3261e; --bad-soft: #fbe9e7; --neutral-soft: #f1ecef;
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891; --line: #34282f; --accent: #e0479f; --accent-soft: #3a1830;
+  --s1: #3987e5; --s2: #d95926; --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891; --line: #34282f; --accent: #e0479f; --accent-soft: #3a1830;
+  --s1: #3987e5; --s2: #d95926; --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.1; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 15px; font-family: var(--font-body); font-weight: 600; }
+p { margin: 0; max-width: 72ch; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--ink-2); } .small { font-size: 13px; }
+header, section { display: flex; flex-direction: column; gap: 14px; }
+.scope { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--neutral-soft); color: var(--ink-2); white-space: nowrap; }
+a { color: var(--accent); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.v { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+.v .q { font-size: 13px; color: var(--ink-2); }
+.v .a { font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: 1.2; }
+.v p { font-size: 14px; color: var(--ink-2); }
+.pill { align-self: flex-start; display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); } .pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); } .pill.flat { background: var(--neutral-soft); color: var(--ink-2); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+th:first-child, td:first-child { text-align: left; }
+td.wrap-cell { white-space: normal; min-width: 220px; text-align: left; }
+tr.hl td { background: var(--accent-soft); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend i.proj { background-image: repeating-linear-gradient(135deg, var(--ink-3) 0 2px, transparent 2px 5px); border: 1px solid var(--ink-3); }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
+svg .val { fill: var(--ink); font-weight: 600; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .hit { fill: transparent; } svg .hit:hover { fill: var(--ink); fill-opacity: 0.05; }
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; max-width: 300px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.prov { display: flex; flex-direction: column; gap: 10px; }
+.prov h3 { font-family: var(--font-display); font-size: 19px; }
+.prov p { font-size: 14px; color: var(--ink-2); }
+ol.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); }
+code { font-size: 12.5px; background: var(--neutral-soft); padding: 1px 5px; border-radius: 5px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } .panel { padding: 14px; } th, td { padding: 7px 8px; } }
+</style>
+
+<div id="tip" hidden></div>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Projeto Recurso de Glosa · Laboratórios e clínicas · Out/26</span>
+  <h1>Recurso de Glosa em Outubro: Laboratórios e Clínicas</h1>
+  <p class="muted">Em outubro, o recurso de laboratórios voltou a subir logo nos primeiros dias, depois do vale de setembro. Este relatório mostra o tamanho da alta em valor, itens e PEG, de onde ela vem, como fica o motivo de falta de autorização e o que mudou desde a análise da queda de setembro.</p>
+  <div class="scope">
+    <span class="chip">Laboratório + Clínica · Health Institution · totvs-alice · fases 1 a 4</span>
+    <span class="chip">Recursos até 06/10/2026</span>
+    <span class="chip">Sem o lote antigo da DASA (glosas de 2025, recebidas 22–30/09)</span>
+    <span class="chip">Sem os recursos de 7F6 de jul–ago</span>
+    <span class="chip">Autorização = 7DL (até jun) e 7F8 (desde jul)</span>
+  </div>
+</header>
+
+<section>
+  <h2>Resposta curta</h2>
+  <div class="verdict">
+    <div class="v">
+      <span class="q">Outubro está fora do normal?</span>
+      <span class="pill good">Não. Volta ao patamar de jul–ago</span>
+      <span class="a">~R$ 690 mil · ~5,1 mil itens · ~390 PEGs</span>
+      <p>Até 06/10 entraram R$ 262 mil, 978 itens e 160 PEGs. Pela projeção, o mês fecha perto de julho e agosto (R$ 717–907 mil, 5,5–5,7 mil itens, 381–432 PEGs). A glosa total de agosto e setembro voltou ao nível de abr–mai com os novos motivos. Só julho tinha sido baixo, e julho alimentou setembro.</p>
+    </div>
+    <div class="v">
+      <span class="q">O recurso por falta de autorização voltou a subir?</span>
+      <span class="pill good">Não. Segue em queda</span>
+      <span class="a">~R$ 153 mil no mês, contra ~R$ 267 mil (média de abr–ago)</span>
+      <p>A glosa desse motivo caiu de 2,8–4,5% para 1,3–1,5% do apresentado desde julho, e ficou nesse nível. O % recursado não mudou (30–34% em até 60 dias). Com a base menor, entra menos recurso: ~22% do recurso de outubro, contra 32–48% antes.</p>
+    </div>
+    <div class="v">
+      <span class="q">Por que setembro caiu e outubro subiu?</span>
+      <span class="pill flat">Calendário de entrega</span>
+      <span class="a">A coorte de agosto caiu em outubro</span>
+      <p>A DASA costumava recursar em 42–44 dias. As glosas de agosto, feitas em sua maioria entre 11 e 20/08, eram esperadas de 22/09 a 01/10, mas chegaram em 05–06/10 (mediana de 54 dias), na taxa de sempre (57% do glosado). Setembro ficou sem esse lote e outubro recebeu tudo junto.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>1. Valor recebido por mês</h2>
+  <p class="muted">Valor recursado (R$ mil), por mês de recebimento do recurso. A barra de outubro mostra o real de 01 a 06/10 e, hachurada, a projeção de 07 a 31/10.</p>
+  <div class="panel">
+    <div class="legend"><span><i style="background:var(--s2)"></i>Autorização (7DL/7F8)</span><span><i style="background:var(--s1)"></i>Demais motivos</span><span><i class="proj"></i>Projeção 07–31/10</span></div>
+    <div id="chVal"></div>
+    <div class="tbl-wrap"><table id="tVal"></table></div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Itens recebidos para análise</h2>
+  <p class="muted">Itens recursados (itens distintos de guia), por mês de recebimento. Esta é a medida de carga de trabalho do time de análise.</p>
+  <div class="panel">
+    <div class="legend"><span><i style="background:var(--s2)"></i>Autorização (7DL/7F8)</span><span><i style="background:var(--s1)"></i>Demais motivos</span><span><i class="proj"></i>Projeção 07–31/10</span></div>
+    <div id="chItem"></div>
+    <div class="tbl-wrap"><table id="tItem"></table></div>
+  </div>
+</section>
+
+<section>
+  <h2>3. Recurso por protocolo (PEG)</h2>
+  <p class="muted">PEGs distintos com recurso recebido no mês, com o tamanho médio de cada PEG. Outubro teve PEGs pequenos: a DASA abre um PEG por protocolo original, com cerca de 6 itens cada.</p>
+  <div class="panel">
+    <div class="legend"><span><i style="background:var(--accent)"></i>PEGs recebidos</span><span><i class="proj"></i>Projeção 07–31/10</span></div>
+    <div id="chPeg"></div>
+    <div class="tbl-wrap"><table id="tPeg"></table></div>
+    <p class="small muted">A projeção de PEGs divide os itens projetados de cada prestador pela média de itens por PEG dele em mar–set (DASA ~8, Fleury ~20, Femme ~40). É uma estimativa aproximada.</p>
+  </div>
+  <div class="grid2">
+    <div class="panel prov"><span class="pill warn">156 de 160 PEGs</span><h3>DASA</h3>
+      <p>R$ 249 mil e 952 itens em 05–06/10, todos de glosas de 06 a 26/08. São PEGs de 1 a 58 itens. O maior é o 00103281 (58 itens, R$ 13 mil, motivo 7G9).</p></div>
+    <div class="panel prov"><span class="pill flat">4 PEGs</span><h3>Fleury</h3>
+      <p>R$ 13 mil e 26 itens de glosas de agosto. A coorte de agosto do Fleury (R$ 783 mil glosados) entra na janela dele de meados de outubro ao início de novembro.</p></div>
+    <div class="panel prov"><span class="pill flat">0 PEG até 06/10</span><h3>Femme</h3>
+      <p>Recursa ~80% do que é glosado, em PEGs grandes (~40 itens). As coortes de agosto e setembro ainda não chegaram e devem trazer ~1.250 itens de baixo valor.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>4. Motivos: falta de autorização segue em queda</h2>
+  <p class="muted">Glosa por autorização não localizada, em % do valor apresentado, por mês da glosa. Em julho, o 7DL deixou de ser usado e o motivo passou a sair como 7F8.</p>
+  <div class="panel">
+    <h3>Glosa de autorização em % do apresentado</h3>
+    <div id="chGlA"></div>
+    <div class="tbl-wrap"><table id="tGlA"></table></div>
+    <p class="small muted">% do apresentado = glosado no mês da glosa ÷ apresentado no mês da conta. Coortes de agosto e setembro ainda abertas para recurso.</p>
+  </div>
+  <div class="panel tbl-wrap">
+    <h3>Motivos mais recursados por mês de recebimento (R$ mil · itens)</h3>
+    <table>
+      <thead><tr><th>Mês</th><th>1º</th><th>2º</th><th>3º</th><th>4º</th></tr></thead>
+      <tbody>
+        <tr><td>Jul</td><td>7DL 439 · 1.642</td><td>7EK 188 · 1.232</td><td>7EY 72 · 869</td><td>7DY 42 · 163</td></tr>
+        <tr><td>Ago</td><td>7DL 194 · 1.381</td><td>7G4 142 · 693</td><td>7EK 95 · 1.142</td><td>7DY 74 · 474</td></tr>
+        <tr><td>Set</td><td>7EK 59 · 157</td><td>7F8 40 · 94</td><td>7G4 21 · 112</td><td>7F6 12 · 384</td></tr>
+        <tr class="hl"><td>Out (01–06)</td><td>7G4 93 · 369</td><td>7F8 42 · 101</td><td>7F6 41 · 105</td><td>7EK 37 · 87</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">7EK: procedimento sem registro de execução · 7EY: senha cancelada · 7DY: item redundante na guia · 7G4: cobrança em duplicidade · 7F6: data preenchida incorretamente. O código é o primeiro motivo do item.</p>
+  </div>
+  <div class="grid2">
+    <div class="panel prov"><span class="pill good">Queda estrutural</span><h3>Menos glosa, mesma taxa de recurso</h3>
+      <p>O % recursado em até 60 dias ficou em 30% (abr), 34% (mai), 30% (jun) e 32% (jul). A coorte de agosto está em 17% e ainda não fechou. Nada indica que os laboratórios passaram a recursar mais esse motivo. Volta menos recurso desse motivo porque a glosa dele é 50–60% menor.</p></div>
+    <div class="panel prov"><span class="pill warn">Atenção</span><h3>O que ainda é recursado é muito acatado</h3>
+      <p>Do recurso de autorização analisado em agosto, 81% foi acatado (61% em julho). A glosa caiu, mas a maior parte do que ainda é glosado e recursado está sendo revertida. Vale olhar se o 7F8 está glosando itens que tinham autorização.</p></div>
+    <div class="panel prov"><span class="pill flat">Os demais motivos</span><h3>7G4, 7F6, 7EK e 7G9 puxam outubro</h3>
+      <p>Os demais motivos voltam ao nível de jul–ago (~R$ 540 mil e ~4,2 mil itens projetados). A duplicidade (7G4), código novo da tabela de julho, já é o motivo mais recursado da DASA. A seção 5 mostra por que esses motivos compensaram a queda da autorização.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>5. Onde está o efeito da redução da glosa</h2>
+  <p class="muted">A redução da glosa por autorização é real, mas a glosa total de laboratórios e clínicas não caiu. Ela caiu em julho e voltou a subir em agosto e setembro, porque outros motivos ocuparam o espaço. Valores em R$ mil, por mês da glosa, classificados pelo primeiro motivo do item.</p>
+  <div class="panel tbl-wrap">
+    <table>
+      <thead><tr><th>Mês da glosa</th><th>Autorização (7DL/7F8)</th><th>Códigos novos (7G4, 7G9, 7G3)</th><th>7F6 + 7EY</th><th>Demais</th><th>Total glosado</th><th>% do apresentado</th></tr></thead>
+      <tbody>
+        <tr><td>Mar</td><td>371</td><td>–</td><td>0</td><td>531</td><td><b>902</b></td><td>7,1%</td></tr>
+        <tr><td>Abr</td><td>419</td><td>–</td><td>315</td><td>522</td><td><b>1.256</b></td><td>8,3%</td></tr>
+        <tr><td>Mai</td><td>613</td><td>–</td><td>26</td><td>507</td><td><b>1.146</b></td><td>8,2%</td></tr>
+        <tr><td>Jun</td><td>494</td><td>–</td><td>777</td><td>914</td><td><b>2.185</b></td><td>14,1%</td></tr>
+        <tr class="hl"><td>Jul</td><td>199</td><td>560</td><td>94</td><td>164</td><td><b>1.017</b></td><td>6,7%</td></tr>
+        <tr><td>Ago</td><td>253</td><td>477</td><td>292</td><td>330</td><td><b>1.352</b></td><td>7,7%</td></tr>
+        <tr><td>Set</td><td>259</td><td>378</td><td>572</td><td>319</td><td><b>1.528</b></td><td>8,6%</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">7G4: cobrança em duplicidade · 7G9: local de atendimento inválido · 7G3: duplicidade de conta · 7F6: data preenchida incorretamente · 7EY: senha cancelada. Junho inclui o pico pontual de 7F6. Códigos antigos como 7EI, 7DY, 7DX, 7DK e 7EZ deixaram de aparecer em julho.</p>
+  </div>
+  <div class="grid2">
+    <div class="panel prov"><span class="pill good">O efeito existe</span><h3>No motivo de autorização</h3>
+      <p>A glosa do motivo caiu ~R$ 250 mil por mês, e o recurso dele também: ~R$ 153 mil projetados em outubro, contra ~R$ 267 mil (média de abr–ago). São cerca de R$ 115 mil e 600 itens a menos por mês só desse motivo.</p></div>
+    <div class="panel prov"><span class="pill warn">Mas foi compensado</span><h3>A glosa total voltou ao nível de abr–mai</h3>
+      <p>Com a tabela nova, entraram códigos que somam R$ 380–560 mil por mês, e 7F6 e 7EY cresceram. Julho foi o único mês com glosa total baixa (6,7% do apresentado). Agosto e setembro voltaram a 7,7–8,6%, o mesmo patamar de abril e maio (8,2–8,3%). O apresentado também cresceu, de ~R$ 15 mi para ~R$ 17,6 mi por mês.</p></div>
+    <div class="panel prov"><span class="pill flat">E é mais recursado</span><h3>Os motivos que entraram geram mais recurso</h3>
+      <p>Na coorte de julho, 35% do glosado foi recursado em até 60 dias, contra 29% em abr–jun. A duplicidade (7G4) teve 58% recursado, contra 32% da autorização. A troca de motivo leva a um pouco mais de recurso por real glosado, não menos.</p></div>
+  </div>
+  <div class="panel">
+    <h3>O que isso muda na leitura de setembro e outubro</h3>
+    <p>A queda de setembro veio da coorte de julho, o único mês em que a glosa total caiu. Outubro é alimentado pelas coortes de agosto e setembro, que voltaram ao nível normal de glosa (R$ 1,35 e 1,53 mi). Por isso o recurso volta ao patamar de julho e agosto. A redução da glosa por autorização continua aparecendo, mas só dentro do motivo. No total, ela foi compensada pelos novos motivos.</p>
+  </div>
+</section>
+
+<section>
+  <h2>6. Setembro e outubro: o que a análise anterior previa e o que aconteceu</h2>
+  <div class="panel tbl-wrap">
+    <table>
+      <thead><tr><th>Hipótese da análise de setembro</th><th>O que aconteceu em outubro</th><th>Leitura</th></tr></thead>
+      <tbody>
+        <tr><td class="wrap-cell"><b>A tabela nova reduziu a glosa por autorização não localizada</b></td><td class="wrap-cell">Agosto e setembro ficaram em 1,5% do apresentado (R$ 255–259 mil), contra 2,8–4,5% até junho.</td><td class="wrap-cell"><span class="pill good">Se mantém</span></td></tr>
+        <tr><td class="wrap-cell"><b>O % recursado do motivo não mudou; o volume caiu</b></td><td class="wrap-cell">Julho fechou em 32% em até 60 dias. O recurso de autorização em outubro deve ficar ~43% abaixo da média de abr–ago.</td><td class="wrap-cell"><span class="pill good">Se mantém</span></td></tr>
+        <tr><td class="wrap-cell"><b>Julho foi recursado antes, em agosto, e sobrou pouco para setembro</b></td><td class="wrap-cell">28% da coorte de julho chegou já em agosto. Setembro recebeu só R$ 150 mil e 936 itens.</td><td class="wrap-cell"><span class="pill good">Confirmada</span></td></tr>
+        <tr><td class="wrap-cell"><b>Agosto foi glosado tarde no mês. Acompanhar a DASA até 01/10</b></td><td class="wrap-cell">A DASA recursou toda a coorte de agosto em 05–06/10, uma semana depois da janela. Recursou 57% do glosado, dentro da faixa histórica de 48–65%. O mix de motivos é parecido com o de julho.</td><td class="wrap-cell"><span class="pill good">Explica a alta</span> Atraso de calendário, sem mudança de comportamento</td></tr>
+        <tr><td class="wrap-cell"><b>Fleury e Femme só teriam leitura em outubro</b></td><td class="wrap-cell">Ainda não chegaram. As coortes de agosto deles são o maior volume previsto para o resto do mês.</td><td class="wrap-cell"><span class="pill flat">Em aberto</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="panel">
+    <h3>Conclusão</h3>
+    <p>Setembro não marcou uma queda de comportamento. Foi um vale de calendário, com três causas:</p>
+    <ul class="plain">
+      <li>A base que alimentava o mês era menor: a glosa total de julho caiu (R$ 1,02 mi, 6,7% do apresentado) na virada para a tabela nova.</li>
+      <li>Parte dessa base já tinha sido recursada em agosto.</li>
+      <li>A DASA atrasou em uma semana o lote de agosto, que saiu de setembro e caiu em outubro.</li>
+    </ul>
+    <p>Outubro não é uma alta nova. A glosa total de agosto e setembro voltou ao nível de abril e maio, com novos motivos no lugar da autorização, e o comportamento de recurso dos prestadores não mudou. Por isso o recurso de laboratórios volta ao patamar de julho e agosto. O efeito da tabela nova aparece no motivo de autorização, que fica num patamar mais baixo e estável. No total, ele foi compensado.</p>
+  </div>
+</section>
+
+<section>
+  <h2>7. Projeção de outubro e grau de confiança</h2>
+  <div class="panel tbl-wrap">
+    <table>
+      <thead><tr><th></th><th>Valor</th><th>Itens</th><th>PEGs</th></tr></thead>
+      <tbody>
+        <tr><td>Real 01–06/10</td><td>R$ 262 mil</td><td>978</td><td>160</td></tr>
+        <tr><td>Fleury, coorte de agosto</td><td>R$ 199 mil</td><td>~1.530</td><td>~75</td></tr>
+        <tr><td>DASA, resto de agosto e coorte de setembro</td><td>R$ 160 mil</td><td>~1.240</td><td>~150</td></tr>
+        <tr><td>Femme, agosto e setembro</td><td>R$ 54 mil</td><td>~1.260</td><td>~30</td></tr>
+        <tr><td>Demais prestadores</td><td>R$ 17 mil</td><td>~70</td><td>–</td></tr>
+        <tr class="hl"><td><b>Fechamento estimado</b></td><td><b>~R$ 690 mil</b></td><td><b>~5,1 mil</b></td><td><b>~390</b></td></tr>
+        <tr><td>Se a DASA de setembro ficar para novembro</td><td>~R$ 575 mil</td><td>~4,4 mil</td><td>~300</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="plain">
+    <li><b>Método:</b> para cada prestador e motivo, uma curva do % do glosado que costuma chegar a cada dia depois da glosa, com coortes de 2026. Ela é aplicada só às glosas em aberto até setembro, porque laboratórios e clínicas não recursam no mês da glosa (0% no histórico). Se um prestador já recursou acima da curva, nada mais é projetado para aquela coorte.</li>
+    <li><b>Teste:</b> com o mesmo método, como se estivéssemos no dia 06 de cada mês, o real ficou entre 0,34 e 2,1 vezes o projetado (jul 2,1 · ago 1,4 · set 0,34). O valor do mês depende de quando cada prestador manda o lote. Por isso, a faixa razoável vai de ~R$ 575 a ~R$ 880 mil.</li>
+    <li><b>Dados:</b> data warehouse (<code>curated.totvs_procedure_invoice</code>) atualizado até 06/10. Não é tempo real.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>8. O que acompanhar</h2>
+  <div class="panel">
+    <ol class="steps">
+      <li><b>Fleury, de meados de outubro ao início de novembro:</b> chegada da coorte de agosto (R$ 783 mil glosados), o maior volume previsto.</li>
+      <li><b>DASA, do fim de outubro ao início de novembro:</b> coorte de setembro (R$ 505 mil glosados). Se chegar com mais de 50 dias de novo, o prazo dela passou de ~42 para ~54 dias e vale ajustar o planejamento.</li>
+      <li><b>Motivo de autorização:</b> com 81% de acato em agosto, levantar uma amostra de 7F8 acatados para ver se a autorização existia na glosa.</li>
+      <li><b>Medir por coorte de glosa:</b> no dashboard, a leitura mês a mês mistura coortes e oscila com o calendário de cada prestador. O % recursado em até 60 dias é a métrica estável.</li>
+    </ol>
+  </div>
+  <p class="small muted">Análise anterior: <a href="https://claude.ai/artifact/NsmUzkeco6xeDXkmZEHZZ2" target="_blank" rel="noopener">Queda de Recurso em Setembro</a> · Dashboard: <a href="https://metabase.datalake.alice.tools/dashboard/2774" target="_blank" rel="noopener">Recurso de Glosa no Metabase</a> · Relatório de hospitais publicado à parte.</p>
+</section>
+
+</div>
+
+<script>
+const MES = {"01":"jan","02":"fev","03":"mar","04":"abr","05":"mai","06":"jun","07":"jul","08":"ago","09":"set","10":"out"};
+const lab = m => MES[m.slice(5,7)];
+const nf = (v, d=0) => v.toLocaleString("pt-BR", {minimumFractionDigits:d, maximumFractionDigits:d});
+const brl = v => "R$ " + nf(v) + " mil";
+const tip = document.getElementById("tip");
+function bindTips(root) {
+  root.querySelectorAll("[data-tip]").forEach(el => {
+    el.addEventListener("mousemove", e => { tip.innerHTML = el.getAttribute("data-tip"); tip.hidden = false;
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (e.clientY + 14) + "px"; });
+    el.addEventListener("mouseleave", () => tip.hidden = true);
+  });
+}
+function rpath(x, y, w, h, r) { if (h <= 0.5) return ""; r = Math.min(r, h, w/2);
+  return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`; }
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1,1.2,1.5,2,2.5,3,4,5,6,8,10]) if (m*p >= v) return m*p; return 10*p; }
+// rows: [{m, a, o, pa, po}] a/o = real; pa/po = projected (only last). fmt for labels.
+function stacked(id, rows, unit, fmt) {
+  const W = 680, H = 270, L = 52, R = 10, T = 24, B = 30, pw = W-L-R, ph = H-T-B;
+  const tot = r => r.a + r.o + (r.pa||0) + (r.po||0);
+  const max = niceMax(Math.max(...rows.map(tot)) * 1.08);
+  const y = v => T + ph - v/max*ph, band = pw/rows.length, bw = Math.min(44, band*0.56);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${unit} por mês, autorização e demais motivos"><defs>
+    <pattern id="h${id}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--surface)"/><rect width="2.2" height="5" fill="var(--ink-3)"/></pattern></defs>`;
+  for (let i=0;i<=4;i++){ const v=max*i/4; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`; }
+  rows.forEach((r,i) => {
+    const x = L + band*i + band/2 - bw/2; let base = 0;
+    const segs = [["o", r.o, "var(--s1)"], ["a", r.a, "var(--s2)"]];
+    if (r.pa || r.po) { segs.push(["po", r.po||0, `url(#h${id})`]); segs.push(["pa", r.pa||0, `url(#h${id})`]); }
+    const drawn = segs.filter(sg => sg[1] > 0);
+    drawn.forEach((sg, k) => {
+      const top = k === drawn.length-1; const y0 = y(base), y1 = y(base+sg[1]);
+      const h = Math.max(0, y0 - y1 - (k>0 ? 2 : 0));
+      s += top ? `<path d="${rpath(x, y1, bw, h, 4)}" fill="${sg[2]}"${sg[0].startsWith("p")?' stroke="var(--ink-3)" stroke-width="1"':''}/>`
+               : `<rect x="${x}" y="${y1}" width="${bw}" height="${h}" fill="${sg[2]}"${sg[0].startsWith("p")?' stroke="var(--ink-3)" stroke-width="1"':''}/>`;
+      base += sg[1];
+    });
+    s += `<text class="val" x="${x+bw/2}" y="${y(tot(r))-7}" text-anchor="middle">${fmt(tot(r))}</text>`;
+    s += `<text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${r.label || lab(r.m)}</text>`;
+    const pct = r.a + r.o + (r.pa||0) + (r.po||0) > 0 ? 100*(r.a+(r.pa||0))/tot(r) : 0;
+    let t = `<b>${r.label || lab(r.m)+'/26'}</b><br>Autorização (7DL/7F8): ${fmt(r.a)}<br>Demais motivos: ${fmt(r.o)}`;
+    if (r.pa || r.po) t += `<br>Projeção 07–31/10: ${fmt((r.pa||0)+(r.po||0))} (autorização ${fmt(r.pa||0)})`;
+    t += `<br>Total: ${fmt(tot(r))} · autorização ${nf(pct)}%`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="${t}"/>`;
+  });
+  s += `</svg>`;
+  const el = document.getElementById(id); el.innerHTML = s; bindTips(el);
+}
+// simple bars: rows [{label, v, pv, tipx}]
+function bars(id, rows, fmt, aria, col) {
+  col = col || "var(--accent)";
+  const W = 680, H = 230, L = 52, R = 10, T = 24, B = 30, pw = W-L-R, ph = H-T-B;
+  const max = niceMax(Math.max(...rows.map(r => r.v + (r.pv||0))) * 1.08);
+  const y = v => T + ph - v/max*ph, band = pw/rows.length, bw = Math.min(44, band*0.56);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}"><defs><pattern id="h${id}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--surface)"/><rect width="2.2" height="5" fill="var(--ink-3)"/></pattern></defs>`;
+  for (let i=0;i<=4;i++){ const v=max*i/4; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`; }
+  rows.forEach((r,i) => {
+    const x = L + band*i + band/2 - bw/2, tot = r.v + (r.pv||0);
+    if (r.pv) { s += `<rect x="${x}" y="${y(r.v)}" width="${bw}" height="${y(0)-y(r.v)}" fill="${col}"/>`;
+      s += `<path d="${rpath(x, y(tot), bw, y(r.v)-y(tot)-2, 4)}" fill="url(#h${id})" stroke="var(--ink-3)" stroke-width="1"/>`; }
+    else s += `<path d="${rpath(x, y(r.v), bw, y(0)-y(r.v), 4)}" fill="${col}"/>`;
+    s += `<text class="val" x="${x+bw/2}" y="${y(tot)-7}" text-anchor="middle">${fmt(tot)}</text><text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${r.label}</text>`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="${r.tipx}"/>`;
+  });
+  s += `</svg>`; const el = document.getElementById(id); el.innerHTML = s; bindTips(el);
+}
+</script>
+
+<script>
+
+const V = [
+ {m:"2026-03",a:266.1,o:397.6},{m:"2026-04",a:175.6,o:371.4},{m:"2026-05",a:260.7,o:354.7},{m:"2026-06",a:202.2,o:257.7},
+ {m:"2026-07",a:439.1,o:468.2},{m:"2026-08",a:255.6,o:460.9},{m:"2026-09",a:41.7,o:108.8},
+ {m:"2026-10",label:"out*",a:43.5,o:218.6,pa:109,po:321}];
+const I = [
+ {m:"2026-03",a:1232,o:1468},{m:"2026-04",a:733,o:5232},{m:"2026-05",a:1080,o:1578},{m:"2026-06",a:1882,o:2414},
+ {m:"2026-07",a:1644,o:3830},{m:"2026-08",a:1765,o:3890},{m:"2026-09",a:126,o:810},
+ {m:"2026-10",label:"out*",a:102,o:876,pa:729,po:3359}];
+const P = [["2026-03",313,2700,663.7],["2026-04",247,5965,547.0],["2026-05",341,2658,615.4],["2026-06",394,4296,459.9],["2026-07",432,5474,907.2],["2026-08",381,5655,716.5],["2026-09",91,936,150.5],["2026-10",160,978,262.1]];
+const AC = {"2026-03":[37,70],"2026-04":[26,23],"2026-05":[78,88],"2026-06":[14,80],"2026-07":[61,94],"2026-08":[81,79],"2026-09":[50,85]};
+const G = [["2026-01",371,2053,4.13],["2026-02",387,2742,2.81],["2026-03",373,2777,2.95],["2026-04",424,3054,2.81],["2026-05",626,3762,4.46],["2026-06",519,4345,3.34],["2026-07",204,1163,1.34],["2026-08",255,1729,1.45],["2026-09",259,1772,1.47]];
+const R60 = {"2026-04":29.8,"2026-05":33.5,"2026-06":29.9,"2026-07":32.4,"2026-08":"17,1 (aberta)","2026-09":"aberta"};
+const fk = v => nf(v);
+stacked("chVal", V, "Valor recursado", fk);
+stacked("chItem", I, "Itens recursados", v => nf(v));
+const head = rows => `<thead><tr><th></th>${rows.map(r=>`<th>${r.label||lab(r.m)}</th>`).join("")}</tr></thead>`;
+const sh = r => 100*(r.a+(r.pa||0))/(r.a+r.o+(r.pa||0)+(r.po||0));
+document.getElementById("tVal").innerHTML = head(V) + `<tbody>
+ <tr><td>Autorização (R$ mil)</td>${V.map(r=>`<td>${nf(r.a+(r.pa||0))}</td>`).join("")}</tr>
+ <tr><td>Demais (R$ mil)</td>${V.map(r=>`<td>${nf(r.o+(r.po||0))}</td>`).join("")}</tr>
+ <tr><td><b>Total (R$ mil)</b></td>${V.map(r=>`<td><b>${nf(r.a+r.o+(r.pa||0)+(r.po||0))}</b></td>`).join("")}</tr>
+ <tr><td>% autorização</td>${V.map(r=>`<td>${nf(sh(r))}%</td>`).join("")}</tr>
+ <tr><td>Acato autorização · demais</td>${V.map(r=>`<td>${AC[r.m]?AC[r.m][0]+"% · "+AC[r.m][1]+"%":"em análise"}</td>`).join("")}</tr></tbody>`;
+document.getElementById("tItem").innerHTML = head(I) + `<tbody>
+ <tr><td>Autorização</td>${I.map(r=>`<td>${nf(r.a+(r.pa||0))}</td>`).join("")}</tr>
+ <tr><td>Demais</td>${I.map(r=>`<td>${nf(r.o+(r.po||0))}</td>`).join("")}</tr>
+ <tr><td><b>Total</b></td>${I.map(r=>`<td><b>${nf(r.a+r.o+(r.pa||0)+(r.po||0))}</b></td>`).join("")}</tr></tbody>`;
+bars("chPeg", P.map(p => ({label: p[0]==="2026-10"?"out*":lab(p[0]), v:p[1], pv: p[0]==="2026-10"?234:0,
+  tipx:`<b>${lab(p[0])}/26</b><br>PEGs: ${p[1]}${p[0]==="2026-10"?" (real 01–06) + ~234 projetados":""}<br>Itens por PEG: ${nf(p[2]/p[1],1)}<br>R$ por PEG: ${nf(p[3]/p[1],1)} mil`})), v=>nf(v), "PEGs com recurso por mês");
+document.getElementById("tPeg").innerHTML = `<thead><tr><th></th>${P.map(p=>`<th>${p[0]==="2026-10"?"out (01–06)":lab(p[0])}</th>`).join("")}<th>out* proj.</th></tr></thead><tbody>
+ <tr><td>PEGs</td>${P.map(p=>`<td>${p[1]}</td>`).join("")}<td>~390</td></tr>
+ <tr><td>Itens por PEG</td>${P.map(p=>`<td>${nf(p[2]/p[1],1)}</td>`).join("")}<td>~13</td></tr>
+ <tr><td>R$ mil por PEG</td>${P.map(p=>`<td>${nf(p[3]/p[1],1)}</td>`).join("")}<td>~1,8</td></tr></tbody>`;
+bars("chGlA", G.map(g => ({label: lab(g[0]), v:g[3], tipx:`<b>${lab(g[0])}/26 · ${g[0]>="2026-07"?"7F8":"7DL"}</b><br>Glosado: R$ ${g[1]} mil<br>Itens: ${nf(g[2])}<br>% do apresentado: ${nf(g[3],2)}%`})), v=>nf(v,1)+"%", "Glosa de autorização em % do apresentado", "var(--s2)");
+document.getElementById("tGlA").innerHTML = `<thead><tr><th>Mês da glosa</th>${G.map(g=>`<th>${lab(g[0])}</th>`).join("")}</tr></thead><tbody>
+ <tr><td>Código</td>${G.map(g=>`<td>${g[0]>="2026-07"?"7F8":"7DL"}</td>`).join("")}</tr>
+ <tr><td>Glosado (R$ mil)</td>${G.map(g=>`<td>${g[1]}</td>`).join("")}</tr>
+ <tr><td>Itens glosados</td>${G.map(g=>`<td>${nf(g[2])}</td>`).join("")}</tr>
+ <tr><td>% do apresentado</td>${G.map(g=>`<td>${nf(g[3],2)}%</td>`).join("")}</tr>
+ <tr><td>% recursado em até 60 dias</td>${G.map(g=>`<td>${R60[g[0]]!==undefined?(typeof R60[g[0]]==="number"?nf(R60[g[0]],1)+"%":R60[g[0]]):"–"}</td>`).join("")}</tr></tbody>`;
+
+</script>
+
+</body>
+</html>
