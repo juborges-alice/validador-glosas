@@ -81,6 +81,13 @@ no catálogo, e que precisam ser respeitadas:
   mês corrente, o critério de >1 p.p. é **tendência/informativo e NÃO dispara 🔴 sozinho** (o
   volume do mês ainda está em maturação); a partir do **dia 20**, o mesmo critério vale como
   alerta pleno e dispara 🔴. Reporte sempre o número; o que muda é a cor.
+  - **O estágio se lê pelo dia do mês corrente sempre que houver qualquer dado do mês corrente**
+    (decisão da OM, 07/10/2026). Exceção, **só no primeiro dia útil do mês e só enquanto não
+    houver nenhum dado do mês corrente**: aí o estágio se lê pela **maturidade do mês medido** —
+    se o que está sendo comparado é o mês anterior **fechado e maduro**, vale o **estágio 2**
+    (alerta pleno, 🔴), não o estágio 1. O estágio 1 existe porque o mês corrente ainda está
+    imaturo; quando não há mês corrente nenhum na leitura, não há imaturidade para proteger.
+    Assim que entrar qualquer dado do mês corrente, volta a valer a leitura padrão pelo dia.
 - **Degraus de prazo, não proporção** — `PEGs por Status de Análise no SLA - HI`: recalibrado em
   22/09/2026 (decisão da OM). O farol sai de **duas contagens absolutas** de PEGs ainda em aberto,
   pela idade em dias úteis desde o `invoice_date`, e o total em aberto do dia **não entra mais**
