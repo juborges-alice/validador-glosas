@@ -3,7 +3,7 @@ body = r"""
 <header>
   <span class="eyebrow">Projeto Recurso de Glosa · Hospitais · Out/26</span>
   <h1>Recurso de Glosa em Outubro: Hospitais</h1>
-  <p class="muted">Em hospitais, outubro começou com R$ 564 mil de recurso em seis dias. Este relatório separa o que é pontual (poucos PEGs de valor alto e recursos fora do prazo) do que é tendência: a glosa e o recurso por falta de autorização vêm subindo desde junho, ao contrário dos laboratórios.</p>
+  <p class="muted">Em hospitais, outubro começou com R$ 564 mil de recurso em seis dias. Este relatório separa o que é pontual (poucos PEGs de valor alto e recursos fora do prazo) do que é tendência: a glosa e o recurso por falta de autorização vêm subindo desde junho, um aumento esperado para hospitais e que vai na direção oposta à dos laboratórios.</p>
   <div class="scope">
     <span class="chip">Hospital · Health Institution · totvs-alice · fases 1 a 4</span>
     <span class="chip">Recursos até 06/10/2026</span>
@@ -23,9 +23,9 @@ body = r"""
     </div>
     <div class="v">
       <span class="q">O recurso por falta de autorização está subindo?</span>
-      <span class="pill bad">Sim. Tendência oposta à dos laboratórios</span>
+      <span class="pill flat">Sim, como esperado para hospitais</span>
       <span class="a">Glosa de 0,3–0,7% para 2,4% do apresentado</span>
-      <p>A glosa de autorização em hospitais subiu de R$ 76–254 mil por mês (mar–mai) para R$ 936–945 mil (ago–set). Os hospitais recursam 40–70% dela e 82–92% do recursado é acatado. O recurso desse motivo foi de R$ 588 mil (ago) e R$ 768 mil (set), com ~R$ 665 mil projetados para outubro.</p>
+      <p>A glosa de autorização em hospitais subiu de R$ 76–254 mil por mês (mar–mai) para R$ 936–945 mil (ago–set). Os hospitais recursam 40–70% dela e 82–92% do recursado é acatado. O recurso desse motivo foi de R$ 588 mil (ago) e R$ 768 mil (set), com ~R$ 665 mil projetados para outubro. Esse aumento era esperado e explica a maior parte da subida do patamar.</p>
     </div>
     <div class="v">
       <span class="q">O que puxa os primeiros dias de outubro?</span>
@@ -81,7 +81,7 @@ body = r"""
 </section>
 
 <section>
-  <h2>4. Motivos: a autorização cresce nos hospitais</h2>
+  <h2>4. Motivos: a autorização cresce nos hospitais, como esperado</h2>
   <p class="muted">Glosa por autorização não localizada em hospitais, em % do valor apresentado, por mês da glosa. A alta começa em junho, ainda com o 7DL, e segue com o 7F8.</p>
   <div class="panel">
     <h3>Glosa de autorização em % do apresentado</h3>
@@ -116,8 +116,8 @@ body = r"""
     <p class="small muted">7DK: procedimento não autorizado · 7DJ: conta não localizada no capeante · 7DQ: negociado como pacote · 7E1: valor divergente do negociado · 7EY: senha cancelada · 7G3: duplicidade de conta · 7EL: código cobrado diferente do autorizado · 7F7: cobrança fora do prazo. O código é o primeiro motivo do item.</p>
   </div>
   <div class="grid2">
-    <div class="panel prov"><span class="pill bad">Hipótese principal</span><h3>A glosa de autorização está pegando itens que tinham autorização</h3>
-      <p>O volume glosado por esse motivo ficou quase 6 vezes maior e o acato do recurso fica em 82–92% há meses. Se a glosa estivesse certa, o acato cairia. Uma hipótese é que a regra não encontra a autorização de itens hospitalares (por exemplo, itens cobertos pela senha da internação ou guias não vinculadas) e glosa algo que depois é revertido. Isso gera retrabalho dos dois lados.</p></div>
+    <div class="panel prov"><span class="pill flat">Esperado</span><h3>Mais glosa de autorização, e mais recurso desse motivo</h3>
+      <p>O volume glosado por esse motivo ficou quase 6 vezes maior desde junho, e o recurso acompanha. Esse aumento era esperado para hospitais. O ponto a acompanhar é o acato: 82–92% do que é recursado desse motivo é revertido. Se continuar nesse nível, parte da glosa volta como recurso acatado e gera retrabalho dos dois lados.</p></div>
     <div class="panel prov"><span class="pill warn">Acompanhar</span><h3>Os demais motivos estão sendo menos recursados, ou mais tarde</h3>
       <p>O % recursado em até 60 dias dos demais motivos caiu de 52–67% (abr–jun) para 14–22% (jul–set). Parte disso pode ser atraso, como nos casos de HCor e Einstein, que estão recursando com 80+ dias. Essas coortes podem ainda gerar recurso fora do prazo.</p></div>
   </div>
@@ -128,11 +128,11 @@ body = r"""
   <div class="panel">
     <p>A análise da queda de setembro olhou só laboratórios. Em hospitais, setembro não caiu: foi o maior mês do ano até então (R$ 963 mil), puxado pelo 7F8 do Sírio (R$ 299 mil). A leitura para hospitais é outra:</p>
     <ul class="plain">
-      <li><b>Tendência:</b> o recurso de autorização cresce desde agosto porque a glosa desse motivo cresce desde junho. Isso continua em outubro.</li>
+      <li><b>Tendência esperada:</b> o recurso de autorização cresce desde agosto porque a glosa desse motivo cresce desde junho, como era esperado. Isso continua em outubro.</li>
       <li><b>Pontual:</b> em outubro, somam-se PEGs de valor muito alto (CIP) e recursos atrasados de glosas de julho e agosto (HCor, Einstein, Santa Marcelina, SMA). São ~R$ 380 mil acima do ritmo normal.</li>
       <li><b>Comportamento:</b> HCor e Einstein mudaram. HCor passou de 8–31 para 78–85 dias. O Einstein começou a recursar mais e mais tarde.</li>
     </ul>
-    <p>Sem os pontuais, outubro ficaria perto de R$ 0,95–1,0 mi, em linha com setembro e acima de mar–jun. O que eleva o patamar é o motivo de autorização.</p>
+    <p>Sem os pontuais, outubro ficaria perto de R$ 0,95–1,0 mi, em linha com setembro e acima de mar–jun. O que eleva o patamar é o motivo de autorização, dentro do esperado. O que não estava previsto são os pontuais: PEGs de valor muito alto e recursos chegando fora do prazo.</p>
   </div>
 </section>
 
@@ -162,7 +162,7 @@ body = r"""
   <h2>7. O que acompanhar</h2>
   <div class="panel">
     <ol class="steps">
-      <li><b>Regra de autorização em hospitais:</b> pegar uma amostra de 7F8 acatados de Sírio, HAOC, Américas e CIP e verificar se havia autorização (senha da internação, guia vinculada). Se a hipótese se confirmar, corrigir a regra reduz a glosa e o recurso juntos.</li>
+      <li><b>Acato do 7F8 em hospitais:</b> o aumento do motivo é esperado, mas 82–92% do recurso é acatado. Acompanhar mês a mês. Se não cair, vale olhar uma amostra de Sírio, HAOC, Américas e CIP para entender por que a glosa está sendo revertida.</li>
       <li><b>Prazo de 60 dias:</b> R$ 266 mil de outubro chegaram fora do prazo (HCor, Einstein, Santa Marcelina e SMA). Definir se esses recursos serão negados por prazo e confirmar qual data vale como referência.</li>
       <li><b>HCor e Einstein:</b> conversar sobre o atraso. Os 7DJ do HCor indicam problema de capeante que vale resolver na origem.</li>
       <li><b>Segundo recurso:</b> monitorar reincidência, como o 7F8 do Santa Marcelina.</li>
