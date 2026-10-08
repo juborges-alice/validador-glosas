@@ -230,40 +230,6 @@ dia só significa que a consulta do passo 2 não foi feita.
 
 Depois de criar, volte na Execução de Rotina e preencha `Decisões geradas` com as URLs.
 
-### ⚠️ Correções pendentes no Decision Log — executar na primeira execução a partir de 08/10/2026
-
-Bloco de uso único, autorizado pela OM em 07/10/2026 ("sim, corrija amanhã"). Execute os três
-itens, depois **apague este bloco inteiro do arquivo e commite**. Se o bloco ainda estiver aqui,
-é porque não foi feito.
-
-Contexto: em 06 e 07/10 o `R$ Recurso de Glosa acumulado` saiu 🟢 com a direção invertida. A regra
-já foi corrigida (`01-regras-de-registro.md` §1 e tabela em `00-identificadores.md`), mas o
-Decision Log ainda carrega o texto errado, e quem abrir o log lê a versão errada.
-
-1. **Episódio `R$ Recurso de Glosa acumulado · desvio desde 05/10`**
-   (`3f0f0f13146a81a4a31df1f193ebee19`, Concluída). No fim do `Contexto / problema` está:
-   *"Variação na direção boa de um KPI em que mais recursado é melhor não gera farol (§1, regra de
-   direção), então o KPI sai 🟢 e o episódio fecha um dia depois de aberto."*
-   Acrescente ao fim do campo uma linha de correção — **não apague o texto original**, ele é o
-   registro do que foi publicado: `CORREÇÃO (08/10): a direção usada neste fechamento está
-   invertida. A OM declarou em 07/10 que este KPI é "quanto MENOR melhor"; +59,39% em 06/10 era
-   🔴, não 🟢, e o episódio foi encerrado no dia em que deveria ter sido escalado. Ver a tabela de
-   direção em 00-identificadores.md.`
-2. **Episódio `R$ Recurso de Glosa acumulado · desvio desde 30/09`**
-   (`3ebf0f13146a814a9b10d59df3416c28`, Concluída). Ele guarda a decisão Vigente de 22/09
-   ("mantém-se o disparo nas duas direções"). Acrescente ao fim do `Contexto / problema`:
-   `ATUALIZAÇÃO DE RÉGUA (08/10): a decisão de 22/09 foi refinada pela da OM de 07/10 — o disparo
-   segue nos dois sentidos, mas alta é 🔴 (acionamento) e queda da magnitude do limiar é 🟡 de
-   variação favorável atípica (visibilidade, com teste de sanidade). Os 🔴 de 30/09 e 05/10
-   estavam corretos para a régua da época e seriam 🟡 sob a régua atual.`
-3. **Episódio novo do desvio de alta**, aberto no fluxo normal do Passo 7, com os dois dias de
-   história (06/10 +59,39% e 07/10 +128,65%, ambos não reportados) e o drill já levantado em
-   07/10, que está em `00-identificadores.md`. Não reaproveite os episódios acima: são desvio de
-   sinal oposto.
-
-Nada disto é decisão sua — é transcrição de decisão da OM já tomada. Mantenha `Estado de
-complemento` e `Veredito` como estão nos dois episódios fechados; a correção é de texto.
-
 **Esta tarefa não cria ações no Action Log.** Às 06h30 ainda não existe conclusão validada —
 as threads acabaram de ser abertas. Ação é registrada no fechamento (tarefa 05), só com o que
 tiver OK humano. É por isso que o Action Log de Contas Médicas está vazio hoje: os syncs nunca
