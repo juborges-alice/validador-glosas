@@ -185,6 +185,14 @@ no catálogo, e que precisam ser respeitadas:
   para prestadores com faturamento ≥ R$50.000 no mês. Prestador abaixo disso não entra no farol.
 - **Piso de idade** — `% Faturas por Status - HS`: só contam faturas há **mais de 7 dias** no
   status, inclusive de meses passados. Fatura em trânsito normal não conta.
+- **Piso de maturação e competência completa** — `% PEGs sem NF`: recalibrado em 20/10/2026
+  (decisão da OM). O farol deixou de ler o mês corrente e passou a ler a **competência completa**,
+  com piso de **13 dias úteis** após o PLS e limiar de **> 1%**. Sem `Meta atual` cadastrada, o
+  farol é binário 🟢/🔴. Competência ainda em maturação sai com número **parcial e sem farol**, e
+  competência sem nenhuma PEG acima do piso sai ⚪ — entre 63% e 86% das PEGs de uma competência só
+  amadurecem depois do fim do próprio mês, então a competência **não sai do acompanhamento quando o
+  mês vira**. A fila de cobrança de NF (card 78778) é fila de trabalho: não acende farol e não abre
+  episódio. Fonte: card **78774**, drill **78778**. Detalhamento em `00-identificadores.md`.
 - **Regra de dois estágios por dia do mês** — `% Glosa por Tipo de HI`: do **dia 1 ao 19** do
   mês corrente, o critério de >1 p.p. é **tendência/informativo e NÃO dispara 🔴 sozinho** (o
   volume do mês ainda está em maturação); a partir do **dia 20**, o mesmo critério vale como
