@@ -81,7 +81,7 @@ Quando um drill for cadastrado, esta nota sai.
 
 **⚠️ `% PEGs sem NF`: régua revisada em 20/10/2026, fonte agora é o card 78774 com drill no 78778.**
 O farol deixou de ler o mês corrente e passou a ler a **competência completa**, com piso de maturação
-de **13 DU** após o PLS e limiar de **1%**. O 77507/77508 (07/10, três horizontes com piso de 7 DU), o
+de **13 DU** após o PLS e limiar **zero** (21/10). O 77507/77508 (07/10, três horizontes com 7 DU), o
 77275 (06/10) e o 65694 não são mais a fonte. Regra completa na seção "% PEGs sem NF" abaixo; o
 catálogo do Notion é a fonte.
 
@@ -212,12 +212,18 @@ correndo), não há o que investigar, e o que o time precisa é a **lista para a
 | KPI | Card | Classe |
 |---|---|---|
 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | **Alerta de trabalho** |
+| Contas Médicas - % PEGs sem NF | 78774 · fila no 78778 | **Alerta de trabalho** (desde 21/10/2026) |
 
-**Caso híbrido — `% PEGs sem NF` (desde 20/10/2026).** Este KPI não entra inteiro na classe: o farol
-é da **competência completa** e é termômetro normal; a **fila de cobrança de NF** (card 78778 — PEGs
-maduras sem NF, de qualquer competência) segue as regras desta classe: sai como fila, com lista e
-dono, rola todo dia até zerar, não abre episódio no Decision Log e não entra na contagem do farol.
-Detalhe na seção "% PEGs sem NF — competência e coorte madura".
+**`% PEGs sem NF` entrou inteiro na classe em 21/10/2026**, quando a OM levou o limiar a **zero**.
+Deixou de ser termômetro porque não há mais faixa de tolerância: passados os 13 DU do PLS, qualquer
+PEG sem NF numa competência completa é 🔴, e a cor fica vermelha enquanto houver uma PEG. O que
+informa passa a ser a **contagem, o valor e a direção**, mais a lista de cobrança do card 78778.
+
+**Por que a migração de classe foi necessária, e não cosmética:** sob o tratamento de termômetro, a
+rotina abriria episódio no Decision Log todo dia, com hipótese e plano de ação, para um vermelho
+permanente por construção — a mesma poluição de log que a §3 de `01-regras-de-registro.md` existe
+para evitar. Decisão tomada pela rotina por decorrência, e reversível pela OM. Detalhe na seção
+"% PEGs sem NF — competência e coorte madura".
 
 Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
 
@@ -784,8 +790,9 @@ chegar depois do PLS.
 | Denominador | PEGs da competência com lote PLS gerado há **≥ 13 dias úteis** |
 | Numerador | dessas, as que não têm **nenhuma** NF atrelada |
 | Janela | **ano corrente** (2026) |
-| Meta atual | **não cadastrada** — farol binário 🟢/🔴, sem 🟡 (§1 de `01-regras-de-registro.md`) |
-| Limiar de alerta | **> 1%**, aplicado só à competência **completa** mais recente |
+| Meta atual | **0 PEGs sem NF** após o piso, em competência completa |
+| Limiar de alerta | **qualquer PEG madura sem NF** em competência completa — limiar **zero** |
+| Farol | **binário** 🟢/🔴 — meta e limiar coincidem em zero, não existe 🟡 neste KPI |
 
 PEG com PLS há menos de 13 DU fica **fora da conta**: não é atraso, é o prazo normal de emissão da
 NF pelo prestador.
@@ -833,15 +840,25 @@ se estiver sem NF, entra no mesmo dia na fila de cobrança do 78778.
 
 **O farol do KPI sai da competência `Completa` mais recente.**
 
-### Calibração do limiar de 1%
+### O limiar é zero (decisão da OM, 21/10/2026)
 
-Série 2026 sob esta régua: Jan 0,79% · Fev 0,88% · Mar 0,80% · Abr 1,19% · Mai 0,98% · Jun 1,45% ·
-Jul 0,97% · Ago 0,26%. Média 0,92%.
+Palavras da OM: *"enquanto não temos o campo oficial, 13 DU já é um tempo até grande demais. Vamos
+deixar assim e coloca que o limiar deveria ser 0. Com 13 DU todas as PEGs já deveriam ter sido
+vinculadas as NFs."* **É régua de padrão, não de média.**
 
-Com o corte em 1%, **duas das oito competências completas de 2026 teriam acendido 🔴** — Abr/26
-(1,19%) e Jun/26 (1,45%). É uma régua exigente **por decisão da OM em 20/10/2026**, escolhida acima
-das alternativas de >3% (recomendada pela rotina) e >2%, que não acenderiam em nenhum mês de 2026.
-Referência fora da janela, mesma régua: Mar–Ago/2025 ficava entre 2,32% e 5,36%.
+Efeito medido em 21/10/2026: as **oito** competências completas de 2026 acendem 🔴 — Jan 10 PEGs ·
+Fev 13 · Mar 12 · Abr 20 · Mai 16 · Jun 25 · Jul 17 · Ago 5, somando **118 PEGs e R$1.425.668,58**.
+Nenhuma competência de 2026 fechou com NF em 100%.
+
+**Consequência de leitura, e ela é o ponto todo:** a cor deixa de ser a informação, porque é vermelha
+enquanto houver uma PEG. O que informa é a **contagem**, o **valor** e a **direção** — e a lista de
+cobrança. É por isso que o KPI passou à classe *alerta de trabalho*: a mensagem traz a fila, não
+hipótese e plano de ação.
+
+Histórico de calibração do limiar: **10%** sobre o mês corrente (até 19/10, sempre vermelho por
+imaturidade da coorte) → **1%** sobre a competência completa (20/10, duas das oito acenderiam) →
+**zero** (21/10, as oito acendem). As alternativas de >3% e >2% recomendadas pela rotina em 19–20/10
+não acenderiam em nenhuma competência de 2026.
 
 ### A fila de cobrança não acende farol
 
@@ -856,7 +873,13 @@ O drill separa dois blocos, a pedido da OM:
 Ordenado por valor do grupo econômico, que é a ordem de cobrança: resolve-se por prestador, não por
 PEG solta.
 
-**Leitura de 20/10/2026, a primeira sob esta régua:** farol em **Ago/26 a 0,26%** 🟢 (5 de 1.907);
+**Leitura de 21/10/2026, a primeira sob o limiar zero:** farol em **Ago/26 🔴** — 5 PEGs maduras sem
+NF de 1.907, R$42.684,57, a competência mais recente já completa. Set/26 em 12 PEGs (R$78.314,45),
+ainda parcial com 2 em maturação, fecha em 22/10 e acende quando fechar. Out/26 ⚪, 1.703 em
+maturação, fecha em 06/11. Nota de leitura: sob o limiar de 1% vigente em 20/10 a mesma posição de
+Ago/26 saía 🟢 a 0,26%.
+
+**Leitura de 20/10/2026, sob o limiar de 1% (um dia):** farol em **Ago/26 a 0,26%** 🟢 (5 de 1.907);
 Set/26 em 0,70% ainda parcial, 9 PEGs em maturação, fecha em 22/10; Out/26 ⚪ sem base elegível, com
 1.608 PEGs em maturação e fechamento previsto para 06/11. Fila de cobrança: **132 PEGs ·
 R$1.684.020,25**, sendo 118 PEGs · R$1.440.827,96 de resquício — e **CAEN (66 PEGs · R$990.810,00,
@@ -872,6 +895,8 @@ o acionável que o vermelho diário abafava.
 - **20/10** — cards **78774** e **78778**, leitura por competência na coorte madura, piso de 13 DU,
   limiar de 1%. O grão deixa de ser o horizonte e passa a ser a competência, e o farol deixa de ler
   o mês corrente.
+- **21/10** — mesmo card, **limiar zero** e o KPI passa à classe *alerta de trabalho*. O 78774 ganha
+  a coluna `veredito`, que já entrega a cor pronta.
 
 **Não comparar números entre réguas.** O 18,87% publicado em 20/10 sob o piso de 7 DU e o 0,26% de
 Ago/26 sob a régua nova medem coisas diferentes — o primeiro é uma coorte no meio da maturação, o

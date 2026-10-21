@@ -187,8 +187,10 @@ no catálogo, e que precisam ser respeitadas:
   status, inclusive de meses passados. Fatura em trânsito normal não conta.
 - **Piso de maturação e competência completa** — `% PEGs sem NF`: recalibrado em 20/10/2026
   (decisão da OM). O farol deixou de ler o mês corrente e passou a ler a **competência completa**,
-  com piso de **13 dias úteis** após o PLS e limiar de **> 1%**. Sem `Meta atual` cadastrada, o
-  farol é binário 🟢/🔴. Competência ainda em maturação sai com número **parcial e sem farol**, e
+  com piso de **13 dias úteis** após o PLS e **limiar zero** (21/10/2026): passado o piso, qualquer
+  PEG sem NF em competência completa é 🔴. Meta e limiar coincidem em zero, então o farol é binário
+  🟢/🔴 e **não existe 🟡 neste KPI**. Com limiar zero o KPI passou à classe **alerta de trabalho** —
+  traz a fila, não hipótese nem plano de ação, e **não abre episódio no Decision Log**. Competência ainda em maturação sai com número **parcial e sem farol**, e
   competência sem nenhuma PEG acima do piso sai ⚪ — entre 63% e 86% das PEGs de uma competência só
   amadurecem depois do fim do próprio mês, então a competência **não sai do acompanhamento quando o
   mês vira**. A fila de cobrança de NF (card 78778) é fila de trabalho: não acende farol e não abre
