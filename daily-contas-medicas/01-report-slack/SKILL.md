@@ -359,9 +359,16 @@ aberto** (`Vencido (nao acionavel)` — escreva "vencido, ainda em aberto", nunc
 🔴 _{KPI}_ — fila de trabalho do dia
 Vencendo em até 3 dias: {N} recursos · R$ {valor}
 Já vencidos, ainda em aberto: {M} recursos · R$ {valor}
+Linhas em aberto: {linhas_abertas} de {linhas_total} itens · R$ {valor_aberto} de R$ {valor_total}
 Concentração dos vencidos: {grupo econômico} {n} recursos (R$ {valor}) · {grupo} {n} (R$ {valor})
 ↩️ <@ID> lista completa na thread. Priorize hoje o que ainda dá pra salvar.
 ```
+
+A linha de **Linhas em aberto** sai do card **79437** e é obrigatória em
+`Recursos de Glosa Próximos do Vencimento` (decisão da OM, 22/10/2026). Ela existe porque o 73490
+publica o valor cheio da PEG mesmo quando quase toda ela já foi finalizada — em 22/10 a fila
+aparecia com R$631.375,23 contra R$498.636,12 de fato em aberto, 26,6% a mais. Sem essa linha o
+canal cobra trabalho que não existe. Regra completa em `00-identificadores.md`.
 
 A linha de **Concentração** é obrigatória e traz os grupos econômicos em ordem decrescente de
 valor vencido, até cobrir 90% do valor. Ela é o que transforma uma pilha de recursos numa
@@ -381,6 +388,12 @@ informação, ausência da linha não é.
 1. **Vencendo em até 3 dias** — lista **completa**, ordenada por `dias_restantes_vencimento`
    crescente (o mais urgente primeiro):
    `{dias} d · PEG {peg_code} · {institution_name} · R$ {appeal_value}`
+   Em `Recursos de Glosa Próximos do Vencimento`, acrescente logo abaixo o **detalhamento item a
+   item** das linhas ainda abertas, do card **79438** (decisão da OM, 22/10/2026):
+   `PEG {peg_code} · guia {guide_number} · item {guide_item_number} · {procedure_name} · TUSS {tuss_code} · R$ {appeal_value} · {disallowance_reason} · {appeal_status}`
+   **Só no 🔴.** Em dia 🟢 ou 🟡 o item a item não é publicado — nem no canal nem na thread.
+   Quando a linha tiver `appeal_analysis_date` preenchida, diga isso na própria linha: ela já foi
+   analisada e o que falta é a gravação do status, o que faz dela item de tech e não de operação.
 2. **Vencidos, ainda em aberto** — **consolidado por grupo econômico**, ordenado por valor
    decrescente, mais os 10 maiores recursos individuais por valor:
    `{provider_economic_group}: {n} recursos · R$ {valor} · protocolados entre {data} e {data}`

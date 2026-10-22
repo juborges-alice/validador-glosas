@@ -190,7 +190,7 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | % Glosa Alice por Prestador - HI | 50958 (R$ Glosado por Prestador Top 12) |
 | R$ Recurso de Glosa acumulado | 54662 (Valor Recursado por prestador) · 54677 (Valor Recursado por Motivo Geral) |
 | SLA Recurso de Glosa - HI | 65835 (Qnt acumulada Recurso de Glosa) · 73490 (Recursos próximos do vencimento) |
-| Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | — sem drill próprio; o card 73490 já é a lista item-a-item |
+| Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 79437 (linhas abertas por PEG) · 79438 (itens em aberto na janela de alerta) |
 | SLA de Análise de conta - HI | 65837 (guias/dia Hospitais) · 65839 (guias/dia Labs+Clínicas) · 32465 (PEGs por Status no SLA) |
 | PEGs por Status de Análise no SLA - HI | 65837 · 65839 |
 | Qnt de guias analisadas por dia | 73390 (PEGs abertas por dias úteis — a linha de 7 du vencendo hoje) |
@@ -236,6 +236,46 @@ Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
 5. **O farol continua saindo do `Limiar de alerta` do catálogo**, como qualquer KPI. Hoje o
    limiar olha só a janela de ≤3 dias; se a OM quiser que o estoque vencido também dispare
    sozinho, é editar o texto do limiar no Notion — a rotina obedece o que estiver escrito lá.
+6. **O grão da fila é a PEG, e o valor publicado superestima** (decisão da OM, 22/10/2026). Só vale
+   para `Recursos de Glosa Próximos do Vencimento`. Ver a seção própria logo abaixo.
+
+### O grão do card 73490 é a PEG — e isso superestima a fila
+
+O card decide se a PEG está aberta com
+`MAX(CASE WHEN appeal_status IN ('Protocolado','Em Analise') THEN 1 ELSE 0 END)` agrupado por
+`peg_code`, e então reporta `SUM(appeal_value)` de **todas** as linhas. Uma linha aberta em 76 faz a
+PEG inteira aparecer como aberta, pelo valor cheio: no grão publicado, uma PEG 97% resolvida é
+indistinguível de uma intocada.
+
+Medido em 22/10/2026 sobre as 96 PEGs do card: **2.706 linhas de fato abertas de 2.941**, e
+**R$498.636,12 realmente em aberto contra R$631.375,23 publicados** — superestimação de
+R$132.739,11, ou 26,6%, com **19 PEGs parcialmente finalizadas**. Caso extremo: PEG 00107531
+(HAOC), 1 linha aberta de 13, R$3.182,00 abertos contra R$105.847,19 publicados.
+
+**Como reportar, a partir de 23/10/2026:**
+
+- **Todo dia**, na linha do KPI e na página: a contagem de PEGs e o valor do 73490, mais o resumo
+  de `linhas_abertas` sobre `linhas_total` e o `valor_aberto`, que saem do card **79437**.
+- **Só quando o KPI cruza o 🔴**: o detalhamento item a item (guia, item, procedimento, TUSS, valor
+  do recurso, motivo da glosa) vai na **thread** da mensagem do vermelho, a partir do card **79438**.
+  Em dia 🟢 ou 🟡 nenhum item a item é publicado.
+- **O farol, a meta e o limiar não mudam**: continuam saindo do 73490, e o limiar de R$100.000 segue
+  aplicado sobre o `valor_total`. **Não há decisão ainda sobre trocar a base do limiar para
+  `valor_aberto`** — não troque por conta própria.
+
+Os dois cards foram criados em 22/10/2026 na collection 3609 e **não aceitam parâmetro**: execute
+sem parâmetro. O 79437 reconcilia com o 73490 (96 PEGs, R$631.375,23 em `valor_total`); o 79438 é
+restrito a `dias_restantes_vencimento <= 3`.
+
+⚠️ **`appeal_analysis_date` distingue pendência real de registro preso.** O 79438 devolve essa
+coluna porque linha com status aberto **e** data de análise preenchida já foi analisada — o que
+faltou foi a gravação do status. Caso que originou a regra: PEG 00094968, guia 159118534402420,
+itens 001 e 002, analisados em 28/08/2026 por `larissa.fukuda`, no prazo, com valor acatado, e até
+22/10 ainda marcados como `Em Analise`. São as duas únicas linhas com esse status em toda a base de
+6 meses (2 de 42.398: Autorizado 28.278 · Negado 9.921 · Protocolado 2.704 · Autorizado
+Parcialmente 1.493 · Em Analise 2). **Antes de cobrar uma linha, confira se ela tem data de
+análise** — cobrar registro preso como se fosse trabalho pendente queima a confiança do time no
+report, e foi exatamente o que aconteceu em 22/10.
 
 **A classe existe desde 16/09 e nunca foi aplicada.** Verificado em 17/09/2026: toda entrada do
 Decision Log para `Recursos de Glosa Próximos do Vencimento`, desde pelo menos 14/09, usa o
