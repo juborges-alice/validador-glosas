@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}</style>
+</head>
+<body>
+<title>Deep Dive Recurso Laboratórios</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: relatório em uma coluna. Resposta curta, depois valor, itens, PEG, motivos, prestadores, setembro x outubro, projeção e próximos passos. */
+:root {
+  --bg: #fbf8f9; --surface: #ffffff; --ink: #40002d; --ink-2: #6b5a64; --ink-3: #94858d;
+  --line: #eee5ea; --accent: #be0380; --accent-soft: #fbe7f3;
+  --s1: #2a78d6; --s2: #eb6834;
+  --good: #0f7b3f; --good-soft: #e3f4ea; --warn: #8a5a00; --warn-soft: #fbf0d9; --bad: #b3261e; --bad-soft: #fbe9e7; --neutral-soft: #f1ecef;
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891; --line: #34282f; --accent: #e0479f; --accent-soft: #3a1830;
+  --s1: #3987e5; --s2: #d95926; --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #1a1418; --surface: #221a1f; --ink: #f6e9f0; --ink-2: #c7b5bf; --ink-3: #9a8891; --line: #34282f; --accent: #e0479f; --accent-soft: #3a1830;
+  --s1: #3987e5; --s2: #d95926; --good: #5fd08f; --good-soft: #17301f; --warn: #f0c060; --warn-soft: #3a2e14; --bad: #ff8a80; --bad-soft: #3a1c1a; --neutral-soft: #2c2228; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.1; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 15px; font-family: var(--font-body); font-weight: 600; }
+p { margin: 0; max-width: 72ch; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--ink-2); } .small { font-size: 13px; }
+header, section { display: flex; flex-direction: column; gap: 14px; }
+.scope { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--neutral-soft); color: var(--ink-2); white-space: nowrap; }
+a { color: var(--accent); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.v { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+.v .q { font-size: 13px; color: var(--ink-2); }
+.v .a { font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: 1.2; }
+.v p { font-size: 14px; color: var(--ink-2); }
+.pill { align-self: flex-start; display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); } .pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); } .pill.flat { background: var(--neutral-soft); color: var(--ink-2); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+th:first-child, td:first-child { text-align: left; }
+td.wrap-cell { white-space: normal; min-width: 220px; text-align: left; }
+tr.hl td { background: var(--accent-soft); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend i.proj { background-image: repeating-linear-gradient(135deg, var(--ink-3) 0 2px, transparent 2px 5px); border: 1px solid var(--ink-3); }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { fill: var(--ink-2); font-family: var(--font-body); font-size: 12px; }
+svg .val { fill: var(--ink); font-weight: 600; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .hit { fill: transparent; } svg .hit:hover { fill: var(--ink); fill-opacity: 0.05; }
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; max-width: 300px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.prov { display: flex; flex-direction: column; gap: 10px; }
+.prov h3 { font-family: var(--font-display); font-size: 19px; }
+.prov p { font-size: 14px; color: var(--ink-2); }
+ol.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); }
+code { font-size: 12.5px; background: var(--neutral-soft); padding: 1px 5px; border-radius: 5px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } .panel { padding: 14px; } th, td { padding: 7px 8px; } }
+</style>
+
+<div id="tip" hidden></div>
+<div class="wrap">
+<style>.v .pill, .chip { white-space: normal; }
+:root { --w1:#cfe0f6; --w2:#9ec2ee; --w3:#5f9ae0; --w4:#2a6fc8; --w5:#f0a37c; --w6:#c8501e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --w1:#1e3555; --w2:#2b4f80; --w3:#3c6fb3; --w4:#5b93dd; --w5:#c8693c; --w6:#ef8a58; } }
+:root[data-theme="dark"] { --w1:#1e3555; --w2:#2b4f80; --w3:#3c6fb3; --w4:#5b93dd; --w5:#c8693c; --w6:#ef8a58; }
+</style>
+<header>
+  <span class="eyebrow">Projeto Recurso de Glosa · Deep dive · Laboratórios e clínicas · Out/26</span>
+  <h1>Por que o recurso de laboratórios subiu em outubro</h1>
+  <p class="muted">Leitura do mês com dados até 22/10: quanto subiu, quais prestadores puxaram, em quais motivos e como mudou a janela entre a glosa e o recurso.</p>
+  <div class="scope"><span class="chip">Health Institution · totvs-alice · fases 1 a 4</span>
+    <span class="chip">Recursos até 22/10/2026</span>
+    <span class="chip">Sem o lote antigo da DASA (glosas de 2025) e sem os recursos de 7F6 de jul–ago</span>
+    <span class="chip">Janela = dias entre a data da glosa e a data do recurso</span></div>
+</header>
+
+<section>
+  <h2>Resposta curta</h2>
+  <div class="verdict">
+    <div class="v">
+      <span class="q">Quanto subiu?</span>
+      <span class="pill warn">Recorde de itens; valor no pico de julho</span>
+      <span class="a">R$ 761 mil · 7.155 itens até 22/10</span>
+      <p>A projeção fecha o mês em ~R$ 900 mil (faixa de R$ 780 mil a 1,1 mi), ~8,6 mil itens e ~410 PEGs. Em itens, é o maior mês do ano com folga: o recorde anterior era 6,0 mil (abril). Em valor, fica no nível de julho (R$ 907 mil).</p>
+    </div>
+    <div class="v">
+      <span class="q">Quem puxou?</span>
+      <span class="pill bad">Fleury: 55% do valor e 64% dos itens</span>
+      <span class="a">Fleury R$ 419 mil · DASA R$ 254 mil</span>
+      <p>O Fleury recursou 54% da glosa de agosto, contra 22–37% nas coortes anteriores, e mandou tudo dentro do prazo de 60 dias. A DASA trouxe a coorte de agosto com atraso (mediana de 53 dias, contra 44–46). O Femme veio no padrão.</p>
+    </div>
+    <div class="v">
+      <span class="q">Em qual motivo?</span>
+      <span class="pill warn">74% em códigos da tabela nova</span>
+      <span class="a">7G4, 7F8, 7G9 e 7F6</span>
+      <p>Duplicidade 7G4 (R$ 193 mil), autorização 7F8 (R$ 133 mil), local de atendimento 7G9 (R$ 123 mil e 2.596 itens, R$ 103 mil do Fleury) e data incorreta 7F6 (R$ 85 mil). Somados ao 7EK (R$ 136 mil), explicam 88% do mês.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>1. Volume por mês</h2>
+  <p class="muted">Valor recursado por mês de recebimento. A barra de outubro mostra o real até 22/10 e, hachurada, a projeção de 23 a 31/10.</p>
+  <div class="panel">
+    <div class="legend"><span><i style="background:var(--accent)"></i>Valor recebido (R$ mil)</span><span><i class="proj"></i>Projeção 23–31/10</span></div>
+    <div id="chVol"></div>
+    <div class="tbl-wrap"><table id="tVol"></table></div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Prestadores</h2>
+  <div class="panel tbl-wrap">
+    <h3>Outubro até 22/10</h3>
+    <table>
+      <thead><tr><th>Prestador</th><th>Valor</th><th>Itens</th><th>PEGs</th><th>Coorte de glosa</th><th>Dias até o recurso</th><th>Mais de 60 dias</th><th>Acato (analisado)</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Fleury</td><td>R$ 419 mil</td><td>4.605</td><td>120</td><td>agosto</td><td>41–69</td><td>R$ 56 mil</td><td>50%</td></tr>
+        <tr><td>DASA</td><td>R$ 254 mil</td><td>965</td><td>161</td><td>agosto (e início de setembro)</td><td>38–60</td><td>–</td><td>86%</td></tr>
+        <tr><td>Femme</td><td>R$ 72 mil</td><td>1.483</td><td>20</td><td>agosto</td><td>44–55</td><td>–</td><td>47%</td></tr>
+        <tr><td>Centro Diagnóstico (CDDAPDGL)</td><td>R$ 14 mil</td><td>59</td><td>3</td><td>agosto</td><td>41–53</td><td>–</td><td>95%</td></tr>
+        <tr><td>Demais</td><td>R$ 1 mil</td><td>43</td><td>5</td><td>setembro</td><td>21–31</td><td>–</td><td>–</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="panel tbl-wrap">
+    <h3>Como cada um recursa: mediana de dias e % do valor que chega depois de 60 dias, por mês de recebimento</h3>
+    <table>
+      <thead><tr><th>Prestador</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Fleury</td><td>86 dias</td><td>79 dias · 88% &gt;60</td><td>65 dias · 86% &gt;60</td><td>56 dias · 46% &gt;60</td><td><b>57 dias · 13% &gt;60</b></td></tr>
+        <tr><td>DASA</td><td>49 dias</td><td>44 dias · 22% &gt;60</td><td>46 dias · 17% &gt;60</td><td>(só lote antigo)</td><td><b>53 dias · 0% &gt;60</b></td></tr>
+        <tr><td>Femme</td><td>37 dias</td><td>62 dias</td><td>50 dias</td><td>45 dias</td><td>49 dias</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="panel tbl-wrap">
+    <h3>Coortes de glosa do Fleury: quanto foi recursado</h3>
+    <table>
+      <thead><tr><th>Coorte</th><th>Glosado</th><th>Recursado até hoje</th><th>%</th><th>Recebido principalmente em</th></tr></thead>
+      <tbody>
+        <tr><td>Mai</td><td>R$ 442 mil</td><td>R$ 163 mil</td><td>37%</td><td>jul</td></tr>
+        <tr><td>Jun</td><td>R$ 1.035 mil</td><td>R$ 342 mil</td><td>33%</td><td>ago</td></tr>
+        <tr><td>Jul</td><td>R$ 513 mil</td><td>R$ 115 mil</td><td>22%</td><td>set</td></tr>
+        <tr class="hl"><td>Ago</td><td>R$ 783 mil</td><td><b>R$ 419 mil</b></td><td><b>54%</b></td><td>out</td></tr>
+        <tr><td>Set</td><td>R$ 880 mil</td><td>–</td><td>–</td><td>esperado em nov</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">Junho sem os recursos de 7F6 de jul–ago. A coorte de agosto do Fleury foi a maior em valor e a mais recursada em %: os dois efeitos se somaram em outubro.</p>
+  </div>
+</section>
+
+<section>
+  <h2>3. Janela de envio: os recursos passaram a chegar dentro do prazo</h2>
+  <p class="muted">Distribuição do valor recebido no mês pelos dias entre a glosa e o recurso. Laranja = mais de 60 dias.</p>
+  <div class="panel">
+    <div class="legend" id="lgWin"></div>
+    <div id="chWin"></div>
+    <div class="tbl-wrap"><table id="tWin"></table></div>
+  </div>
+  <div class="grid2">
+    <div class="panel prov"><span class="pill warn">O que mudou</span><h3>Fora do prazo caiu de 46–48% para 7%</h3>
+      <p>De julho a setembro, quase metade do valor chegava depois de 60 dias, quase todo do Fleury. Em outubro, 72% chegou entre 46 e 60 dias e só 7% depois. O Fleury encurtou a mediana de 65–79 para 57 dias.</p></div>
+    <div class="panel prov"><span class="pill flat">Efeito no mês</span><h3>A coorte inteira cabe num mês só</h3>
+      <p>Com a janela em 46–60 dias, a glosa de um mês é recursada inteira no mês M+2. Antes, parte escorria para M+3. Em outubro, isso juntou a coorte de agosto do Fleury, que já era grande, em um único mês.</p></div>
+    <div class="panel prov"><span class="pill good">Lado bom</span><h3>Menos recurso fora do prazo</h3>
+      <p>Com o recurso chegando dentro dos 60 dias, cai o volume que poderia ser negado por prazo. O lado ruim é que ele deixa de ser contestável por esse critério.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>4. Motivos</h2>
+  <div class="panel tbl-wrap">
+    <h3>Valor recursado por motivo e mês de recebimento (R$ mil · itens)</h3>
+    <table>
+      <thead><tr><th>Motivo</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out (01–22)</th><th>Quem puxa em outubro</th></tr></thead>
+      <tbody>
+        <tr><td>7G4 · duplicidade</td><td>–</td><td>–</td><td>142 · 693</td><td>21 · 112</td><td><b>193 · 1.074</b></td><td class="wrap-cell">DASA, Fleury e Femme</td></tr>
+        <tr><td>7EK · sem registro de execução</td><td>114 · 965</td><td>188 · 1.232</td><td>95 · 1.142</td><td>59 · 157</td><td><b>136 · 507</b></td><td class="wrap-cell">Fleury (R$ 99 mil)</td></tr>
+        <tr><td>7F8 · autorização</td><td>–</td><td>–</td><td>55 · 374</td><td>40 · 94</td><td><b>133 · 1.042</b></td><td class="wrap-cell">Fleury, DASA e Femme (731 itens de baixo valor)</td></tr>
+        <tr class="hl"><td>7G9 · local de atendimento</td><td>–</td><td>–</td><td>10 · 37</td><td>3 · 5</td><td><b>123 · 2.596</b></td><td class="wrap-cell">Fleury R$ 103 mil, DASA R$ 20 mil. Antes, só 5–10% desse motivo era recursado</td></tr>
+        <tr><td>7F6 · data incorreta</td><td>–</td><td>–</td><td>–</td><td>12 · 384</td><td><b>85 · 422</b></td><td class="wrap-cell">DASA e Fleury</td></tr>
+        <tr><td>7EY · senha cancelada</td><td>3 · 66</td><td>72 · 869</td><td>42 · 680</td><td>3 · 59</td><td>35 · 1.021</td><td class="wrap-cell">Fleury</td></tr>
+        <tr><td>7G3 · duplicidade de conta</td><td>–</td><td>–</td><td>13 · 113</td><td>3 · 18</td><td>32 · 200</td><td class="wrap-cell">DASA e Fleury</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">Em junho e julho, o motivo principal era o 7DL (autorização, tabela antiga): R$ 202 mil e R$ 439 mil. O código é o primeiro motivo do item.</p>
+  </div>
+  <div class="grid2">
+    <div class="panel prov"><span class="pill warn">Tabela nova</span><h3>Os códigos novos viraram o grosso do recurso</h3>
+      <p>7G4, 7F8, 7G9, 7F6 e 7G3 somam R$ 566 mil, 74% do recebido em outubro. Em agosto, eram R$ 220 mil.</p></div>
+    <div class="panel prov"><span class="pill bad">Novidade</span><h3>7G9 passou a ser recursado</h3>
+      <p>Local de atendimento inválido quase não voltava como recurso. Em outubro, vieram 2,6 mil itens (R$ 123 mil), R$ 103 mil do Fleury. É o motivo que mais explica o recorde de itens.</p></div>
+    <div class="panel prov"><span class="pill flat">Acato</span><h3>Autorização com acato menor</h3>
+      <p>Do recurso de autorização já analisado em outubro, 31% foi acatado, contra 81% em agosto. Nos demais motivos, 72%. A amostra ainda é pequena (R$ 134 mil analisados).</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>5. O que vem pela frente: a glosa de outubro está alta</h2>
+  <div class="panel">
+    <p>A glosa de laboratórios e clínicas de 01 a 22/10 já soma <b>R$ 1,75 mi, 10,5% do apresentado</b>, contra 7,7–8,7% em agosto e setembro. O maior motivo é data incorreta (7F6): <b>R$ 631 mil, 3,8% do apresentado</b>, o dobro de setembro. Com o Fleury e a DASA recursando 55–60% e dentro de 60 dias, essa glosa deve virar recurso em dezembro.</p>
+  </div>
+</section>
+
+<section>
+  <h2>6. Projeção de fechamento</h2>
+  <div class="panel tbl-wrap">
+    <table>
+      <thead><tr><th></th><th>Valor</th><th>Itens</th><th>PEGs</th></tr></thead>
+      <tbody>
+        <tr><td>Real 01–22/10</td><td>R$ 761 mil</td><td>7.155</td><td>309</td></tr>
+        <tr><td>DASA, coorte de setembro e resto de agosto</td><td>R$ 97 mil</td><td>~710</td><td>~80</td></tr>
+        <tr><td>Femme e Fleury, coorte de setembro</td><td>R$ 34 mil</td><td>~740</td><td>~15</td></tr>
+        <tr><td>Demais</td><td>R$ 4 mil</td><td>~10</td><td>~4</td></tr>
+        <tr class="hl"><td><b>Fechamento estimado</b></td><td><b>~R$ 900 mil</b></td><td><b>~8,6 mil</b></td><td><b>~410</b></td></tr>
+        <tr><td>Se a DASA de setembro ficar para novembro</td><td>~R$ 810 mil</td><td>~8,1 mil</td><td>~350</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="plain">
+    <li><b>Método:</b> curvas por prestador e motivo do % do glosado que chega a cada dia depois da glosa, aplicadas só às glosas em aberto até setembro. O que já chegou acima da curva não é projetado de novo.</li>
+    <li><b>Teste:</b> no dia 22 de cada mês, o real ficou entre 0 e 2,5 vezes o projetado (jul 2,5 · ago 2,0 · set 0). Em nove dias, quase tudo depende de a DASA mandar ou não a coorte de setembro. Com a mediana atual dela (53 dias), o lote cai entre 31/10 e meados de novembro.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. O que acompanhar</h2>
+  <div class="panel">
+    <ol class="steps">
+      <li><b>Fleury em novembro:</b> a coorte de setembro tem R$ 880 mil glosados. No ritmo de agosto (54%), seriam ~R$ 475 mil de recurso entre 10 e 20/11. Vale entender com o Fleury o que mudou (equipe, sistema, prioridade) e se 7G9 e 7EY vão seguir sendo recursados.</li>
+      <li><b>DASA:</b> coorte de setembro (R$ 505 mil glosados) deve chegar entre 31/10 e meados de novembro.</li>
+      <li><b>Data incorreta (7F6):</b> R$ 631 mil glosados em 22 dias de outubro. Entender o que mudou na regra ou no faturamento antes que o recurso chegue.</li>
+      <li><b>Capacidade de análise:</b> com ~8,6 mil itens em outubro e uma onda maior prevista para novembro, vale dimensionar o time de análise com antecedência.</li>
+    </ol>
+  </div>
+  <p class="small muted">Relatórios anteriores: <a href="https://claude.ai/artifact/9mDGecRHioDCKkpKHeFFhc" target="_blank" rel="noopener">Recurso de Glosa em Outubro: Laboratórios e Clínicas</a> · <a href="https://claude.ai/artifact/BnYkCCrfqa5Nr7ruyfoeQA" target="_blank" rel="noopener">Regra de Duplicidade</a>. Fonte: <code>curated.totvs_procedure_invoice</code>, atualizada até 22/10. Não é tempo real.</p>
+</section>
+
+</div>
+
+<script>
+const MES = {"01":"jan","02":"fev","03":"mar","04":"abr","05":"mai","06":"jun","07":"jul","08":"ago","09":"set","10":"out"};
+const lab = m => MES[m.slice(5,7)];
+const nf = (v, d=0) => v.toLocaleString("pt-BR", {minimumFractionDigits:d, maximumFractionDigits:d});
+const brl = v => "R$ " + nf(v) + " mil";
+const tip = document.getElementById("tip");
+function bindTips(root) {
+  root.querySelectorAll("[data-tip]").forEach(el => {
+    el.addEventListener("mousemove", e => { tip.innerHTML = el.getAttribute("data-tip"); tip.hidden = false;
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = (e.clientY + 14) + "px"; });
+    el.addEventListener("mouseleave", () => tip.hidden = true);
+  });
+}
+function rpath(x, y, w, h, r) { if (h <= 0.5) return ""; r = Math.min(r, h, w/2);
+  return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`; }
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1,1.2,1.5,2,2.5,3,4,5,6,8,10]) if (m*p >= v) return m*p; return 10*p; }
+// rows: [{m, a, o, pa, po}] a/o = real; pa/po = projected (only last). fmt for labels.
+function stacked(id, rows, unit, fmt) {
+  const W = 680, H = 270, L = 52, R = 10, T = 24, B = 30, pw = W-L-R, ph = H-T-B;
+  const tot = r => r.a + r.o + (r.pa||0) + (r.po||0);
+  const max = niceMax(Math.max(...rows.map(tot)) * 1.08);
+  const y = v => T + ph - v/max*ph, band = pw/rows.length, bw = Math.min(44, band*0.56);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${unit} por mês, autorização e demais motivos"><defs>
+    <pattern id="h${id}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--surface)"/><rect width="2.2" height="5" fill="var(--ink-3)"/></pattern></defs>`;
+  for (let i=0;i<=4;i++){ const v=max*i/4; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`; }
+  rows.forEach((r,i) => {
+    const x = L + band*i + band/2 - bw/2; let base = 0;
+    const segs = [["o", r.o, "var(--s1)"], ["a", r.a, "var(--s2)"]];
+    if (r.pa || r.po) { segs.push(["po", r.po||0, `url(#h${id})`]); segs.push(["pa", r.pa||0, `url(#h${id})`]); }
+    const drawn = segs.filter(sg => sg[1] > 0);
+    drawn.forEach((sg, k) => {
+      const top = k === drawn.length-1; const y0 = y(base), y1 = y(base+sg[1]);
+      const h = Math.max(0, y0 - y1 - (k>0 ? 2 : 0));
+      s += top ? `<path d="${rpath(x, y1, bw, h, 4)}" fill="${sg[2]}"${sg[0].startsWith("p")?' stroke="var(--ink-3)" stroke-width="1"':''}/>`
+               : `<rect x="${x}" y="${y1}" width="${bw}" height="${h}" fill="${sg[2]}"${sg[0].startsWith("p")?' stroke="var(--ink-3)" stroke-width="1"':''}/>`;
+      base += sg[1];
+    });
+    s += `<text class="val" x="${x+bw/2}" y="${y(tot(r))-7}" text-anchor="middle">${fmt(tot(r))}</text>`;
+    s += `<text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${r.label || lab(r.m)}</text>`;
+    const pct = r.a + r.o + (r.pa||0) + (r.po||0) > 0 ? 100*(r.a+(r.pa||0))/tot(r) : 0;
+    let t = `<b>${r.label || lab(r.m)+'/26'}</b><br>Autorização (7DL/7F8): ${fmt(r.a)}<br>Demais motivos: ${fmt(r.o)}`;
+    if (r.pa || r.po) t += `<br>Projeção 07–31/10: ${fmt((r.pa||0)+(r.po||0))} (autorização ${fmt(r.pa||0)})`;
+    t += `<br>Total: ${fmt(tot(r))} · autorização ${nf(pct)}%`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="${t}"/>`;
+  });
+  s += `</svg>`;
+  const el = document.getElementById(id); el.innerHTML = s; bindTips(el);
+}
+// simple bars: rows [{label, v, pv, tipx}]
+function bars(id, rows, fmt, aria, col) {
+  col = col || "var(--accent)";
+  const W = 680, H = 230, L = 52, R = 10, T = 24, B = 30, pw = W-L-R, ph = H-T-B;
+  const max = niceMax(Math.max(...rows.map(r => r.v + (r.pv||0))) * 1.08);
+  const y = v => T + ph - v/max*ph, band = pw/rows.length, bw = Math.min(44, band*0.56);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}"><defs><pattern id="h${id}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--surface)"/><rect width="2.2" height="5" fill="var(--ink-3)"/></pattern></defs>`;
+  for (let i=0;i<=4;i++){ const v=max*i/4; s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`; }
+  rows.forEach((r,i) => {
+    const x = L + band*i + band/2 - bw/2, tot = r.v + (r.pv||0);
+    if (r.pv) { s += `<rect x="${x}" y="${y(r.v)}" width="${bw}" height="${y(0)-y(r.v)}" fill="${col}"/>`;
+      s += `<path d="${rpath(x, y(tot), bw, y(r.v)-y(tot)-2, 4)}" fill="url(#h${id})" stroke="var(--ink-3)" stroke-width="1"/>`; }
+    else s += `<path d="${rpath(x, y(r.v), bw, y(0)-y(r.v), 4)}" fill="${col}"/>`;
+    s += `<text class="val" x="${x+bw/2}" y="${y(tot)-7}" text-anchor="middle">${fmt(tot)}</text><text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${r.label}</text>`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="${r.tipx}"/>`;
+  });
+  s += `</svg>`; const el = document.getElementById(id); el.innerHTML = s; bindTips(el);
+}
+</script>
+
+<script>
+
+const D = {"vol": [{"m": "2026-03", "v": 663.7, "i": 2700, "p": 314}, {"m": "2026-04", "v": 547.0, "i": 5965, "p": 247}, {"m": "2026-05", "v": 615.4, "i": 2658, "p": 347}, {"m": "2026-06", "v": 459.9, "i": 4296, "p": 406}, {"m": "2026-07", "v": 907.2, "i": 5474, "p": 437}, {"m": "2026-08", "v": 716.5, "i": 5655, "p": 390}, {"m": "2026-09", "v": 150.5, "i": 936, "p": 93}, {"m": "2026-10", "v": 760.6, "i": 7155, "p": 309, "pv": 135, "pi": 1464, "pp": 99}], "win": [{"m": "2026-03", "s": [0.1, 0.1, 0.0, 23.1, 75.5, 1.2]}, {"m": "2026-04", "s": [5.0, 0.6, 10.4, 47.1, 32.8, 4.2]}, {"m": "2026-05", "s": [5.4, 6.4, 9.1, 11.3, 67.7, 0.0]}, {"m": "2026-06", "s": [0.5, 0.1, 29.4, 64.4, 5.6, 0.0]}, {"m": "2026-07", "s": [0.6, 3.8, 30.7, 17.7, 47.1, 0.0]}, {"m": "2026-08", "s": [1.3, 0.3, 31.5, 19.0, 47.8, 0.2]}, {"m": "2026-09", "s": [0.1, 0.4, 18.6, 34.6, 46.3, 0.0]}, {"m": "2026-10", "s": [0.0, 0.1, 20.8, 71.8, 7.3, 0.0]}]};
+bars("chVol", D.vol.map(r => ({label: r.m==="2026-10" ? "out*" : lab(r.m), v: r.v, pv: r.pv||0,
+  tipx: `<b>${lab(r.m)}/26</b><br>Valor: R$ ${nf(r.v)} mil${r.pv?` (real até 22/10) + R$ ${nf(r.pv)} mil projetados`:""}<br>Itens: ${nf(r.i)}${r.pi?` + ~${nf(r.pi)}`:""}<br>PEGs: ${r.p}${r.pp?` + ~${r.pp}`:""}`})), v => nf(v), "Valor recursado por mês (R$ mil)", "var(--accent)");
+document.getElementById("tVol").innerHTML = `<thead><tr><th></th>${D.vol.map(r=>`<th>${r.m==="2026-10"?"out (01–22)":lab(r.m)}</th>`).join("")}<th>out* proj.</th></tr></thead><tbody>
+ <tr><td>Valor (R$ mil)</td>${D.vol.map(r=>`<td>${nf(r.v)}</td>`).join("")}<td><b>~${nf(D.vol[7].v+D.vol[7].pv)}</b></td></tr>
+ <tr><td>Itens</td>${D.vol.map(r=>`<td>${nf(r.i)}</td>`).join("")}<td><b>~${nf(D.vol[7].i+D.vol[7].pi)}</b></td></tr>
+ <tr><td>PEGs</td>${D.vol.map(r=>`<td>${nf(r.p)}</td>`).join("")}<td><b>~${nf(D.vol[7].p+D.vol[7].pp)}</b></td></tr>
+ <tr><td>R$ mil por PEG</td>${D.vol.map(r=>`<td>${nf(r.v/r.p,1)}</td>`).join("")}<td>–</td></tr></tbody>`;
+(function(){
+  const K = ["0–15 dias","16–30","31–45","46–60","61–90",">90"], C = ["var(--w1)","var(--w2)","var(--w3)","var(--w4)","var(--w5)","var(--w6)"];
+  const W = 680, H = 250, L = 44, R = 10, T = 14, B = 30, pw = W-L-R, ph = H-T-B, rows = D.win;
+  const band = pw/rows.length, bw = Math.min(46, band*0.6), y = v => T + ph - v/100*ph;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Distribuição do valor recursado por dias entre a glosa e o recurso">`;
+  [0,25,50,75,100].forEach(v => s += `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}%</text>`);
+  rows.forEach((r,i) => {
+    const x = L + band*i + band/2 - bw/2; let base = 0;
+    r.s.forEach((p,k) => { if (p <= 0) return; const y1 = y(base+p), h = Math.max(0, y(base)-y1-1); s += `<rect x="${x}" y="${y1}" width="${bw}" height="${h}" fill="${C[k]}"/>`; base += p; });
+    const late = r.s[4]+r.s[5];
+    s += `<text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${r.m==="2026-10"?"out*":lab(r.m)}</text>`;
+    s += `<rect class="hit" x="${L+band*i}" y="${T}" width="${band}" height="${ph}" data-tip="<b>${lab(r.m)}/26</b><br>${K.map((k,j)=>`${k}: ${nf(r.s[j])}%`).join("<br>")}<br><b>Mais de 60 dias: ${nf(late)}%</b>"/>`;
+  });
+  s += `<line x1="${L}" x2="${W-R}" y1="${T}" y2="${T}" stroke="var(--line)"/></svg>`;
+  const el = document.getElementById("chWin"); el.innerHTML = s; bindTips(el);
+  document.getElementById("lgWin").innerHTML = K.map((k,j)=>`<span><i style="background:${C[j]}"></i>${k}</span>`).join("");
+  document.getElementById("tWin").innerHTML = `<thead><tr><th>Dias da glosa ao recurso</th>${rows.map(r=>`<th>${r.m==="2026-10"?"out (01–22)":lab(r.m)}</th>`).join("")}</tr></thead><tbody>` +
+    K.map((k,j)=>`<tr${j>=4?' class="hl"':''}><td>${k}</td>${rows.map(r=>`<td>${nf(r.s[j])}%</td>`).join("")}</tr>`).join("") +
+    `<tr><td><b>Mais de 60 dias</b></td>${rows.map(r=>`<td><b>${nf(r.s[4]+r.s[5])}%</b></td>`).join("")}</tr></tbody>`;
+})();
+
+</script>
+
+</body>
+</html>

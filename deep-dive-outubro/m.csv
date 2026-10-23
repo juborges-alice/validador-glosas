@@ -1,0 +1,217 @@
+mes,seg,cod,descr,itens,vlr
+2026-10-01,H,7F7,7F7 - COBRANÇA FORA DO PRAZO ESTIPULADO NO CONTRATO COM O PR,5,32477.0900
+2026-08-01,H,7G4,7G4 - COBRANÇA DE PROCEDIMENTO/ITEM ASSISTENCIAL EM DUPLICID,2,1049.7300
+2026-07-01,L,7DY,7DY - Item redundante na mesma guia,163,41909.9900
+2026-06-01,L,7ED,7ED - Profissional da retaguarda da Alice,2,139.2600
+2026-06-01,H,7E5,7E5 - Procedimento configura etapa de procedimento principal,11,3694.0400
+2026-08-01,L,7G6,7G6 - COBRANÇA DE ITEM ASSISTENCIAL EM QUANTIDADE INCOMPATÍV,1,651.4100
+2026-09-01,L,7DL,7DL - Autorização de item não localizada,32,1843.0900
+2026-10-01,L,7DT,7DT - Procedimento negociado como captation,10,272.9200
+2026-08-01,H,7DN,7DN - Membro inativo na data de execução,3,2108.1800
+2026-10-01,L,7F6,7F6 - Data preenchida incorretamente,422,84793.4700
+2026-07-01,L,7E1,7E1 - Valor apresentado divergente do negociado,66,7352.9000
+2026-09-01,H,004,004 - Critica Financeira.,13,2432.0300
+2026-06-01,H,7E6,7E6 - Prescrição sem justificativa para o prontuário,70,6662.8900
+2026-09-01,H,7G9,7G9 - LOCAL DE ATENDIMENTO INVÁLIDO,1,170.0200
+2026-09-01,L,7G3,7G3 - DUPLICIDADE DE CONTA DEVIDO A PERÍODO JÁ APRESENTADO E,18,3187.0800
+2026-06-01,H,7DO,7DO - Serviço Profissional hospitalar não coberto,10,13168.4600
+2026-08-01,H,7G3,7G3 - DUPLICIDADE DE CONTA DEVIDO A PERÍODO JÁ APRESENTADO E,4,6360.9200
+2026-10-01,L,7EK,7EK - Procedimento sem registro de execução,507,136145.3000
+2026-09-01,L,7F6,7F6 - Data preenchida incorretamente,384,12400.9500
+2026-10-01,H,7DQ,7DQ - Procedimento negociado como pacote,1,1200.0000
+2026-10-01,L,7EE,7EE - Procedimento duplicado,2,618.0900
+2026-06-01,H,7E4,7E4 - Hipercodificação de materiais/medicamentos,28,7333.7000
+2026-07-01,L,7EZ,7EZ - COBRANÇA DE PROCEDIMENTO COM DATA DE AUTORIZAÇÃO POSTE,182,37989.4800
+2026-09-01,L,7DY,7DY - Item redundante na mesma guia,2,344.9900
+2026-10-01,L,7G6,7G6 - COBRANÇA DE ITEM ASSISTENCIAL EM QUANTIDADE INCOMPATÍV,2,269.6300
+2026-06-01,H,7F3,7F3 - Material não pertinente para o procedimento realizado,6,4250.8700
+2026-10-01,H,7E4,7E4 - Hipercodificação de materiais/medicamentos,12,23999.2900
+2026-09-01,H,7F9,7F9 - NÃO AUTORIZADO PELA AUDITORIA MÉDICA,17,8706.6400
+2026-06-01,H,7DQ,7DQ - Procedimento negociado como pacote,4,8300.9600
+2026-06-01,L,7EF,7EF - Reexecução,198,11086.9900
+2026-10-01,H,7E7,7E7 - Diária/taxa incompatível,3,6943.7100
+2026-09-01,H,7DV,7DV - Honorário médico pago para Especialista Alice,6,4996.5900
+2026-07-01,L,7EK,7EK - Procedimento sem registro de execução,1232,187778.3800
+2026-06-01,H,7E0,7E0 - Valor apresentado divergente do capeante,102,48177.7400
+2026-06-01,L,7DN,7DN - Membro inativo na data de execução,9,369.8400
+2026-10-01,L,7G4,7G4 - COBRANÇA DE PROCEDIMENTO/ITEM ASSISTENCIAL EM DUPLICID,1074,193314.3800
+2026-08-01,H,7E1,7E1 - Valor apresentado divergente do negociado,180,18285.3900
+2026-06-01,L,7DT,7DT - Procedimento negociado como captation,73,3066.9300
+2026-08-01,L,7F9,7F9 - NÃO AUTORIZADO PELA AUDITORIA MÉDICA,5,924.0600
+2026-07-01,L,701,701 - COBRANÇA DE EXAME NÃO COMPATÍVEL COM A IDADE.,61,9894.6100
+2026-09-01,H,7DY,7DY - Item redundante na mesma guia,2,274.3800
+2026-06-01,H,7DJ,7DJ - Conta não localizada no capeante,83,211844.4800
+2026-07-01,H,0TS,0TS - SADT conflitantes,2,63.7000
+2026-09-01,H,7G7,7G7 - COBRANÇA DE ITEM ASSISTENCIAL EM QUANTIDADE INCOMPATÍV,1,60.0000
+2026-06-01,H,7DX,7DX - Item cobrado em múltiplas guias,7,2409.4400
+2026-09-01,H,7DK,7DK - Procedimento não autorizado,25,4578.2900
+2026-07-01,H,7E8,7E8 - Procedimento incompatível,1,12520.4300
+2026-06-01,L,7F0,7F0 - Cobrança de exame em quantidade incompatível com o pro,119,10564.6400
+2026-08-01,H,7E7,7E7 - Diária/taxa incompatível,1,2794.5300
+2026-09-01,H,7G4,7G4 - COBRANÇA DE PROCEDIMENTO/ITEM ASSISTENCIAL EM DUPLICID,1,688.9400
+2026-07-01,H,7E6,7E6 - Prescrição sem justificativa para o prontuário,4,262.7200
+2026-07-01,H,7DV,7DV - Honorário médico pago para Especialista Alice,6,5796.1300
+2026-07-01,H,7G3,7G3 - DUPLICIDADE DE CONTA DEVIDO A PERÍODO JÁ APRESENTADO E,5,48825.7300
+2026-09-01,H,7DP,7DP - Item incluso em pacote,110,10818.1900
+2026-07-01,L,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,869,72421.3900
+2026-10-01,H,7E1,7E1 - Valor apresentado divergente do negociado,241,69566.3100
+2026-09-01,H,7E3,7E3 - Reexecução excessiva,1,44.7000
+2026-08-01,H,7DL,7DL - Autorização de item não localizada,639,241481.4300
+2026-07-01,L,7DL,7DL - Autorização de item não localizada,1642,438983.1400
+2026-07-01,L,7DX,7DX - Item cobrado em múltiplas guias,87,21576.8100
+2026-06-01,H,7E1,7E1 - Valor apresentado divergente do negociado,96,15997.3100
+2026-06-01,L,7E6,7E6 - Prescrição sem justificativa para o prontuário,103,4536.4100
+2026-09-01,L,7G9,7G9 - LOCAL DE ATENDIMENTO INVÁLIDO,5,2679.5800
+2026-07-01,L,,,403,29119.3600
+2026-10-01,H,7G3,7G3 - DUPLICIDADE DE CONTA DEVIDO A PERÍODO JÁ APRESENTADO E,15,7358.1400
+2026-06-01,H,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,2,143.0800
+2026-07-01,H,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,4,5068.3700
+2026-06-01,L,7EI,7EI - Procedimento autorizado em unidade divergente da cobra,87,17552.5900
+2026-06-01,H,7F2,7F2 - Cobrança de taxas em ambientes incompatíveis com uso d,1,179.0000
+2026-10-01,H,7E5,7E5 - Procedimento configura etapa de procedimento principal,4,2311.0600
+2026-09-01,H,7F8,7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA,967,754755.2500
+2026-08-01,H,7DY,7DY - Item redundante na mesma guia,14,5446.0900
+2026-10-01,L,7F8,7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA,1042,132763.4000
+2026-06-01,H,7E8,7E8 - Procedimento incompatível,1,1188.3200
+2026-06-01,H,0TS,0TS - SADT conflitantes,5,969.4700
+2026-09-01,H,7E1,7E1 - Valor apresentado divergente do negociado,37,25994.7900
+2026-07-01,L,7EL,7EL - O código cobrado é diferente do código autorizado,1,42.8300
+2026-10-01,H,7G8,7G8 - COBRANÇA/SOLICITAÇÃO DE PROCEDIMENTO/ITEM ASSISTENCIAL,1,194.0000
+2026-10-01,H,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,13,11879.6600
+2026-08-01,L,7G9,7G9 - LOCAL DE ATENDIMENTO INVÁLIDO,37,9725.1200
+2026-09-01,L,7DN,7DN - Membro inativo na data de execução,1,105.8000
+2026-06-01,H,7EI,7EI - Procedimento autorizado em unidade divergente da cobra,30,1989.9600
+2026-07-01,H,7F8,7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA,65,11853.2700
+2026-09-01,H,7G6,7G6 - COBRANÇA DE ITEM ASSISTENCIAL EM QUANTIDADE INCOMPATÍV,4,121.1300
+2026-08-01,H,7E5,7E5 - Procedimento configura etapa de procedimento principal,1,282.1600
+2026-08-01,H,7DJ,7DJ - Conta não localizada no capeante,109,82185.9400
+2026-08-01,L,7F8,7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA,374,54642.7100
+2026-07-01,H,7DK,7DK - Procedimento não autorizado,225,224080.6800
+2026-08-01,L,7EI,7EI - Procedimento autorizado em unidade divergente da cobra,3,234.2900
+2026-07-01,L,0TS,0TS - SADT conflitantes,87,9972.2700
+2026-06-01,H,7EL,7EL - O código cobrado é diferente do código autorizado,1,1362.0300
+2026-06-01,L,099,099 - Guia já processada com este numero impresso           ,1,22.6800
+2026-08-01,H,7G9,7G9 - LOCAL DE ATENDIMENTO INVÁLIDO,1,336.3000
+2026-07-01,H,7DP,7DP - Item incluso em pacote,15,12428.3300
+2026-08-01,H,7EL,7EL - O código cobrado é diferente do código autorizado,4,12654.3200
+2026-07-01,L,7DN,7DN - Membro inativo na data de execução,1,85.1800
+2026-08-01,L,7DL,7DL - Autorização de item não localizada,1380,193121.4000
+2026-10-01,H,7DL,7DL - Autorização de item não localizada,5,4116.9300
+2026-10-01,H,7DJ,7DJ - Conta não localizada no capeante,191,262503.2300
+2026-09-01,L,,,1,16.4800
+2026-06-01,L,7DK,7DK - Procedimento não autorizado,55,4130.4500
+2026-09-01,H,7ET,7ET - COBRANÇA DE TAXA EM QUANTIDADE INCORRETA,1,1288.1100
+2026-10-01,L,7G3,7G3 - DUPLICIDADE DE CONTA DEVIDO A PERÍODO JÁ APRESENTADO E,200,32101.9000
+2026-08-01,H,7DX,7DX - Item cobrado em múltiplas guias,20,4469.3600
+2026-08-01,L,7DK,7DK - Procedimento não autorizado,10,5304.9300
+2026-07-01,H,7E4,7E4 - Hipercodificação de materiais/medicamentos,19,6147.1200
+2026-06-01,L,7E3,7E3 - Reexecução excessiva,1,846.5700
+2026-07-01,L,7DS,7DS - Cobrança fora do prazo contratual,1,2100.0000
+2026-08-01,H,7E3,7E3 - Reexecução excessiva,4,1794.4300
+2026-06-01,L,0TS,0TS - SADT conflitantes,69,5929.4800
+2026-08-01,L,7DT,7DT - Procedimento negociado como captation,367,12027.7900
+2026-07-01,H,7EU,7EU - COBRANÇA DE PROCEDIMENTO INCLUSO NO PROCEDIMENTO PRINC,2,440.5200
+2026-09-01,L,506,506 - Usuario bloqueado.,27,2942.1600
+2026-09-01,L,7E1,7E1 - Valor apresentado divergente do negociado,4,1136.7000
+2026-06-01,L,7EK,7EK - Procedimento sem registro de execução,965,114046.6500
+2026-10-01,H,7EK,7EK - Procedimento sem registro de execução,8,18738.7800
+2026-10-01,H,7DV,7DV - Honorário médico pago para Especialista Alice,22,17578.0000
+2026-08-01,L,7E6,7E6 - Prescrição sem justificativa para o prontuário,7,286.4400
+2026-08-01,L,7EK,7EK - Procedimento sem registro de execução,1142,95055.8900
+2026-07-01,L,7DT,7DT - Procedimento negociado como captation,38,1478.8000
+2026-08-01,H,,,1,5.6600
+2026-10-01,H,7EE,7EE - Procedimento duplicado,1,44.7200
+2026-07-01,H,7F2,7F2 - Cobrança de taxas em ambientes incompatíveis com uso d,1,100.0000
+2026-06-01,H,7DL,7DL - Autorização de item não localizada,220,202514.3000
+2026-08-01,L,7EZ,7EZ - COBRANÇA DE PROCEDIMENTO COM DATA DE AUTORIZAÇÃO POSTE,102,17739.2400
+2026-07-01,L,7F0,7F0 - Cobrança de exame em quantidade incompatível com o pro,17,1692.4300
+2026-08-01,H,7DO,7DO - Serviço Profissional hospitalar não coberto,7,4169.6000
+2026-07-01,H,7DN,7DN - Membro inativo na data de execução,1,799.0000
+2026-06-01,L,7EZ,7EZ - COBRANÇA DE PROCEDIMENTO COM DATA DE AUTORIZAÇÃO POSTE,144,7905.7100
+2026-08-01,H,7F9,7F9 - NÃO AUTORIZADO PELA AUDITORIA MÉDICA,22,14532.6400
+2026-10-01,H,7DR,7DR - Procedimento não negociado em contrato,5,664.8200
+2026-08-01,L,7DY,7DY - Item redundante na mesma guia,474,73957.9000
+2026-10-01,L,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,1021,35025.7900
+2026-09-01,L,7G4,7G4 - COBRANÇA DE PROCEDIMENTO/ITEM ASSISTENCIAL EM DUPLICID,112,21331.4300
+2026-06-01,H,7F0,7F0 - Cobrança de exame em quantidade incompatível com o pro,10,45.0900
+2026-07-01,H,7DQ,7DQ - Procedimento negociado como pacote,46,73944.5700
+2026-09-01,H,7G3,7G3 - DUPLICIDADE DE CONTA DEVIDO A PERÍODO JÁ APRESENTADO E,34,35529.3400
+2026-08-01,H,7D4,7D4 - RDA nao autorizada a executar o procedimento para este,1,1455.4300
+2026-06-01,H,7F1,7F1 - Item incluído no pacote negociado,4,151.1200
+2026-06-01,L,7ES,7ES - PROCEDIMENTO INCOMPATÍVEL COM O SEXO DO BENEFICIÁRIO,1,66.5400
+2026-09-01,L,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,59,2903.8700
+2026-09-01,H,7E4,7E4 - Hipercodificação de materiais/medicamentos,2,2377.1600
+2026-08-01,L,7DX,7DX - Item cobrado em múltiplas guias,115,16363.9100
+2026-07-01,L,7EI,7EI - Procedimento autorizado em unidade divergente da cobra,43,6413.3800
+2026-08-01,L,0TS,0TS - SADT conflitantes,1,52.0500
+2026-08-01,H,7G7,7G7 - COBRANÇA DE ITEM ASSISTENCIAL EM QUANTIDADE INCOMPATÍV,22,8274.1200
+2026-07-01,H,7DJ,7DJ - Conta não localizada no capeante,178,181033.4500
+2026-07-01,L,7F8,7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA,1,55.0000
+2026-08-01,H,7F8,7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA,641,342141.4200
+2026-07-01,H,7DL,7DL - Autorização de item não localizada,123,169265.7900
+2026-09-01,L,7F9,7F9 - NÃO AUTORIZADO PELA AUDITORIA MÉDICA,9,474.0600
+2026-07-01,H,7DX,7DX - Item cobrado em múltiplas guias,29,49697.2800
+2026-06-01,L,7EL,7EL - O código cobrado é diferente do código autorizado,40,2912.7600
+2026-10-01,H,7DP,7DP - Item incluso em pacote,39,9521.7200
+2026-06-01,L,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,66,2598.7200
+2026-08-01,H,7EE,7EE - Procedimento duplicado,10,1443.5400
+2026-07-01,H,7ED,7ED - Profissional da retaguarda da Alice,6,34291.3300
+2026-07-01,H,7DY,7DY - Item redundante na mesma guia,8,381.4600
+2026-09-01,H,7E8,7E8 - Procedimento incompatível,5,854.9000
+2026-06-01,H,7DK,7DK - Procedimento não autorizado,128,221021.1200
+2026-06-01,H,7EU,7EU - COBRANÇA DE PROCEDIMENTO INCLUSO NO PROCEDIMENTO PRINC,2,569.3000
+2026-08-01,H,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,53,14533.0700
+2026-07-01,H,7EL,7EL - O código cobrado é diferente do código autorizado,1,525.0000
+2026-10-01,L,7E1,7E1 - Valor apresentado divergente do negociado,110,8116.6400
+2026-06-01,L,701,701 - COBRANÇA DE EXAME NÃO COMPATÍVEL COM A IDADE.,39,5518.5600
+2026-10-01,H,7E8,7E8 - Procedimento incompatível,18,21926.8100
+2026-07-01,H,7DS,7DS - Cobrança fora do prazo contratual,33,22005.5800
+2026-06-01,L,7DY,7DY - Item redundante na mesma guia,208,41444.6000
+2026-07-01,H,,,15,6095.9400
+2026-08-01,L,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,680,42119.2700
+2026-09-01,H,7EL,7EL - O código cobrado é diferente do código autorizado,2,20037.1200
+2026-10-01,L,7DN,7DN - Membro inativo na data de execução,6,629.0300
+2026-06-01,L,7E1,7E1 - Valor apresentado divergente do negociado,24,2185.0700
+2026-08-01,H,7DV,7DV - Honorário médico pago para Especialista Alice,2,8318.7300
+2026-08-01,H,7E6,7E6 - Prescrição sem justificativa para o prontuário,3,384.7000
+2026-06-01,L,008,008 - Idade do usuario incompativel com a idade limite para ,40,4743.3500
+2026-08-01,L,,,76,3068.8300
+2026-08-01,L,7E1,7E1 - Valor apresentado divergente do negociado,45,32969.3900
+2026-09-01,H,7EY,7EY - SENHA DE AUTORIZAÇÃO CANCELADA,25,41622.6000
+2026-10-01,H,7G4,7G4 - COBRANÇA DE PROCEDIMENTO/ITEM ASSISTENCIAL EM DUPLICID,1,801.0200
+2026-08-01,L,7G4,7G4 - COBRANÇA DE PROCEDIMENTO/ITEM ASSISTENCIAL EM DUPLICID,693,141703.5800
+2026-10-01,L,7DX,7DX - Item cobrado em múltiplas guias,2,259.5000
+2026-08-01,H,7E8,7E8 - Procedimento incompatível,1,45.6600
+2026-08-01,L,505,505 - Familia bloqueada.,16,3217.3700
+2026-10-01,L,7F9,7F9 - NÃO AUTORIZADO PELA AUDITORIA MÉDICA,161,13044.1000
+2026-09-01,L,7F8,7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA,94,39841.6400
+2026-09-01,H,7DJ,7DJ - Conta não localizada no capeante,28,30008.2900
+2026-09-01,H,7DL,7DL - Autorização de item não localizada,29,9956.8200
+2026-06-01,L,7DL,7DL - Autorização de item não localizada,1879,200537.0900
+2026-10-01,H,7G1,7G1 - PROCEDIMENTO/ITEM ASSISTENCIAL NÃO POSSUI COBERTURA PE,23,29756.7200
+2026-09-01,L,7DK,7DK - Procedimento não autorizado,5,1361.0500
+2026-09-01,H,7DX,7DX - Item cobrado em múltiplas guias,5,3840.9500
+2026-06-01,L,7DX,7DX - Item cobrado em múltiplas guias,173,19695.9000
+2026-09-01,H,,,2,430.0200
+2026-07-01,H,7E1,7E1 - Valor apresentado divergente do negociado,60,19591.2800
+2026-07-01,L,7E6,7E6 - Prescrição sem justificativa para o prontuário,522,28002.5000
+2026-06-01,H,7DP,7DP - Item incluso em pacote,50,16168.1000
+2026-08-01,L,7G3,7G3 - DUPLICIDADE DE CONTA DEVIDO A PERÍODO JÁ APRESENTADO E,113,12946.2600
+2026-10-01,L,7G9,7G9 - LOCAL DE ATENDIMENTO INVÁLIDO,2596,123221.4100
+2026-06-01,H,,,31,1728.8400
+2026-08-01,H,7DK,7DK - Procedimento não autorizado,27,11447.9200
+2026-10-01,H,7DX,7DX - Item cobrado em múltiplas guias,1,336.0000
+2026-06-01,H,7E3,7E3 - Reexecução excessiva,3,887.3800
+2026-10-01,H,7E3,7E3 - Reexecução excessiva,5,641.7400
+2026-08-01,H,7E4,7E4 - Hipercodificação de materiais/medicamentos,9,14458.8600
+2026-07-01,L,7DK,7DK - Procedimento não autorizado,56,10194.1500
+2026-09-01,L,7EK,7EK - Procedimento sem registro de execução,157,59330.3300
+2026-10-01,H,7EL,7EL - O código cobrado é diferente do código autorizado,14,87409.2800
+2026-10-01,H,505,505 - Familia bloqueada.,10,23901.6400
+2026-09-01,L,7DT,7DT - Procedimento negociado como captation,26,566.5200
+2026-06-01,H,7DY,7DY - Item redundante na mesma guia,11,707.5500
+2026-10-01,H,7F8,7F8 - COBRANÇA DE PROCEDIMENTO QUE EXIGE AUTORIZAÇÃO PRÉVIA,791,557053.6100
+2026-07-01,H,7F3,7F3 - Material não pertinente para o procedimento realizado,15,11463.9300
+2026-07-01,L,003,003 - Sexo invalido para este procedimento.,2,155.4700
+2026-08-01,L,7DN,7DN - Membro inativo na data de execução,14,363.3600
+2026-08-01,H,7DP,7DP - Item incluso em pacote,21,3006.3500
