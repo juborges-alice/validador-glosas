@@ -252,20 +252,58 @@ Medido em 22/10/2026 sobre as 96 PEGs do card: **2.706 linhas de fato abertas de
 R$132.739,11, ou 26,6%, com **19 PEGs parcialmente finalizadas**. Caso extremo: PEG 00107531
 (HAOC), 1 linha aberta de 13, R$3.182,00 abertos contra R$105.847,19 publicados.
 
-**Como reportar, a partir de 23/10/2026:**
+### A janela de visibilidade é de 3 DIAS ÚTEIS (decisão da OM, 23/10/2026)
 
-- **Todo dia**, na linha do KPI e na página: a contagem de PEGs e o valor do 73490, mais o resumo
-  de `linhas_abertas` sobre `linhas_total` e o `valor_aberto`, que saem do card **79437**.
-- **Só quando o KPI cruza o 🔴**: o detalhamento item a item (guia, item, procedimento, TUSS, valor
-  do recurso, motivo da glosa) vai na **thread** da mensagem do vermelho, a partir do card **79438**.
-  Em dia 🟢 ou 🟡 nenhum item a item é publicado.
-- **O farol, a meta e o limiar não mudam**: continuam saindo do 73490, e o limiar de R$100.000 segue
-  aplicado sobre o `valor_total`. **Não há decisão ainda sobre trocar a base do limiar para
-  `valor_aberto`** — não troque por conta própria.
+Em dias corridos o fim de semana come a janela. Medido em **23/10/2026, uma sexta-feira**:
 
-Os dois cards foram criados em 22/10/2026 na collection 3609 e **não aceitam parâmetro**: execute
-sem parâmetro. O 79437 reconcilia com o 73490 (96 PEGs, R$631.375,23 em `valor_total`); o 79438 é
-restrito a `dias_restantes_vencimento <= 3`.
+| Régua | PEGs na janela | Valor |
+|---|---|---|
+| 3 dias corridos (até então) | **0** | R$ 0,00 |
+| 3 dias úteis (nova) | **6** | R$ 61.824,66 |
+
+As 6 vencem todas em **28/10**, uma quarta — 48 linhas de recurso ainda abertas que a régua antiga
+não mostrava para o time. **A janela em DU é sempre um superconjunto da de dias corridos**, porque
+o 3º dia útil nunca cai antes do 3º dia corrido: ampliar a visibilidade não esconde nada do que o
+limiar já pegava.
+
+A distância em dias úteis sai da coluna `du_restantes_vencimento` do card **79437**, calculada pelo
+índice de dias úteis de `curated.dim_date_public` — a mesma régua dos cards 76364 e 77507.
+
+**Farol em três faixas:**
+
+- 🔴 o limiar foi cruzado: **>15 recursos ou >R$100.000 de `valor_total`** na janela de **3 dias
+  corridos**. Esta janela **não mudou**.
+- 🟡 há recurso vencendo dentro de **3 dias úteis**, ou vencido e ainda em aberto, sem cruzar o
+  limiar. É o amarelo de fila de trabalho: visibilidade, não acionamento. Nasce da **meta** do
+  próprio KPI na Etapa 1, não é rebaixamento — mesma mecânica do 🟡 de 7 du do
+  `PEGs por Status de Análise no SLA - HI`.
+- 🟢 nada vencendo dentro de 3 DU e nada vencido em aberto.
+
+**O limiar de R$100.000 incide sobre o `valor_total`, não sobre o `valor_aberto`** (decisão da OM,
+23/10/2026, recusando a proposta da rotina): *"quero que acenda sim pois qualquer coisa perto de
+vencer tem que aparecer"*. O caso que a decisão cobre é a PEG 00107531 do HAOC — 1 linha aberta de
+13, R$3.182,00 em aberto e R$105.847,19 de valor total, vencendo em 04/11: sozinha ela acende o 🔴.
+O `valor_aberto` segue publicado ao lado, como contexto.
+
+**Como reportar, a partir de 26/10/2026:**
+
+- **Todo dia**, na linha do KPI e na página: a contagem de PEGs e o valor na janela de **3 DU**,
+  mais o resumo de `linhas_abertas` sobre `linhas_total` e o `valor_aberto` ao lado do
+  `valor_total`. Tudo do card **79437**.
+- **Na thread, em 🟡 e em 🔴**: o detalhamento item a item de tudo que está na janela de 3 DU —
+  guia, item, procedimento, TUSS, valor do recurso, motivo da glosa — do card **79438**. A mensagem
+  solta no canal leva só o resumo; o item a item vive na thread, que é onde cabe densidade.
+- Em 🟢 não há o que listar.
+- Isto **amplia a decisão de 22/10**, que limitava o item a item ao 🔴: a OM pediu visibilidade de
+  tudo que está perto de vencer, e o 🟡 de fila de trabalho passa a carregar a lista também.
+
+⚠️ **Segue em aberto:** se o próprio 🔴 também deveria ler a janela de 3 DU. Hoje não lê. A
+consequência conhecida é que numa sexta com mais de 15 recursos vencendo na quarta o KPI sai 🟡 e
+só vira 🔴 na segunda. **Não mude a janela do limiar por conta própria.**
+
+Os dois cards foram criados em 22/10/2026 na collection 3609, revisados em 23/10, e **não aceitam
+parâmetro**: execute sem parâmetro. O 79437 reconcilia com o 73490 na coluna `valor_total`; o 79438
+é restrito a `du_restantes_vencimento <= 3`.
 
 ⚠️ **`appeal_analysis_date` distingue pendência real de registro preso.** O 79438 devolve essa
 coluna porque linha com status aberto **e** data de análise preenchida já foi analisada — o que

@@ -357,12 +357,19 @@ aberto** (`Vencido (nao acionavel)` — escreva "vencido, ainda em aberto", nunc
 
 ```
 🔴 _{KPI}_ — fila de trabalho do dia
-Vencendo em até 3 dias: {N} recursos · R$ {valor}
+Vencendo em até 3 dias úteis: {N} recursos · R$ {valor}
 Já vencidos, ainda em aberto: {M} recursos · R$ {valor}
 Linhas em aberto: {linhas_abertas} de {linhas_total} itens · R$ {valor_aberto} de R$ {valor_total}
 Concentração dos vencidos: {grupo econômico} {n} recursos (R$ {valor}) · {grupo} {n} (R$ {valor})
 ↩️ <@ID> lista completa na thread. Priorize hoje o que ainda dá pra salvar.
 ```
+
+**Em 🟡 este bloco não vira mensagem solta.** A mensagem solta continua reservada ao 🔴 (Passo 8).
+Quando o KPI sai 🟡 de fila de trabalho — há recurso dentro da janela de 3 dias úteis mas o limiar
+não foi cruzado —, o mesmo conteúdo vai como **resposta na thread da Mensagem 1**, com o cabeçalho
+`🟡 _{KPI}_ — fila de trabalho do dia` e as mesmas linhas. É o que concilia as duas coisas que a OM
+pediu em 23/10/2026: visibilidade de tudo que está perto de vencer, sem gastar no amarelo a atenção
+que o vermelho precisa ter.
 
 A linha de **Linhas em aberto** sai do card **79437** e é obrigatória em
 `Recursos de Glosa Próximos do Vencimento` (decisão da OM, 22/10/2026). Ela existe porque o 73490
@@ -385,13 +392,17 @@ informação, ausência da linha não é.
 
 **Parte 2 — respostas na thread.** Duas listas, nesta ordem, cada uma numa resposta:
 
-1. **Vencendo em até 3 dias** — lista **completa**, ordenada por `dias_restantes_vencimento`
+1. **Vencendo em até 3 dias úteis** — lista **completa**, ordenada por `du_restantes_vencimento`
    crescente (o mais urgente primeiro):
-   `{dias} d · PEG {peg_code} · {institution_name} · R$ {appeal_value}`
+   `{du} du · PEG {peg_code} · {institution_name} · R$ {appeal_value}`
+   A janela é de **dias úteis** desde 23/10/2026, não de dias corridos: numa sexta, a régua antiga
+   devolvia 0 PEGs enquanto a nova devolvia 6 e R$61.824,66, todas vencendo na quarta seguinte.
    Em `Recursos de Glosa Próximos do Vencimento`, acrescente logo abaixo o **detalhamento item a
-   item** das linhas ainda abertas, do card **79438** (decisão da OM, 22/10/2026):
+   item** das linhas ainda abertas, do card **79438**:
    `PEG {peg_code} · guia {guide_number} · item {guide_item_number} · {procedure_name} · TUSS {tuss_code} · R$ {appeal_value} · {disallowance_reason} · {appeal_status}`
-   **Só no 🔴.** Em dia 🟢 ou 🟡 o item a item não é publicado — nem no canal nem na thread.
+   **Sai em 🟡 e em 🔴**, cobrindo a janela de 3 dias úteis inteira (decisão da OM, 23/10/2026, que
+   amplia a de 22/10 — a OM quer visibilidade de tudo que está perto de vencer). Em 🟢 não há o que
+   listar. A lista vive sempre na thread, nunca na mensagem solta.
    Quando a linha tiver `appeal_analysis_date` preenchida, diga isso na própria linha: ela já foi
    analisada e o que falta é a gravação do status, o que faz dela item de tech e não de operação.
 2. **Vencidos, ainda em aberto** — **consolidado por grupo econômico**, ordenado por valor
