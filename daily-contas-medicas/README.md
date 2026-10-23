@@ -14,7 +14,7 @@ Adaptada do desenho da Operação Autorização (`rotinadailyopsprompts`, ago/20
 | 06h30 | `30 9 * * 1-5` | `01-report-slack` | Lê os KPIs, aplica o farol, posta o report e os vermelhos, cria a Execução de Rotina enxuta e as entradas de Decision Log | Sim — é o report |
 | 09h30 | `30 12 * * 1-5` | `02-notion-page` | Transforma a Execução de Rotina na página canônica de 5 blocos, puxa os drills completos, repuxa o que o ETL não tinha às 06h30 | Só o link da página |
 | 10h15 | `15 13 * * 1-5` | `03-sync-pre-daily` | Pré-daily: captura o que o time respondeu nas threads e leva pra página | Não (silenciosa) |
-| 15h00 | `0 18 * * 1-5` | `04-sync-pos-daily` | Pós-daily: processa a transcrição, **propõe** decisões/ações nas threads, re-cobra pendências | Sim |
+| 15h00 | `0 18 * * 1-5` | `04-sync-pos-daily` | Pós-daily: processa a transcrição e **propõe** decisões/ações nas threads. Não cobra pendência | Só propostas |
 | 19h00 | `0 22 * * 1-5` | `05-sync-fechamento` | Fechamento: **registra** só o que foi validado, abre Deep dives pendentes, fecha o rodapé | Só pendências D+1 |
 
 O cron das Routines é **UTC**. BRT = UTC-3, e nenhum horário cruza a meia-noite, então o
@@ -35,7 +35,9 @@ explicitamente **pré**-daily. Se o horário da reunião mudar, mova a Routine.
 3. **Idempotência por marcador.** Cada sync deixa um marcador (`[dl-sync]`,
    `[meet-sync DD/MM]`, `[eod-sync DD/MM]`) que é o ponto de corte do próximo. Sem isso, rodar
    duas vezes duplica tudo.
-4. **Uma thread única de pendências por dia.** Os syncs re-cobram *na mesma thread*, citando os
+4. **Uma thread única de pendências por dia**, cobrada **duas** vezes: a lista da manhã
+   (Mensagem 6) e o fechamento das 19h. A tarefa das 15h não cobra — eram três toques diários no
+   mesmo item, e o do meio não acrescentava estado. O fechamento re-cobra *na mesma thread*, citando os
    mesmos números (`Pendência 1`, `2`…). Nunca criam mensagem nova.
 5. **A forma é string literal; o modelo decide só o conteúdo analítico.** Sem isso o layout muda
    todo dia e o report fica ilegível como série.

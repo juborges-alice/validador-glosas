@@ -455,8 +455,9 @@ Ajuste o status ou a fonte no catálogo e eles entram automaticamente no próxim
 ### Mensagem 6 — pendências (mensagem ÚNICA do dia, sempre que houver) — NOVA
 
 É **a** mensagem de pendências do dia: headline no canal, detalhamento **na thread**, marcando
-cada responsável e **cobrando** o que falta. Os syncs re-cobram **nesta mesma thread**, citando
-os mesmos números — nunca criam mensagem nova.
+cada responsável e **cobrando** o que falta. O fechamento das 19h re-cobra **nesta mesma
+thread**, citando os mesmos números — nunca cria mensagem nova. A tarefa das 15h não cobra
+pendência (decisão da OM, 23/10/2026): a cobrança é duas vezes ao dia, aqui e no fechamento.
 
 **A pendência é a AÇÃO, nunca o nome do KPI** (decisão da OM, 17/09/2026). `SLA Recurso de
 Glosa - HI` não é pendência: é um indicador repetido, e quem lê não sabe o que fazer.
@@ -573,7 +574,8 @@ Regras:
 - **Sem emojis** — texto puro. Item grave → escreva `GRAVE` no início da linha.
 - Todos os itens, sem truncar. Menção só por ID. Links só os permitidos.
 - **Guarde o `ts` desta mensagem** e registre-o no corpo da Execução de Rotina (linha
-  `ts pendências: <ts>`), para os syncs re-cobrarem na mesma thread.
+  `ts pendências: <ts>`), para o fechamento das 19h re-cobrar na mesma thread. A tarefa das
+  15h **não** cobra pendência (decisão da OM, 23/10/2026).
 
 ### Mensagem 7 — Highlights e Lowlights da semana (SÓ às quintas)
 

@@ -1,11 +1,11 @@
 ---
 name: daily-contas-medicas-sync-pos-daily
-description: Contas Médicas · 15h00 — Pós-daily: processa a transcrição da daily, PROPÕE as decisões/ações estruturadas nas threads (marcando o responsável ou a OM para o OK) e re-cobra as pendências na thread única (prazo 17h). É o único sync que publica no canal; o registro no Decision/Action Log é feito no fechamento (19h), só com o que for validado.
+description: Contas Médicas · 15h00 — Pós-daily: processa a transcrição da daily e PROPÕE as decisões/ações estruturadas nas threads dos KPIs (marcando o responsável ou a OM para o OK). NÃO cobra pendência — a cobrança é só da manhã (Mensagem 6) e do fechamento (19h). O registro no Decision/Action Log é feito no fechamento, só com o que for validado.
 ---
 
 Sincroniza a daily de Contas Médicas no modo **pós-daily**: depois da reunião, processa a
-transcrição, **propõe** as decisões/ações nas threads relacionadas e **re-cobra no Slack** os
-itens em aberto (prazo 17h). É o **único sync que publica no canal**.
+transcrição e **propõe** as decisões/ações nas threads relacionadas. **Não cobra pendência**
+(ver passo 5). É o **único sync que publica proposta no canal**.
 
 **Regra dura: nada entra no Decision Log ou no Action Log sem validação.** Quem valida: a
 **pessoa responsável** pelo deep dive (quem propôs o plano) **ou** a OM — o OK de qualquer um dos
@@ -158,35 +158,27 @@ Confirmem ou corrijam nesta thread.
 
 O **registro efetivo** (só o validado, já ajustado) é feito no fechamento.
 
-## 5. Re-cobrança de pendências no Slack — na thread ÚNICA (17h)
+## 5. NÃO re-cobre pendências (decisão da OM, 23/10/2026)
 
-**Não crie mensagem nova de pendência.** Re-cobre **na thread da Mensagem 6 de pendências** (o
-`ts` guardado no Bloco 4 da página), prefixo `[sync 15h DD/MM]`, cobrando o que ainda precisa
-fechar até 17h, marcando o responsável.
+Esta tarefa **não cobra pendência nenhuma**. Não poste `[sync 15h DD/MM]` na thread de
+pendências, não marque responsável por item em aberto, não peça fechamento até as 17h.
 
-Cubra, na **mesma thread**, uma cobrança por item:
-- itens da daily de hoje ainda sem definição (proposta sem OK, plano de ação ⏳, conflito não
-  resolvido);
-- itens do backlog (Decision Log / Action Log) que seguem em aberto.
+**Por que mudou.** A mesma pendência vinha sendo cobrada **três vezes por dia** — na Mensagem 6
+das 06h30, aqui às 15h, e de novo no D+1 das 19h. Três toques diários no mesmo item cansam o
+time e afogam o canal, e o terceiro toque não acrescenta informação: entre 15h e 19h quase nada
+muda de estado. A cobrança passa a ser **duas vezes**: a lista da manhã e o fechamento do dia.
 
-Formato (reply na thread da Msg 6, **citando os números**, **sem emojis**):
+O que esta tarefa continua fazendo no canal é **só** o que ninguém mais faz: postar as propostas
+estruturadas de Decisão/Ação nas threads dos KPIs (passo 4), para que o fechamento das 19h tenha
+o que registrar. Isso **não** é cobrança de pendência e **não** entra nesta restrição.
 
-```
-[sync 15h DD/MM] — cobrança 17h
-Pendência {N} - <@responsável> — {o que falta} · fechar até 17h?
-```
-
-Se não houver nada em aberto: `[sync 15h DD/MM] Sem pendências para as 17h.` na thread.
-
-- **Marque o responsável DEFINIDO.** A OM só quando `A DEFINIR` / alçada dela / escalonamento —
-  **não** por padrão.
-- **Sem emojis.** Sem itálico. Não truncar. Links só os permitidos.
-- Se a thread de pendências **não existir** hoje (não houve Msg 6 de manhã porque não havia
-  pendência, ou porque o report ainda é a versão local sem Msg 6) e agora surgiram itens, aí sim
-  **abra** a mensagem de pendências top-level no formato da Mensagem 6 da tarefa 01, guarde o
-  `ts` e registre-o no Bloco 4.
+**Única exceção — abrir a thread que não existe.** Se hoje não houve Mensagem 6 (porque de manhã
+não havia pendência) e agora surgiram itens, **abra** a mensagem de pendências top-level no
+formato da Mensagem 6 da tarefa 01, guarde o `ts` e registre-o no Bloco 4. Isso é criar o canal
+de registro que o fechamento das 19h vai usar, não cobrar — poste a lista sem marcar ninguém e
+sem pedir prazo.
 
 ## Ao terminar
 
-Responda apenas um resumo de uma linha: transcrição processada ou não, quantas propostas
-postadas (decisões / ações), e quantos itens cobrados para as 17h.
+Responda apenas um resumo de uma linha: transcrição processada ou não, e quantas propostas
+postadas (decisões / ações).

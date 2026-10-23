@@ -57,7 +57,8 @@ usam):
   link do Decision Log. **Guarde o `ts` de cada uma** — é a thread onde o responsável responde.
 - **Mensagem 4** (Sinalizações de risco e bugs) — guarde o `ts`.
 - **Mensagem 5** (KPIs sem instrumentação), se houver.
-- **Mensagem 6** (Pendências), se houver — **guarde o `ts`**: os syncs re-cobram nessa thread.
+- **Mensagem 6** (Pendências), se houver — **guarde o `ts`**: o fechamento das 19h re-cobra
+  nessa thread. A tarefa das 15h não cobra pendência.
 
 Se o report de hoje não existir no canal, **pare** e poste no canal
 `⚠️ Página da daily não montada: report das 06h30 não encontrado no canal.` marcando

@@ -658,7 +658,7 @@ Não há tool de reação emoji. O ponto de corte é sempre um **marcador em tex
 | `Varredura da manhã · [dl-sync]` | rodapé da página | tarefa 03 | corte da pré-daily |
 | `Resumo da daily · [meet-sync DD/MM]` | Bloco 5 da página | tarefa 04 | ata já distribuída |
 | `Fechamento do dia · [eod-sync DD/MM]` | callout de rodapé | tarefa 05 | dia fechado |
-| `[sync 15h DD/MM]` | thread da Msg de pendências | tarefa 04 | cobrança das 17h feita |
+| `[sync 15h DD/MM]` | **aposentado em 23/10/2026** | — | a tarefa 04 não cobra mais pendência; marcador mantido aqui só para leitura de threads antigas |
 | `[eod-sync DD/MM]` | thread da Msg de pendências | tarefa 05 | pendências D+1 postadas |
 
 Regras:
