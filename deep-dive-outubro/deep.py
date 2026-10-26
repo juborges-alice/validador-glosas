@@ -192,14 +192,44 @@ LABS = r"""
 </section>
 
 <section>
-  <h2>5. O que vem pela frente: a glosa de outubro está alta</h2>
+  <h2>5. Falta de autorização por coorte de glosa: o peso do motivo caiu</h2>
+  <p class="muted">Para cada mês de glosa: quanto da glosa e quanto do recurso daquela coorte vem do motivo de autorização (7DL até junho, 7F8 desde julho). A regra mudou em julho.</p>
+  <div class="panel tbl-wrap">
+    <table>
+      <thead><tr><th>Coorte de glosa</th><th>Glosa de autorização</th><th>% da glosa da coorte</th><th>Recurso de autorização</th><th>% do recurso da coorte (valor)</th><th>% do recurso da coorte (itens)</th><th>% recursado: autorização · demais</th></tr></thead>
+      <tbody>
+        <tr><td>Abr</td><td>R$ 424 mil · 3.054 itens</td><td>34%</td><td>R$ 237 mil · 1.422 itens</td><td>42%</td><td>37%</td><td>56% · 39%</td></tr>
+        <tr><td>Mai</td><td>R$ 626 mil · 3.762 itens</td><td>55%</td><td>R$ 373 mil · 1.680 itens</td><td>55%</td><td>35%</td><td>60% · 58%</td></tr>
+        <tr><td>Jun</td><td>R$ 519 mil · 4.345 itens</td><td>31%</td><td>R$ 306 mil · 1.998 itens</td><td>40%</td><td>33%</td><td>59% · 39%</td></tr>
+        <tr class="hl"><td>Jul</td><td>R$ 204 mil · 1.163 itens</td><td>21%</td><td>R$ 94 mil · 465 itens</td><td><b>23%</b></td><td><b>17%</b></td><td>46% · 40%</td></tr>
+        <tr class="hl"><td>Ago</td><td>R$ 255 mil · 1.729 itens</td><td>19%</td><td>R$ 132 mil · 1.039 itens</td><td><b>17%</b></td><td><b>15%</b></td><td>52% · 58%</td></tr>
+        <tr><td>Set (aberta)</td><td>R$ 260 mil · 1.772 itens</td><td>17%</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">% recursado = recursado até 22/10 ÷ glosado da coorte. A coorte de agosto já tem de 57 a 77 dias e está praticamente fechada.</p>
+  </div>
+  <div class="grid2">
+    <div class="panel prov"><span class="pill good">Confirmado</span><h3>A autorização perdeu peso no recurso</h3>
+      <p>Nas coortes de abr–jun, a autorização era 40–55% do valor recursado e 33–37% dos itens. Nas coortes de julho e agosto, caiu para 17–23% do valor e 15–17% dos itens, acompanhando a queda da glosa do motivo (de 31–55% para 19–21% da glosa).</p></div>
+    <div class="panel prov"><span class="pill flat">Sem mudança</span><h3>A taxa de recurso do motivo não subiu</h3>
+      <p>A autorização segue sendo recursada em 46–60% do glosado, como antes. O que parecia alta no recurso em até 60 dias era efeito da janela: o Fleury passou a recursar dentro do prazo.</p></div>
+    <div class="panel prov"><span class="pill flat">Por prestador</span><h3>Fleury mais, DASA menos</h3>
+      <p>Na coorte de agosto, o Fleury recursou 62% da autorização glosada (33–56% antes). A DASA recursou 34% (55–69% antes). O Femme recursa quase tudo, mas em itens de baixo valor: 731 dos 1.039 itens recursados de autorização da coorte de agosto.</p></div>
+  </div>
+  <div class="panel">
+    <p><b>No mês de recebimento:</b> outubro recebeu R$ 135 mil e 1.043 itens de autorização até 22/10. São 18% do valor e 15% dos itens do mês, contra 32–48% do valor de março a agosto. O motivo deixou de puxar o recurso de laboratórios. O aumento de outubro vem dos demais motivos.</p>
+  </div>
+</section>
+
+<section>
+  <h2>6. O que vem pela frente: a glosa de outubro está alta</h2>
   <div class="panel">
     <p>A glosa de laboratórios e clínicas de 01 a 22/10 já soma <b>R$ 1,75 mi, 10,5% do apresentado</b>, contra 7,7–8,7% em agosto e setembro. O maior motivo é data incorreta (7F6): <b>R$ 631 mil, 3,8% do apresentado</b>, o dobro de setembro. Com o Fleury e a DASA recursando 55–60% e dentro de 60 dias, essa glosa deve virar recurso em dezembro.</p>
   </div>
 </section>
 
 <section>
-  <h2>6. Projeção de fechamento</h2>
+  <h2>7. Projeção de fechamento</h2>
   <div class="panel tbl-wrap">
     <table>
       <thead><tr><th></th><th>Valor</th><th>Itens</th><th>PEGs</th></tr></thead>
@@ -220,7 +250,7 @@ LABS = r"""
 </section>
 
 <section>
-  <h2>7. O que acompanhar</h2>
+  <h2>8. O que acompanhar</h2>
   <div class="panel">
     <ol class="steps">
       <li><b>Fleury em novembro:</b> a coorte de setembro tem R$ 880 mil glosados. No ritmo de agosto (54%), seriam ~R$ 475 mil de recurso entre 10 e 20/11. Vale entender com o Fleury o que mudou (equipe, sistema, prioridade) e se 7G9 e 7EY vão seguir sendo recursados.</li>
