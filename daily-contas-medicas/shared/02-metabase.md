@@ -158,10 +158,11 @@ explicitamente — sumiu da lista não é o mesmo que voltou ao normal.
 Verificado em 16/09/2026 pela API (`parameters: []` no nível superior da resposta):
 **30863 · 35629 · 32465 · 65694 · 30858 · 66766 · 48840 · 73490**.
 
-O **77507** e o **77508**, que substituíram o 65694 (e o 77275) em `% PEGs sem NF` desde
-07/10/2026, **aceitam** um parâmetro (`piso_du`, number, default 7). Execute-os **sem parâmetro**: o
-default é a régua vigente. O parâmetro existe para sensibilidade, não para a leitura diária. O 77507
-devolve três linhas, uma por horizonte; o 77508 é a lista item-a-item da fila.
+O **79935** e o **79936**, que são a fonte de `% PEGs sem NF` desde 27/10/2026 (régua de 29% sobre
+PEGs faturadas), **não aceitam parâmetro nenhum** — execute-os direto. O 79935 devolve uma linha por
+competência do ano corrente; o 79936 é a lista item-a-item, com `horizonte` separando o resquício das
+competências fechadas do mês corrente. Os cards 77507, 77508, 78774 e 78778 seguem existindo e
+aceitam `piso_du`, mas **nenhum deles é mais a fonte deste KPI**.
 
 Para esses, o `Parâmetro metabase` do Notion é decorativo — execute o card sem parâmetros e siga.
 **Não registre isso como observação de qualidade de dados no report do dia**: já é sabido e está

@@ -205,8 +205,11 @@ no catálogo, e que precisam ser respeitadas:
   sem nenhuma PEG vencida e com o time analisando a 722% da capacidade esperada; e, antes dela, a
   de ">40% do total em aberto", que disparava com volume normal de início de mês.
 - **Alvo capado pela fila, lido em 5 dias úteis** — `Qnt de guias analisadas por dia`:
-  recalibrado em 28/09/2026 (decisão da OM). Fonte passa a ser o card **76259**, grão **linha
-  (procedimento)**, escopo **Hospital**, janela de mês corrente + mês anterior.
+  recalibrado em 28/09/2026 e corrigido em 30/09/2026 (decisões da OM). Fonte é o card **65837**,
+  escopo **Hospital**, com **dois gates** antes de qualquer avaliação: o KPI só é avaliado se o
+  `SLA de Análise de conta - HI` estiver abaixo de 100% no mês corrente E houver ao menos 1 PEG em
+  aberto na fila viva (card 76805). Fechando qualquer um dos dois, o KPI sai ⚪, sem episódio.
+  A régua do card 76259 (`veredito_5du`, Hospital + Clínica, tetos separados) foi **descartada**.
   - `alvo do dia = MIN(teto do time, base cobrável)`, com **metas e réguas separadas por time**.
     Teto = máximo que cada um já analisou num dia útil: **11.210** Hospital, **4.311** Clínica.
     Laboratório está fora do KPI (analisado em massa).
@@ -225,9 +228,9 @@ no catálogo, e que precisam ser respeitadas:
     O alarme não é diário porque o tempo mediano entre a chegada da conta e a análise é de 3 dias:
     a fila de um dia carrega três dias de trabalho, e 80% dela num dia só seria ciclo de um dia.
   - **Prazo não entra neste KPI.** PEGs vencendo em 7 du saem do `PEGs por Status de Análise no
-    SLA - HI` (32465 / 73390), que é canônico. Os dois não compartilham farol. A linha diária de
-    PEGs vencendo hoje sai do card **76260**, **sem filtro de tipo** — o escopo Hospital vale só
-    para a produtividade.
+    SLA - HI` (card **76805**, fila viva), que é canônico. Os dois não compartilham farol. A linha
+    diária de PEGs vencendo hoje sai do mesmo **76805**, **sem filtro de tipo** — o escopo Hospital
+    vale só para a produtividade.
   - **Este KPI não roteia por concentração.** Com escopo Hospital, o responsável é fixo:
     `<@U073Z4ENBNW>`. Ele sai da lista de KPIs roteáveis por tipo de instituição, que passa de dez
     para nove.
