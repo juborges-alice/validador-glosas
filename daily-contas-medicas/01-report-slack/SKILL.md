@@ -74,11 +74,17 @@ Se nenhum KPI satisfizer o filtro, pare e avise a OM. Não invente KPIs.
 
 Ordem de exibição: a lista 1–17 de `00-identificadores.md`. Não reordene por farol.
 
-**Fora da tabela, mas roda todo dia: `PEGs paradas em digitação - HI` (card 80620).** Este
-indicador **não está no catálogo do Notion** e por isso não aparece no filtro acima — não é
-esquecimento, é desenho: ele é fila de trabalho, não termômetro, e não entra na tabela nem na
-contagem do farol. Execute o card por ID no Passo 8 e poste a thread da seção
-"PEGs paradas em digitação". Se o card voltar vazio, não poste nada.
+**Dois alertas rodam todo dia fora da tabela, e não são KPIs** (decisão da OM, 03/11/2026):
+
+| Alerta | Card | Thread |
+|---|---|---|
+| PEGs paradas em digitação - HI | **80620** | "PEGs paradas em digitação" |
+| PEGs fora das filas de trabalho (órfãs) | **80622** | "PEGs fora das filas de trabalho" |
+
+Nenhum dos dois está no catálogo do Notion, e isso não é esquecimento: são **controles da rotina
+de fila do time**, não indicadores. Não têm meta nem limiar, não entram na tabela do report, não
+contam para o farol e não devem ser cadastrados no Notion. Execute os dois cards por ID no Passo 8
+e poste as threads das seções correspondentes. **Card vazio = não poste nada.**
 
 ## Passo 2 — Decisões vigentes (ANTES de calcular qualquer valor)
 
@@ -352,6 +358,65 @@ operação, uma vez só — a cobrança do dia é a Mensagem 6 e o fechamento da
 
 ```
 <@U03A4SS2P1Q> tem PEG parada há mais de 30 dias em digitação — acima do limite definido.
+```
+
+### PEGs fora das filas de trabalho — resposta na thread da Mensagem 1 (condicional)
+
+Fila de trabalho, **classe "alerta de trabalho"** (`00-identificadores.md`): traz a lista, não a
+análise. Não abre episódio no Decision Log e não entra no farol.
+
+Execute o card canônico **80622** por ID. Não escreva SQL.
+
+**O que este alerta responde.** As seis filas do dashboard 2794 (três de análise, três de recurso
+de glosa) repartem o trabalho do time por tipo de prestador. O risco delas não é errar o
+roteamento — o roteamento termina em `else`, então nenhuma PEG se perde ali. O risco é a PEG que
+**nunca chega a ser roteada**, porque o `WHERE` da fila a descartou antes. Essa PEG não aparece em
+fila nenhuma, ninguém sente falta dela, e ela não vira trabalho de ninguém. É isso que o 80622
+procura: o complemento exato do `WHERE` das filas.
+
+**O card devolve duas coisas, e elas têm tratamento diferente:**
+
+| `grao` | O que é | O que fazer |
+|---|---|---|
+| `PEG` | Órfã real do ano corrente — deveria estar numa fila e não está (`A1`, `R1`) | **Lista item a item na thread.** É trabalho de hoje. |
+| `RESUMO` | Estoque estrutural: `A2`, `A3` e todo o legado de anos anteriores | **Uma linha de contexto cada.** Nunca lista, nunca cobra. |
+
+**Só linha de `grao` = `PEG` dispara a thread.** Se o card só devolver `RESUMO`, **não poste nada**
+— o estoque é conhecido, não muda de um dia para o outro, e repeti-lo toda manhã é exatamente o
+ruído que a OM mandou cortar do canal (23/10/2026).
+
+```
+🧭 *PEGs fora das filas de trabalho* — {N} PEG(s) · R$ {valor}
+Deveriam estar numa das filas do dashboard 2794 e não estão em nenhuma.
+
+• `{peg_code}` · {prestador} · {motivo curto} · {dias} dias · R$ {valor} · {itens} itens
+
+_Estoque estrutural (não é trabalho do dia): {motivo} {pegs} PEGs · R$ {valor}_
+```
+
+Regras de forma:
+
+1. **Traduza o `motivo` do card.** Ele vem com código técnico; no Slack escreva em português
+   direto:
+   - `A1.` → `pronta há mais de 6 meses — caiu da janela da fila`
+   - `R1.` → `recurso protocolado fora do corte de data da fila`
+   - `A2.` → `é HS, e não existe fila de análise para HS`
+   - `A3.` → `valor apresentado zero ou nulo — não é faturável`
+2. **Ordene por valor, maior primeiro.** Teto de 10 linhas; acima disso poste as 10 maiores e
+   feche com `+{N} restantes — ver card 80622`.
+3. **As linhas de `RESUMO` vão em itálico, no fim, sem marcar ninguém.** São contexto para quem
+   lê, não cobrança.
+4. **`A3` é bug de dado, não fila.** PEG com valor apresentado zero não pode ser faturada por
+   definição. Se a contagem de `A3` do ano corrente **subir** em relação ao que está na página de
+   ontem, isso vira item na **Mensagem 4** (sinalização de risco / bug de dado) com HCDev como
+   dono — não vira cobrança de análise nesta thread.
+5. **Não proponha decisão e não peça plano de ação.** Se a daily decidir algo estrutural sobre as
+   filas — mudar a janela de 6 meses, criar fila de HS —, aí sim é proposta normal na tarefa 04.
+
+**Quando houver linha de `grao` = `PEG`**, feche marcando a OM uma vez só:
+
+```
+<@U03A4SS2P1Q> tem PEG que não entrou em nenhuma fila de trabalho.
 ```
 
 ### Mensagem 2 — uma mensagem solta por KPI 🔴 (condicional)
@@ -681,7 +746,8 @@ conferindo contra a fonte.
 | 7 | **Todo KPI que saiu 🟢 por "direção boa" teve a direção LIDA na tabela de `00-identificadores.md`**, não inferida. Liste, antes de publicar, quais KPIs foram poupados do farol por esse argumento e qual linha da tabela sustenta cada um. | Se a tabela diz outra coisa, ou se o KPI não está nela, refaça o farol: sem direção declarada o KPI é bidirecional e o limiar vale nos dois sentidos. |
 | 8 | **Toda variação na direção boa com a magnitude do limiar virou 🟡, com o teste de sanidade rodado.** Direção boa só confirma 🟢 quando a variação é menor que o limiar, ou quando decisão vigente citada por link explica exatamente ela. | Reclassifique para 🟡 e poste a linha na thread da Mensagem 1. Se o teste de sanidade falhar, o KPI é ⚪ e a falha vira bug de dado na Mensagem 4. |
 | 9 | **A fila de digitação (card 80620) foi executada**, e, se veio com linhas, a thread da Mensagem 1 foi postada. Se veio vazia, nada foi postado. | O card não está no catálogo do Notion, então o Passo 1 não o pega — execute por ID. Fila vazia **não** se anuncia. |
-| 10 | **Nenhum valor desta base saiu de um `sum(peg_total_value)`.** O campo é atributo da PEG repetido por item; o agregado correto é `max()`. | Refaça o número. Um valor somado é ~100x o real e não parece errado em nenhuma leitura. |
+| 10 | **O card de órfãs (80622) foi executado**, e a thread só foi postada se ele devolveu alguma linha de `grao` = `PEG`. | Linha de `RESUMO` sozinha **não** gera post: é estoque estrutural, não trabalho do dia. |
+| 11 | **Nenhum valor desta base saiu de um `sum(peg_total_value)`.** O campo é atributo da PEG repetido por item; o agregado correto é `max()`. As filas e o card 80622 usam outro campo, `presented_value`, que **é** por item e se soma normalmente. | Refaça o número. Um valor somado de `peg_total_value` é ~100x o real e não parece errado em nenhuma leitura. |
 
 **Sobre os itens 7 e 8.** Em 07/10/2026 o `R$ Recurso de Glosa acumulado` saiu 🟢 com **+128,65%**
 sobre a média de 3 meses porque a execução decidiu sozinha que o KPI era "maior é melhor". A OM

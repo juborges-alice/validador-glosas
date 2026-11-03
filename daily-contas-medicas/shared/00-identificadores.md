@@ -71,7 +71,6 @@ agrupamento** de exibição, nunca meta nem card.
 | 17 | Contas Médicas - SLA de Pagamento de HS | **35629** (oficial) · 76484 (mesmo número + complementos) | diária |
 | 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
 | 19 | Contas Médicas - Ciclo de processamento Cassi | 65831 (sem card próprio) | **semanal — pergunta na terça, ver seção do ciclo Cassi** |
-| 20 | Contas Médicas - PEGs paradas em digitação - HI | **80620** | diária — fila, não termômetro |
 
 **⚠️ `Tempo para Resolução de Críticas - HS`: metade do limiar é inverificável.** O limiar diz
 `Tempo médio de resolução > 3 dias; ou crítica específica > 10 dias sem resolução`. Sem drill
@@ -214,6 +213,7 @@ correndo), não há o que investigar, e o que o time precisa é a **lista para a
 |---|---|---|
 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | **Alerta de trabalho** |
 | Contas Médicas - PEGs paradas em digitação - HI | 80620 | **Alerta de trabalho** |
+| Contas Médicas - PEGs fora das filas de trabalho (órfãs) | 80622 | **Alerta de trabalho** |
 
 **Caso híbrido — `% PEGs sem NF` (desde 07/10/2026).** Este KPI não entra inteiro na classe: o
 horizonte do **mês corrente** é termômetro normal e acende farol; os **dois horizontes do passado**
@@ -252,6 +252,12 @@ formato normal de hipótese e causa-decidida, e abre página — violando as reg
 você está prestes a escrever "Hipótese:" ou a criar uma página do Decision Log para um KPI desta
 tabela, **pare**: é sinal de que você caiu no tratamento padrão sem perceber. Fila não tem
 hipótese; tem lista e dono.
+
+**`PEGs paradas em digitação` (80620) e `PEGs fora das filas` (80622) NÃO são KPIs**
+(decisão da OM, 03/11/2026). São alertas de controle da rotina de fila do time: não têm meta, não
+têm limiar, não entram no catálogo do Notion, não aparecem na tabela do report e não contam para o
+farol. Estão nesta tabela porque herdam as regras de forma da classe — lista em vez de hipótese,
+sem Decision Log —, não porque sejam indicadores. **Não os cadastre no Notion.**
 
 Para incluir outro KPI nesta classe, acrescente-o à tabela acima. Nada mais precisa mudar.
 
@@ -297,7 +303,7 @@ de R$ 40.984,90 com 100 itens vira R$ 4.098.490,00 sem nenhum sinal de erro.
 
 `1-Digitacao` → `2-Conferencia` → `3-Pronta` → `4-Faturada`, mais os terminais `Cancelada` e
 `Bloqueada`. Digitação é o **primeiro** passo: PEG parada ali não chega a faturamento e não vira
-receita. É o que o KPI 20 (card 80620) acompanha.
+receita. É o que o alerta de fila do card 80620 acompanha.
 
 ### Por que a fila de digitação olha só o ano corrente (decisão da OM, 03/11/2026)
 
@@ -306,6 +312,81 @@ em **108 prestadores diferentes**, todas travadas no mesmo ano. Ninguém trabalh
 ela é resto de migração. O card 80620 filtra o ano corrente e pronto; o legado não entra no report
 nem gera pendência. Se algum dia alguém decidir limpar esse passivo, isso é projeto próprio, não
 item de daily.
+
+## Filas de trabalho do time (dashboard 2794) e as PEGs órfãs
+
+O dashboard **2794 — Filas de Análise de PEGs** reparte o trabalho diário do time em seis filas,
+todas priorizadas pelo SLA de 7 dias úteis, mais antigas primeiro:
+
+| Família | Fila | Card |
+|---|---|---|
+| Análise | Laboratórios e Clínicas | 77509 |
+| Análise | Hospitais | 77510 |
+| Análise | Capeante | 77511 |
+| Recurso de glosa | Capeante | 80588 |
+| Recurso de glosa | Hospitais | 80589 |
+| Recurso de glosa | Laboratórios e Clínicas | 80617 |
+
+Mais dois cards de resumo por situação de SLA: **77512** (análise) e **80590** (recurso).
+
+Dentro de cada família os três cards são **o mesmo SQL**, mudando só o `where fila = '...'` da
+última linha. Verificado por diff em 03/11/2026.
+
+### O roteamento é exaustivo — o que se perde, se perde no `WHERE`
+
+Os dois `CASE` de roteamento terminam em `else`, então **nenhuma PEG se perde ao ser roteada**: se
+entrou no universo, caiu em alguma fila. Toda PEG que não aparece em fila nenhuma foi descartada
+**antes**, pelo `WHERE`. Isso é o que torna o card de órfãs (**80622**) possível e exato: ele
+reproduz o `WHERE` das filas e devolve o complemento dele, sem adivinhação.
+
+**Universo da fila de análise** — PEG em `3-Pronta`, `invoice_billed_step_date` nulo,
+`disallowance_date` nulo, prestador sem "alice" no nome, guia ≠ `GUIA DE RECURSO DE GLOSA`, mais
+quatro cortes que são a origem de toda órfã:
+
+| Corte no `WHERE` | Quem fica de fora | Código no 80622 |
+|---|---|---|
+| `invoice_date >= dateadd('month', -6, current_date)` | PEG pronta e não faturada há mais de 6 meses | `A1` |
+| `provider_class = 'Health Institution'` | PEG de **HS** — não existe fila de análise para HS | `A2` |
+| `peg_total_presented_value is not null and <> 0` | PEG com valor apresentado zero ou nulo | `A3` |
+| `institution_type in (4 tipos)` | nenhum hoje — os quatro tipos cobrem 100% das PEGs prontas | — |
+
+**Universo da fila de recurso de glosa** — itens com `appeal_status = 'Protocolado'` e
+`invoice_date >= '2024-01-01'`. Só esse piso de data exclui, e hoje ele não exclui ninguém: todos
+os `Protocolado` são de 2024 em diante. O código `R1` existe para o caso de aparecer um protocolado
+com `invoice_date` nulo ou anterior a 2024.
+
+### Nem toda órfã é trabalho do dia
+
+Medido em 03/11/2026:
+
+| Código | Situação | PEGs | Valor |
+|---|---|---|---|
+| `A1` | HI com valor, pronta há +6 meses (todo o legado; zero no ano corrente) | 163 | R$ 1.922.309,53 |
+| `A2` | É HS — não existe fila | 151 (74 no ano corrente) | R$ 1.067.948,96 |
+| `A3` | Valor apresentado zero ou nulo | 2.094 | R$ 0,00 |
+| `R1` | Recurso protocolado fora do corte | 0 | — |
+
+`A2` e `A3` são **estoque estrutural**, não falha de execução: `A2` é uma fila que nunca existiu,
+e `A3` é defeito de cadastro — PEG com valor zero não é faturável por definição. Os dois não
+mudam de um dia para o outro e **não disparam a thread**; saem como linha de contexto quando a
+thread já existe por outro motivo. Só `A1` e `R1` do ano corrente são órfãs de verdade: deveriam
+estar numa fila hoje e não estão.
+
+**Duas decisões que a OM ainda não tomou, e que este card tornou visíveis:**
+
+1. **Os 74 HS prontos, R$ 700.167,54, sem fila nenhuma.** Não é a equipe deixando passar — não há
+   para onde passar. Criar fila de HS, ou declarar que HS não é analisado assim, é decisão de
+   processo.
+2. **As 163 PEGs de HI que caíram da janela de 6 meses, R$ 1.922.309,53** (145 só de 2023). Estão
+   prontas, não faturadas, e invisíveis em qualquer fila. Mexer na janela do card as traria todas
+   de uma vez para a fila do time — por isso é decisão da OM, não ajuste de SQL.
+
+### `presented_value` e `peg_total_value` não são a mesma coisa
+
+As filas e o card 80622 usam **`presented_value`** (valor do item, somado com `sum()` no grão da
+PEG) e **`appeal_value`** no recurso. Não confunda com `peg_total_value`, que é atributo da PEG
+repetido em toda linha e **só pode ser agregado com `max()`** (ver a seção de armadilhas acima).
+Usar o agregador errado em qualquer um dos dois produz número plausível e falso.
 
 ## KPIs do tipo "monitoramento" — leem, publicam, não acendem 🔴
 
