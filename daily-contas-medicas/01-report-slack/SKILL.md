@@ -74,6 +74,12 @@ Se nenhum KPI satisfizer o filtro, pare e avise a OM. Não invente KPIs.
 
 Ordem de exibição: a lista 1–17 de `00-identificadores.md`. Não reordene por farol.
 
+**Fora da tabela, mas roda todo dia: `PEGs paradas em digitação - HI` (card 80620).** Este
+indicador **não está no catálogo do Notion** e por isso não aparece no filtro acima — não é
+esquecimento, é desenho: ele é fila de trabalho, não termômetro, e não entra na tabela nem na
+contagem do farol. Execute o card por ID no Passo 8 e poste a thread da seção
+"PEGs paradas em digitação". Se o card voltar vazio, não poste nada.
+
 ## Passo 2 — Decisões vigentes (ANTES de calcular qualquer valor)
 
 Monte o mapa `KPI → decisões vigentes`, classificando em metodológica / explicativa, conforme
@@ -296,6 +302,57 @@ de dado na Mensagem 4, com dono.
 
 Não peça plano de ação e não marque ninguém para responder — isto não é cobrança. Marque o
 responsável do KPI **apenas** quando a leitura ficar "a confirmar" e a confirmação depender dele.
+
+### PEGs paradas em digitação — resposta na thread da Mensagem 1 (condicional)
+
+Fila de trabalho, **classe "alerta de trabalho"** (`00-identificadores.md`): traz a lista, não a
+análise. Sem hipótese, sem "ação sugerida", **não abre episódio no Decision Log** e **não entra na
+contagem do farol**.
+
+Execute o card canônico **80620** por ID. Não escreva SQL.
+
+**Por que isto existe.** `1-Digitacao` é o **primeiro** passo do funil
+(`1-Digitacao → 2-Conferencia → 3-Pronta → 4-Faturada`). PEG parada aí não vira conferência, não
+vira faturamento, não vira receita — e, diferente dos KPIs de prazo, ninguém esbarra nela no dia a
+dia. Por isso ela aparece logo na abertura do report, junto do farol, e não no fim.
+
+**O limite é 30 dias corridos** (decisão da OM, 03/11/2026). Não é meta de SLA: é o ponto em que a
+OM considera que a PEG já deveria ter saído há muito. Acima de 60 a situação é grave. O normal é a
+fila estar vazia ou com uma ou duas PEGs recém-chegadas.
+
+**Não poste nada se o card voltar vazio.** Fila vazia é o estado esperado — anunciar fila vazia
+todo dia é exatamente o ruído que a OM mandou cortar do canal (23/10/2026).
+
+É **resposta na thread da Mensagem 1**, nunca mensagem solta: mensagem solta é reservada ao 🔴.
+
+```
+🖊️ *PEGs paradas em digitação* — {N} PEG(s) · R$ {valor total}
+Primeiro passo do funil: parada aqui, a PEG não chega a faturamento.
+
+• `{peg_code}` · {prestador} · *{dias} dias* · R$ {valor} · {itens} itens
+```
+
+Regras de forma, nesta ordem:
+
+1. **Ordene da mais antiga para a mais nova.** O topo da lista é o que dói.
+2. **Marque a faixa na linha.** Até 7 dias sai sem marca; de 8 a 30 dias entra `⚠️` no fim da
+   linha; acima de 30 dias entra `🔴 estourada` no fim da linha.
+3. **Liste todas.** A fila é curta por natureza. Se vier com **mais de 10 PEGs**, isso já é o
+   achado: poste as 10 mais antigas, feche com
+   `+{N} PEGs restantes — fila acima do normal, ver card 80620` e leve o fato para a Mensagem 4
+   como sinalização de risco.
+4. **PEG sem valor cadastrado** (`valor` nulo) sai como `R$ — (sem valor na base)`. Não a omita e
+   não escreva R$ 0,00: o valor ausente é parte do problema. No total do cabeçalho, some só as que
+   têm valor e escreva `R$ {soma} (+{n} sem valor)`.
+5. **Não peça plano de ação e não proponha decisão.** Se a daily decidir algo estrutural sobre a
+   fila, aí sim vira proposta normal na tarefa 04.
+
+**Quando houver PEG acima de 30 dias**, acrescente uma última linha marcando o responsável da
+operação, uma vez só — a cobrança do dia é a Mensagem 6 e o fechamento das 19h, não esta thread:
+
+```
+<@U03A4SS2P1Q> tem PEG parada há mais de 30 dias em digitação — acima do limite definido.
+```
 
 ### Mensagem 2 — uma mensagem solta por KPI 🔴 (condicional)
 
@@ -618,11 +675,13 @@ conferindo contra a fonte.
 | 1 | **Toda mensagem 🔴 termina com a linha `↩️ <@ID>`.** Em 17/09 **nenhuma das 9** tinha menção — ninguém estava sendo cobrado, e o report parecia completo. | Acrescente. Sem menção, a mensagem é aviso, não cobrança. |
 | 2 | **Todo KPI 🔴 roteável por tipo de instituição tem a linha `Concentração:`**, calculada no drill do dia. | Execute o drill. Se o card não devolve o tipo, escreva a frase de indisponibilidade e marque as duas. |
 | 3 | **Toda decisão citada foi aberta**, e a data e o `Status` que você escreveu são os da página. | Não citou porque não achou? `NÃO ENCONTRADO NO TEXTO`, e sem rebaixar. |
-| 4 | **KPI de "alerta de trabalho" traz os dois horizontes**, mesmo com um deles zerado. | Execute o card inteiro, não só a faixa de ≤3 dias. |
+| 4 | **`Recursos de Glosa Próximos do Vencimento` traz os dois horizontes**, mesmo com um deles zerado. | Execute o card inteiro, não só a faixa de ≤3 dias. |
 | 5 | **Nenhum Top N foi avaliado só pelos nomes conhecidos** — todas as linhas passaram pelo limiar. | Reavalie a lista inteira. |
 | 6 | **Antes de abrir entrada nova no Decision Log**, a busca por episódio aberto daquele KPI foi feita de fato (`01-regras-de-registro.md` §3). | Acrescente a linha de histórico ao episódio existente em vez de criar outra página. |
 | 7 | **Todo KPI que saiu 🟢 por "direção boa" teve a direção LIDA na tabela de `00-identificadores.md`**, não inferida. Liste, antes de publicar, quais KPIs foram poupados do farol por esse argumento e qual linha da tabela sustenta cada um. | Se a tabela diz outra coisa, ou se o KPI não está nela, refaça o farol: sem direção declarada o KPI é bidirecional e o limiar vale nos dois sentidos. |
 | 8 | **Toda variação na direção boa com a magnitude do limiar virou 🟡, com o teste de sanidade rodado.** Direção boa só confirma 🟢 quando a variação é menor que o limiar, ou quando decisão vigente citada por link explica exatamente ela. | Reclassifique para 🟡 e poste a linha na thread da Mensagem 1. Se o teste de sanidade falhar, o KPI é ⚪ e a falha vira bug de dado na Mensagem 4. |
+| 9 | **A fila de digitação (card 80620) foi executada**, e, se veio com linhas, a thread da Mensagem 1 foi postada. Se veio vazia, nada foi postado. | O card não está no catálogo do Notion, então o Passo 1 não o pega — execute por ID. Fila vazia **não** se anuncia. |
+| 10 | **Nenhum valor desta base saiu de um `sum(peg_total_value)`.** O campo é atributo da PEG repetido por item; o agregado correto é `max()`. | Refaça o número. Um valor somado é ~100x o real e não parece errado em nenhuma leitura. |
 
 **Sobre os itens 7 e 8.** Em 07/10/2026 o `R$ Recurso de Glosa acumulado` saiu 🟢 com **+128,65%**
 sobre a média de 3 meses porque a execução decidiu sozinha que o KPI era "maior é melhor". A OM

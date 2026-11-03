@@ -71,6 +71,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 17 | Contas Médicas - SLA de Pagamento de HS | **35629** (oficial) · 76484 (mesmo número + complementos) | diária |
 | 18 | Contas Médicas - % Recurso de Glosa | 65833 | **mensal — nunca entra nesta rotina** |
 | 19 | Contas Médicas - Ciclo de processamento Cassi | 65831 (sem card próprio) | **semanal — pergunta na terça, ver seção do ciclo Cassi** |
+| 20 | Contas Médicas - PEGs paradas em digitação - HI | **80620** | diária — fila, não termômetro |
 
 **⚠️ `Tempo para Resolução de Críticas - HS`: metade do limiar é inverificável.** O limiar diz
 `Tempo médio de resolução > 3 dias; ou crítica específica > 10 dias sem resolução`. Sem drill
@@ -212,6 +213,7 @@ correndo), não há o que investigar, e o que o time precisa é a **lista para a
 | KPI | Card | Classe |
 |---|---|---|
 | Contas Médicas - Recursos de Glosa Próximos do Vencimento (≤3 dias) - HI | 73490 | **Alerta de trabalho** |
+| Contas Médicas - PEGs paradas em digitação - HI | 80620 | **Alerta de trabalho** |
 
 **Caso híbrido — `% PEGs sem NF` (desde 07/10/2026).** Este KPI não entra inteiro na classe: o
 horizonte do **mês corrente** é termômetro normal e acende farol; os **dois horizontes do passado**
@@ -223,7 +225,8 @@ Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
 
 1. **A mensagem no Slack traz a lista, não a análise.** Sem hipótese, sem "ação sugerida". O
    formato está no Passo 8 de `01-report-slack/SKILL.md`.
-2. **Mostra sempre os dois horizontes**, porque a visão útil é do todo:
+2. **`Recursos de Glosa Próximos do Vencimento` mostra sempre os dois horizontes**, porque a
+   visão útil é do todo (regra específica deste KPI):
    - **o que ainda dá pra salvar** — `status_urgencia` = `Vence em ate 3 dias`;
    - **o que já perdeu o prazo mas segue em aberto** — `status_urgencia` =
      `Vencido (nao acionavel)`. O rótulo "não acionável" é do card e se refere ao prazo de 15
@@ -236,6 +239,12 @@ Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
 5. **O farol continua saindo do `Limiar de alerta` do catálogo**, como qualquer KPI. Hoje o
    limiar olha só a janela de ≤3 dias; se a OM quiser que o estoque vencido também dispare
    sozinho, é editar o texto do limiar no Notion — a rotina obedece o que estiver escrito lá.
+6. **`PEGs paradas em digitação` não entra na contagem do farol.** Ela não tem limiar no catálogo
+   do Notion: o limite é operacional (30 dias corridos, decisão da OM de 03/11/2026) e serve para
+   marcar a linha na thread, não para acender vermelho na tabela de KPIs. Ela também não gera
+   pendência na Mensagem 6 pela regra 3 — a thread da Mensagem 1 **é** o registro, e a fila
+   esperada é vazia ou de uma a duas PEGs. Formato em `01-report-slack/SKILL.md`, seção
+   "PEGs paradas em digitação".
 
 **A classe existe desde 16/09 e nunca foi aplicada.** Verificado em 17/09/2026: toda entrada do
 Decision Log para `Recursos de Glosa Próximos do Vencimento`, desde pelo menos 14/09, usa o
@@ -245,6 +254,58 @@ tabela, **pare**: é sinal de que você caiu no tratamento padrão sem perceber.
 hipótese; tem lista e dono.
 
 Para incluir outro KPI nesta classe, acrescente-o à tabela acima. Nada mais precisa mudar.
+
+## HI e HS são `provider_class` — e essa é a origem de erro mais cara desta base
+
+Descoberto em 03/11/2026, conferindo a fila de digitação contra a visão da OM.
+
+Na tabela `curated.totvs_procedure_invoice`, a sigla do nome dos KPIs tem uma coluna literal:
+
+| Sigla | Coluna | Valor |
+|---|---|---|
+| **HI** | `provider_class` | `Health Institution` |
+| **HS** | `provider_class` | `Health Specialist` |
+
+Existem ainda `Nao Informado` e nulos, que **não são nem HI nem HS** e precisam ser tratados à
+parte quando aparecerem.
+
+**Por que isso é caro.** `institution_type` (`Clinica`, `Hospital`, `Laboratorio`,
+`Centro De Diagnosticos`, `Medico`, `Pessoa Fisica - Nao Medico`) **parece** ser o separador de HI
+e HS e não é — é o tipo do estabelecimento, e HI e HS têm os dois `Clinica` e `Hospital`. Filtrar
+por `institution_type` em vez de `provider_class` mistura as duas operações silenciosamente: a
+query roda, devolve número, e o número está errado. Foi exatamente o que aconteceu com a fila de
+digitação, onde 34 PEGs de HS entraram num indicador de HI e transformaram uma fila de 2 itens
+numa de 36.
+
+**Regra: todo KPI com `- HI` ou `- HS` no nome filtra por `provider_class`.** Se um card não tem
+esse filtro, ele está medindo as duas operações juntas — verifique antes de usar o número.
+
+### Duas armadilhas da mesma tabela
+
+**`typing_location` não é filtro de HI.** São os locais de digitação (`0001` e `0002`), e os dois
+contam. Vários cards da base carregam `typing_location = '0002'` herdado do card 31200
+(`R$ faturado por status da guia - Geral`), onde ele fazia sentido. Copiado para um indicador de
+fila, ele some com parte da fila sem avisar — a PEG `00075729` (BLANC SP, parada desde 16/01/2026)
+é invisível em qualquer card que arraste esse filtro.
+
+**`peg_total_value` é atributo da PEG, repetido em toda linha.** Das 294 PEGs em digitação, 274
+têm exatamente **um** valor distinto e 20 são nulas — é o total da PEG denormalizado no grão do
+item. Agregue com `max()`. `sum()` multiplica o valor pelo número de itens e infla ~100x: uma PEG
+de R$ 40.984,90 com 100 itens vira R$ 4.098.490,00 sem nenhum sinal de erro.
+
+### O funil de `invoice_step`
+
+`1-Digitacao` → `2-Conferencia` → `3-Pronta` → `4-Faturada`, mais os terminais `Cancelada` e
+`Bloqueada`. Digitação é o **primeiro** passo: PEG parada ali não chega a faturamento e não vira
+receita. É o que o KPI 20 (card 80620) acompanha.
+
+### Por que a fila de digitação olha só o ano corrente (decisão da OM, 03/11/2026)
+
+Anos anteriores são resíduo de base, não fila de trabalho: 2023 sozinho tem 154 PEGs espalhadas
+em **108 prestadores diferentes**, todas travadas no mesmo ano. Ninguém trabalha uma fila assim —
+ela é resto de migração. O card 80620 filtra o ano corrente e pronto; o legado não entra no report
+nem gera pendência. Se algum dia alguém decidir limpar esse passivo, isso é projeto próprio, não
+item de daily.
 
 ## KPIs do tipo "monitoramento" — leem, publicam, não acendem 🔴
 
