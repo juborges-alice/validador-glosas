@@ -343,17 +343,21 @@ reproduz o `WHERE` das filas e devolve o complemento dele, sem adivinhação.
 `disallowance_date` nulo, prestador sem "alice" no nome, guia ≠ `GUIA DE RECURSO DE GLOSA`, mais
 quatro cortes que são a origem de toda órfã:
 
-| Corte no `WHERE` | Quem fica de fora | Código no 80622 |
-|---|---|---|
-| `invoice_date >= dateadd('month', -6, current_date)` | PEG pronta e não faturada há mais de 6 meses | `A1` |
-| `provider_class = 'Health Institution'` | PEG de **HS** — não existe fila de análise para HS | `A2` |
-| `peg_total_presented_value is not null and <> 0` | PEG com valor apresentado zero ou nulo | `A3` |
-| `institution_type in (4 tipos)` | nenhum hoje — os quatro tipos cobrem 100% das PEGs prontas | — |
+| Corte no `WHERE` | Quem fica de fora | Código | Vira alerta? |
+|---|---|---|---|
+| `invoice_date >= dateadd('month', -6, current_date)` | PEG pronta e não faturada há mais de 6 meses | `A1` | **sim** |
+| `provider_class = 'Health Institution'` | PEG de **HS** — não existe fila de análise para HS | `A2` | não |
+| `peg_total_presented_value is not null and <> 0` | PEG com valor apresentado zero ou nulo | `A3` | não |
+| `institution_type in (4 tipos)` | nenhum hoje — os quatro tipos cobrem 100% das PEGs prontas | — | — |
 
 **Universo da fila de recurso de glosa** — itens com `appeal_status = 'Protocolado'` e
-`invoice_date >= '2024-01-01'`. Só esse piso de data exclui, e hoje ele não exclui ninguém: todos
-os `Protocolado` são de 2024 em diante. O código `R1` existe para o caso de aparecer um protocolado
-com `invoice_date` nulo ou anterior a 2024.
+`invoice_date >= '2024-01-01'`. Esse piso de data é o único corte, e hoje não exclui ninguém: os
+52 protocolados são todos de 2024 em diante, 51 deles de 2026, nenhum com data nula. Logo, **um
+protocolado do ano corrente sempre cai numa fila** — e o `R1` cobre as duas formas de furar isso:
+`invoice_date` nulo (o piso o descarta) e `appeal_date` nulo (a fila não consegue priorizá-lo; ver
+a seção seguinte).
+
+A coluna "Vira alerta?" é o que o card 80622 de fato devolve — ver a seção seguinte.
 
 ### O alerta só cobre A1 e R1, no ano corrente, só HI (decisão da OM, 03/11/2026)
 
