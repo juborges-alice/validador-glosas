@@ -355,31 +355,50 @@ quatro cortes que são a origem de toda órfã:
 os `Protocolado` são de 2024 em diante. O código `R1` existe para o caso de aparecer um protocolado
 com `invoice_date` nulo ou anterior a 2024.
 
-### Nem toda órfã é trabalho do dia
+### O alerta só cobre A1 e R1, no ano corrente, só HI (decisão da OM, 03/11/2026)
 
-Medido em 03/11/2026:
+O card 80622 **não** devolve HS, não devolve nulo e não devolve ano anterior. O desenho inicial
+trazia quatro classes; a OM cortou para duas:
 
-| Código | Situação | PEGs | Valor |
-|---|---|---|---|
-| `A1` | HI com valor, pronta há +6 meses (todo o legado; zero no ano corrente) | 163 | R$ 1.922.309,53 |
-| `A2` | É HS — não existe fila | 151 (74 no ano corrente) | R$ 1.067.948,96 |
-| `A3` | Valor apresentado zero ou nulo | 2.094 | R$ 0,00 |
-| `R1` | Recurso protocolado fora do corte | 0 | — |
+| Código | O que é | No card |
+|---|---|---|
+| `A1` | HI, com valor, pronta e não faturada há mais de 6 meses — caiu da janela da fila | ✅ |
+| `R1` | Recurso protocolado sem data da conta, ou sem data de protocolo | ✅ |
+| `A2` | É HS, e não existe fila de análise para HS | ❌ fora |
+| `A3` | Valor apresentado zero ou nulo — não é faturável | ❌ fora |
 
-`A2` e `A3` são **estoque estrutural**, não falha de execução: `A2` é uma fila que nunca existiu,
-e `A3` é defeito de cadastro — PEG com valor zero não é faturável por definição. Os dois não
-mudam de um dia para o outro e **não disparam a thread**; saem como linha de contexto quando a
-thread já existe por outro motivo. Só `A1` e `R1` do ano corrente são órfãs de verdade: deveriam
-estar numa fila hoje e não estão.
+**Por que `A2` e `A3` saíram.** Nenhum dos dois é órfã: `A2` é uma fila que nunca existiu (151
+PEGs, R$ 1.067.948,96 — decisão de processo em aberto, não falha de execução), e `A3` é defeito de
+cadastro (2.094 PEGs com valor zero, que não são faturáveis por definição). Os dois são estoque
+estrutural que não muda de um dia para o outro; num alerta diário seriam só ruído. Ficam
+registrados aqui para quando a OM quiser tratá-los como projeto.
 
-**Duas decisões que a OM ainda não tomou, e que este card tornou visíveis:**
+**O `R1` mudou de definição no mesmo dia.** A versão original era "protocolado anterior a 2024",
+que o corte de ano torna estruturalmente impossível. Medido: todos os 52 protocolados são de 2024
+em diante, 51 deles de 2026, nenhum com data nula. O `R1` passou a cobrir o que **pode** acontecer
+no ano corrente — e um deles é um sumidouro silencioso dentro da própria fila: a fila calcula o
+SLA a partir de `appeal_date`, e `null >= 7` é NULL, que cai no `else` da faixa. Um protocolado
+sem `appeal_date` ficaria eternamente em `3. No prazo`, sem nunca vencer e sem nunca ser cobrado.
 
-1. **Os 74 HS prontos, R$ 700.167,54, sem fila nenhuma.** Não é a equipe deixando passar — não há
-   para onde passar. Criar fila de HS, ou declarar que HS não é analisado assim, é decisão de
-   processo.
-2. **As 163 PEGs de HI que caíram da janela de 6 meses, R$ 1.922.309,53** (145 só de 2023). Estão
-   prontas, não faturadas, e invisíveis em qualquer fila. Mexer na janela do card as traria todas
-   de uma vez para a fila do time — por isso é decisão da OM, não ajuste de SQL.
+### O card vazio é o estado normal
+
+Medido em 03/11/2026: as **118 PEGs nas filas de análise são todas dos últimos 7 dias** (28/10 a
+03/11). PEG pronta não fica parada — ou fatura ou glosa em dias. Por isso `A1` e `R1` dão zero
+hoje, e isso não é query quebrada: é um detector de exceção fazendo o trabalho dele. Qualquer
+linha que o card devolver é exceção de verdade.
+
+> ### ⚠️ Ponto cego na virada do ano — a OM precisa decidir
+>
+> `A1` exige **ano corrente** e **mais de 6 meses**. As duas condições se contradizem no primeiro
+> semestre: em janeiro de 2027, nenhuma PEG de 2027 pode ter mais de 6 meses, então o `A1` fica
+> estruturalmente morto de janeiro a junho, todo ano, sem avisar. Uma PEG que virou órfã em
+> novembro de 2026 **desaparece do alerta em 1º de janeiro** — exatamente o sumiço silencioso que
+> este alerta existe para impedir.
+>
+> **Correção de uma linha, quando a OM aprovar:** trocar o filtro de ano por janela móvel de 12
+> meses (`invoice_date >= dateadd('month', -12, current_date)`). Isso mantém o lixo de 2023 fora
+> (tem mais de 12 meses) e elimina o ponto cego. Enquanto não houver decisão, vale o que está
+> escrito: ano corrente.
 
 ### `presented_value` e `peg_total_value` não são a mesma coisa
 
