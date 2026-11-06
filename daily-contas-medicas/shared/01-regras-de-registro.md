@@ -189,6 +189,14 @@ no catálogo, e que precisam ser respeitadas:
   mês corrente, o critério de >1 p.p. é **tendência/informativo e NÃO dispara 🔴 sozinho** (o
   volume do mês ainda está em maturação); a partir do **dia 20**, o mesmo critério vale como
   alerta pleno e dispara 🔴. Reporte sempre o número; o que muda é a cor.
+- **Piso de maturação pós-análise** — `% PEGs sem NF`: revisto em 06/11/2026 (decisão da OM).
+  Limiar **> 30%**, e a população do farol é só a PEG em `4-Faturada` **analisada há ≥ 2 dias
+  úteis**. PEG analisada há menos que isso fica fora do numerador **e** do denominador: entre a
+  analista fechar a conta e a NF ser gerada e vinculada passa pelo menos um dia útil, então o
+  prazo dela ainda não venceu. Sem esse piso, o dia seguinte a qualquer lote de análise acende o
+  indicador por construção — medido em 06/11: 66,88% sem piso contra 33,33% com piso.
+  Fonte: card **79935**, drill **79936**. `pegs_maduras` = 0 → **⚪ sem base elegível, não 🟢**.
+  Detalhe em `00-identificadores.md`.
 - **Degraus de prazo, não proporção** — `PEGs por Status de Análise no SLA - HI`: recalibrado em
   22/09/2026 (decisão da OM). O farol sai de **duas contagens absolutas** de PEGs ainda em aberto,
   pela idade em dias úteis desde o `invoice_date`, e o total em aberto do dia **não entra mais**

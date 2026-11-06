@@ -61,7 +61,7 @@ agrupamento** de exibição, nunca meta nem card.
 | 7 | Contas Médicas - SLA de Análise de conta - HI | 65832 | diária |
 | 8 | Contas Médicas - PEGs por Status de Análise no SLA - HI | 32465 | diária |
 | 9 | Contas Médicas - Qnt de guias analisadas por dia | **76259** (Hospital e Clínica, metas separadas) | diária ⚠️ |
-| 10 | Contas Médicas - % PEGs sem NF | **77507** (três horizontes) · drill **77508** | diária ⚠️ |
+| 10 | Contas Médicas - % PEGs sem NF | **79935** (régua de 30% + piso de 2 du pós-análise) · drill **79936** | diária ⚠️ |
 | 11 | Contas Médicas - Faturamento total acumulado | 65831 | diária |
 | 12 | Contas Médicas - R$ Faturado Cassi | 65831 | diária |
 | 13 | Contas Médicas - % Resumos Criticados - HS | 30858 | diária |
@@ -79,11 +79,12 @@ o KPI pela primeira cláusula e escreva no Caveat, todo dia:
 `segunda cláusula do limiar (crítica > 10 dias) não verificável — sem card de drill`.
 Quando um drill for cadastrado, esta nota sai.
 
-**⚠️ `% PEGs sem NF`: fonte trocada em 07/10/2026 para o card 77507, com drill no 77508.** O KPI
-passou a sair em **três horizontes** sobre o ano corrente, e **só o mês corrente acende farol** — os
-dois horizontes do passado são fila de trabalho. Antes disso, em 06/10, o 77275 já tinha trocado o
-65694 para instrumentar o piso de idade pós-PLS. Regra completa na seção "% PEGs sem NF" abaixo; o
-catálogo do Notion é a fonte.
+**⚠️ `% PEGs sem NF`: régua revista em 06/11/2026 (decisão da OM) — limiar de 30% e piso de
+maturação de 2 dias úteis após a análise.** A fonte segue sendo o card **79935**, com drill no
+**79936**, os dois atualizados na mesma data. Entra no cálculo só a PEG em status `4-Faturada`
+**analisada há 2 dias úteis ou mais**; PEG analisada há menos que isso fica fora do numerador e do
+denominador, porque o prazo de gerar e vincular a NF ainda não venceu. Regra completa na seção
+"% PEGs sem NF" abaixo; o catálogo do Notion é a fonte.
 
 **⚠️ `Qnt de guias analisadas por dia`: recalibrado em 28/09/2026 (decisão da OM).** Passou a ter
 **escopo Hospital + Clínica com metas separadas** e **card novo 76259**, com alvo capado pela fila disponível e leitura em 5 dias úteis.
@@ -194,7 +195,7 @@ verificado em 19/08/2026 — se divergir do Notion, o Notion ganha.
 | SLA de Análise de conta - HI | 65837 (guias/dia Hospitais) · 65839 (guias/dia Labs+Clínicas) · 32465 (PEGs por Status no SLA) |
 | PEGs por Status de Análise no SLA - HI | 65837 · 65839 |
 | Qnt de guias analisadas por dia | 73390 (PEGs abertas por dias úteis — a linha de 7 du vencendo hoje) |
-| % PEGs sem NF | 56231 (Top 10 prestadores com mais PEGs sem NF) · 49800 (Protocolos sem NF por valor e data) |
+| % PEGs sem NF | **79936** (lista item-a-item, com maturidade e idade pós-análise — é o drill canônico) · 56231 e 49800 apenas como complemento, não aplicam a régua vigente |
 | Faturamento total acumulado | 65831 (R$ Faturado por tipo de instituição) · 50631 (Volumetria de Guias por Prestador) · 26655 (R$ Faturamento por Prestador) |
 | R$ Faturado Cassi | — sem drill cadastrado |
 | % Resumos Criticados - HS | 66766 (Status das Críticas por fatura) · 38203 (% Críticas Acatadas) |
@@ -215,11 +216,13 @@ correndo), não há o que investigar, e o que o time precisa é a **lista para a
 | Contas Médicas - PEGs paradas em digitação - HI | 80620 | **Alerta de trabalho** |
 | Contas Médicas - PEGs fora das filas de trabalho (órfãs) | 80622 | **Alerta de trabalho** |
 
-**Caso híbrido — `% PEGs sem NF` (desde 07/10/2026).** Este KPI não entra inteiro na classe: o
-horizonte do **mês corrente** é termômetro normal e acende farol; os **dois horizontes do passado**
-(mais de 60 dias, e dois meses anteriores) seguem as regras desta classe — saem como fila, com
-lista e dono, rolam todo dia até zerar, não abrem episódio no Decision Log e não entram na contagem
-do farol. Detalhe na seção "% PEGs sem NF — três horizontes".
+**`% PEGs sem NF` NÃO é alerta de trabalho (desde 27/10/2026).** Com o limiar de 30% o KPI voltou a
+ser termômetro: quando acende, abre episódio no Decision Log com hipótese e plano de ação, como
+qualquer outro. Ele tinha entrado nesta classe em 21/10 só porque o limiar zero o tornava vermelho
+permanente. O que permanece com regra de fila é o **resquício das competências fechadas**, que sai
+todo dia na thread do KPI como lista de cobrança com dono (card 79936, horizonte
+`Resquicio de competencia fechada`), rola até zerar, não abre episódio e não conta para o farol —
+mas é **contexto do KPI, não o farol dele**. Detalhe na seção "% PEGs sem NF" abaixo.
 
 Regras próprias desta classe, que sobrescrevem o tratamento normal de 🔴:
 
@@ -933,105 +936,118 @@ Ambos testados em 28/09/2026 e descartados como fonte de fila:
 **Quando reavaliar:** se a operação mudar a janela de recebimento de contas, ou se Laboratório
 voltar a ser analisado linha a linha, revisite o escopo e o corte de 80%.
 
-## % PEGs sem NF — três horizontes (decisões da OM, 02/10 e 07/10/2026)
+## % PEGs sem NF — régua de 30% com piso de 2 du pós-análise (decisão da OM, 06/11/2026)
 
-O KPI responde a duas perguntas diferentes e por isso sai em **três horizontes**, todos exigindo as
-mesmas duas condições: a PEG **já tem lote PLS gerado** e **não tem nenhuma NF atrelada**. A janela
-é o **ano corrente**.
+**Card: 79935** (`Contas Médicas - % PEGs faturadas sem NF por competência`) · **drill: 79936**
+(`Fila de NF: PEGs faturadas sem vínculo de NF - HI`). Os dois na collection 3609, **sem
+parâmetros**. O SQL de referência dos dois está versionado em `daily-contas-medicas/cards/`.
 
-| # | Horizonte | Período (em Out/26) | Piso de idade | Tratamento |
-|---|---|---|---|---|
-| 1 | Mais de 60 dias | Jan a Jul/26 | não se aplica | **Fila de trabalho** — não acende 🔴 |
-| 2 | Dois meses anteriores | Ago e Set/26 | não se aplica | **Fila de trabalho** — não acende 🔴 |
-| 3 | Mês corrente | Out/26 | **7 DU após o PLS** | **Controle** — é este que acende o farol |
+### A régua
 
-**Card: 77507** (`Contas Médicas - % PEGs sem NF por horizonte`) · **drill: 77508**
-(`... lista item-a-item`), os dois criados em 07/10/2026. O PLS sai de `batch_pls` / `batch_date` de
-`curated.totvs_procedure_invoice`, e os dias úteis do índice de `curated.dim_date_public` — a mesma
-régua do card 76364. Parâmetro `piso_du` (number, default 7) nos dois; execute sem parâmetro.
+| Elemento | Definição |
+|---|---|
+| População (denominador) | PEG em `invoice_step = '4-Faturada'` **e analisada há ≥ 2 dias úteis** |
+| Numerador | Dessas, as que não têm nenhuma NF vinculada (`invoice_number` vazio em todos os itens) |
+| Limiar | **> 30%** → 🔴 |
+| Janela | Ano corrente · Grão: a PEG |
+| Farol | A linha do **mês corrente**. Competências fechadas saem como contexto e como fila de cobrança |
+| Âncora do piso | `administrative_analysis_date`, com `COALESCE` para `invoice_billed_step_date` quando nula |
 
-O piso de 7 DU **só vale no horizonte 3**. Nos horizontes 1 e 2 entram todas as PEGs com PLS e sem
-NF, porque àquela altura o piso já foi ultrapassado por construção.
+### Por que o piso de maturação existe
 
-### Por que o passado não acende vermelho
+Entre a analista fechar a conta e a NF ser gerada e vinculada passa **pelo menos um dia útil**.
+Sem piso, um dia de análise em volume alto joga todas aquelas PEGs no denominador **sem que o prazo
+de vincular a NF tenha sequer começado a correr** — e o indicador estoura por construção no dia
+seguinte a qualquer lote. Palavras da OM em 06/11/2026: *"se ontem elas analisaram um volume muito
+grande de contas, hoje esse indicador sempre iria estourar, sendo que na verdade hoje realmente é o
+prazo para que elas vinculem a nota fiscal do que foi analisado ontem"*.
 
-Palavras da OM em 07/10/2026: *"eu não tenho ação sobre para mudar o indicador dos meses anteriores,
-mas [é] um alerta de operação que precisa ser tratado"*. Mês fechado não se move mais, então cobrar
-o percentual dele é cobrar o impagável — mas as PEGs continuam lá, com PLS gerado e sem nota, e isso
-é trabalho.
+Logo, PEG analisada há menos de 2 du sai do numerador **e** do denominador. Ela não está atrasada;
+está dentro do prazo normal.
 
-**Tratamento no report:** os horizontes 1 e 2 saem como **fila**, com contagem, valor, concentração
-por grupo econômico e dono, rolando todo dia até zerar — o mesmo formato de `Recursos de Glosa
-Próximos do Vencimento`. **Não abrem episódio no Decision Log** e **não entram na contagem do
-farol**. O farol do KPI sai exclusivamente do horizonte 3, contra o limiar de 10%.
+**Por que 2 du e não 1.** Medido em 06/11/2026: com piso de 1 du, Nov/26 daria os mesmos 66,88% da
+régua sem piso, porque as 142 PEGs do lote do dia anterior têm exatamente 1 du desde a análise e
+continuavam entrando. Com piso de 2 du, Nov/26 cai para 33,33% (5 de 15 maduras) e as 142 saem. O
+piso de 1 du não filtra nada no caso que motivou a mudança.
 
-### ⚪ Sem base elegível — o caso do começo do mês
+**A âncora é a análise, não o faturamento.** Medido em 06/11/2026, `administrative_analysis_date`
+coincide com `invoice_billed_step_date` na esmagadora maioria das PEGs (156 de 157 em Nov/26;
+2.166 de 2.338 em Out/26) — é a própria conclusão da análise que avança a PEG para a fase 4. As
+duas âncoras dariam quase o mesmo número hoje, mas a da análise é a que descreve o relógio real do
+processo, e é ela que continua certa se algum dia as duas etapas se separarem.
 
-Quando `pegs_com_pls` do horizonte 3 é zero, `pct_sem_nf` vem **nulo** e o KPI sai **⚪, sem farol —
-não 🟢**. É a janela dos primeiros dias úteis do mês, em que nenhuma PEG do mês corrente alcançou o
-piso de 7 DU ainda. Publicar 0% nesses dias seria afirmar ausência de estoque sem ter medido. A
-coluna `pegs_dentro_do_piso` diz quantas estão esperando o piso.
+### ⚪ Sem base elegível
+
+Quando `pegs_maduras` = 0, `pct_sem_nf` vem **nula** e o KPI sai **⚪, sem farol — não 🟢**. É a
+janela dos primeiros dias úteis do mês. A coluna `pegs_no_piso` diz quantas estão esperando o piso.
+
+### Colunas do 79935
+
+`competencia` · `pegs_faturadas` (total, contexto) · `pegs_no_piso` (fora do cálculo) ·
+`pegs_maduras` (denominador do farol) · `sem_nf` (numerador) · `pct_sem_nf` · `valor_sem_nf` ·
+`sem_nf_2a5du` · `sem_nf_acima_5du` · `status` · `veredito`.
+
+O recorte `2a5du` / `acima_5du` é **diagnóstico, não veredito**: a curva medida em 27/10 mostra que
+a NF segue chegando até cerca de 18 du, então "acima de 5 du" é onde olhar primeiro, não atraso
+confirmado. Quem fecha o diagnóstico é a idade PEG a PEG, que o 79936 devolve.
+
+### A fila do resquício continua saindo todo dia (decisão da OM, 27/10/2026)
+
+Sob 30% as competências fechadas nunca mais acendem farol sozinhas — rodam entre 0,00% e 5,74%.
+Mesmo assim o resíduo delas **continua publicado todo dia** na thread do KPI, como fila de cobrança
+com dono, rolando até zerar. O 79936 devolve a coluna `horizonte`, que separa
+`Resquicio de competencia fechada` de `Mes corrente (farol)`, e a coluna `maturidade`, que dentro do
+mês corrente separa o que entra no farol do que ainda está dentro do piso.
+
+### Leitura de 06/11/2026, a primeira sob esta régua
+
+| Competência | Faturadas | No piso | Maduras | Sem NF | % | Veredito |
+|---|---|---|---|---|---|---|
+| **11/2026** | 157 | 142 | **15** | **5** | **33,33%** | 🔴 acima de 30% |
+| 10/2026 | 2.145 | 1 | 2.144 | 123 | 5,74% | 🟢 |
+| 09/2026 | 2.009 | 0 | 2.009 | 4 | 0,20% | 🟢 |
+| 01 a 08/2026 | — | 0 | — | 0 a 2 | 0,00% a 0,16% | 🟢 |
+
+Sob a régua anterior Nov/26 marcava 66,88% (105 de 157). O piso tira as 142 PEGs do lote analisado
+em 05/11 e o indicador passa a descrever 5 PEGs reais, R$144.926,23, em vez de 105.
+
+> #### ⚠️ O piso resolve o artefato de lote, mas não o de denominador pequeno
+>
+> Mesmo com o piso, Nov/26 sai 🔴 a 33,33% — porque a população madura do mês tem só **15 PEGs**, e
+> cada uma vale 6,67 p.p. É o mesmo problema de denominador que derrubou a régua de 07/10, uma
+> camada abaixo: ele some do dia seguinte a um lote, mas sobrevive nos primeiros dias úteis do mês.
+> **A rotina não acrescentou guarda nenhuma por conta própria** — o limiar e a população são da OM.
+> Se a OM quiser fechar também esse buraco, o caminho natural é um piso de materialidade sobre
+> `pegs_maduras` (o `SLA de Pagamento de HS` já usa um, de 100 faturas classificadas), e a decisão
+> cabe a ela.
 
 ### A janela de ano corrente não é arbitrária
 
 Fora dela o número não é fila, é **artefato de base**: `invoice_number` só passa a ser preenchido de
-fato em **Mar/2025**. Medido em 07/10/2026, PEGs com PLS e sem NF por mês:
+fato em **Mar/2025** (Jan/25 98,7% e Fev/25 93,8% sem NF; Mar/25 cai para 2,9%). Se a janela for
+ampliada algum dia, **o piso é 01/03/2025, nunca antes**.
 
-| Mês | sem NF / com PLS | % |
-|---|---|---|
-| Nov/24 | 728 / 728 | 100,0% |
-| Dez/24 | 720 / 720 | 100,0% |
-| Jan/25 | 693 / 702 | 98,7% |
-| Fev/25 | 744 / 793 | 93,8% |
-| **Mar/25** | **24 / 819** | **2,9%** |
-| Abr/25 em diante | — | 0,8% a 5,4% |
+### ⚠️ Histórico de fonte — seis saltos, a série não é comparável ponta a ponta
 
-Somando 2023 e 2024 inteiros seriam **12.496 PEGs e R$308 milhões** de estoque fantasma. Se a janela
-for ampliada algum dia, **o piso é 01/03/2025, nunca antes**.
+- **até 05/10/2026** — card 65694, sem piso de idade. Out/26 marcava 82,46% em 02/10.
+- **06/10/2026** — card 77275, piso de 7 DU pós-PLS, série mensal.
+- **07/10/2026** — cards 77507 e 77508, três horizontes sobre o ano corrente, piso de 7 DU no mês corrente.
+- **20/10/2026** — cards 78774 e 78778, leitura por competência na coorte madura, piso de 13 DU, limiar de 1% e depois zero (21/10).
+- **27/10/2026** — cards 79935 e 79936, % de PEGs **faturadas** sem NF, limiar de 29%, sem piso. O denominador deixa de ser "PEGs com PLS maduro".
+- **06/11/2026** — mesmos cards 79935 e 79936, limiar **30%** e **piso de 2 du pós-análise**. O denominador deixa de ser "todas as faturadas" e passa a ser "as faturadas já maduras".
 
-### Leitura de 07/10/2026, a primeira sob esta régua
+**Não comparar números entre réguas.** Nas competências fechadas as populações quase se sobrepõem e
+os números coincidem; no mês corrente elas divergem muito (em 06/11, 66,88% contra 33,33%).
 
-- **Horizonte 1** (Jan a Jul/26): 113 PEGs · R$1.397.629,54 · 1,02% de 11.025 com PLS
-- **Horizonte 2** (Ago e Set/26): 50 PEGs · R$546.584,61 · 1,28% de 3.916 com PLS
-- **Horizonte 3** (Out/26): sem base elegível — 269 PEGs ainda dentro do piso ⚪
-- **Fila total do passado: 163 PEGs · R$1.944.214,15**
+### Filtros herdados, preservados
 
-**Concentração da fila, e é o acionável:** CAEN com 66 PEGs e R$990.810,00 é sozinho **51%** do
-valor; ABA ABC LTDA com 24 PEGs e R$314.093,60 é **16%**. Os dois somam 67%.
+`provider_class = 'Health Institution'` · `typing_location = '0002'` · `fee_type <> 'captation'` ·
+`payment_value` diferente de zero · exclusão dos 13 `institution_code` internos e das 2 PEGs
+excluídas na mão. "PEG faturada" é definida no grão da PEG: entra se **qualquer** item estiver em
+`4-Faturada`, e tem NF se **qualquer** item tiver `invoice_number` preenchido.
 
-### ⚠️ Histórico de fonte — três saltos em três dias
-
-A série publicada no canal **não é comparável ponta a ponta**:
-
-- **até 05/10** — card 65694, sem piso de idade. Out/26 marcava 82,46% em 02/10 e 87,18% em 05/10,
-  vermelho por construção no começo do mês.
-- **06/10** — card 77275, piso de 7 DU pós-PLS, série mensal. Out/26 passa a sair sem base elegível
-  e Set/26 cai de 2,54% para 1,61%.
-- **07/10** — cards 77507 e 77508, três horizontes sobre o ano corrente. O grão deixa de ser o mês e
-  passa a ser o horizonte.
-
-O 77275 e o 65694 seguem existindo; **nenhum dos dois é mais a fonte deste KPI**.
-
-### ⚠️ O defeito de grão do 65694, corrigido desde o 77275
-
-O 65694 lê o card base **68915**, que escolhe UMA linha por PEG com
-`ROW_NUMBER() OVER (PARTITION BY peg_code ORDER BY invoice_date DESC)`. Todos os itens de uma PEG
-têm o mesmo `invoice_date`, então o desempate é **arbitrário e muda a cada execução**. Isso não
-afeta `invoice_number` nem `institution_code` (verificado: não divergem dentro da PEG), mas afeta
-`payment_value`, que diverge em **3.653 PEGs** — e o filtro `payment_value != 0` do 65694 cai sobre
-a linha sorteada. O denominador do card oficial oscilava entre execuções sem nada mudar no banco
-(medido em 06/10/2026, duas rodadas com ~15 min de intervalo: Jun/26 1.632 e depois 1.619; Out/26
-317 e depois 320).
-
-Nos cards 77507 e 77508 a decisão é tomada **no grão da PEG** — a PEG entra se qualquer item tiver
-`payment_value` diferente de zero, e tem NF se qualquer item tiver `invoice_number` preenchido — e o
-resultado é determinístico.
-
-### Nota de escopo de collection
-
-O 77275 foi criado em 06/10 na collection **3662**; em 07/10 o escopo de escrita do perfil passou
-para a collection **3609**, onde o 77507 e o 77508 foram criados. O 77275 não é mais editável por
-esta rotina e ficou órfão — arquivá-lo depende de quem tem escopo na 3662.
+Complementares, que **não** servem para o farol porque não aplicam esta régua: card 56231 (Top 10
+prestadores com mais PEGs sem NF) e card 49800 (protocolos sem NF por valor e data).
 
 ## Ciclo de processamento Cassi — o indicador acionável (decisão da OM, 22/09/2026)
 

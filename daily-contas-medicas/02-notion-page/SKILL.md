@@ -167,7 +167,7 @@ estiver `A DEFINIR`, escreva `A DEFINIR — alçada da OM`. Conteúdo:
   - **Glosa por prestador** (50958, 65700): `Prestador | Grupo econômico | R$ Faturado | R$ Glosado | % Glosa | % histórico | Desvio | Causa raiz`
   - **Glosa por motivo** (54617, 31223, 52037, 52038, 66204): `Motivo | R$ Glosado | % do total | Tipo de instituição | Causa raiz`
   - **Recurso de glosa** (54662, 54677, 65835): `Prestador ou Motivo | R$ Recursado | Qnt | % do total | Causa raiz`
-  - **PEGs sem NF** (56231, 49800): `Prestador | Qnt PEGs sem NF | R$ | Dias no status | Causa raiz`
+  - **PEGs sem NF** (79936 — canônico): `Horizonte | Maturidade | Grupo econômico | Prestador | PEG | R$ | Data da análise | du desde a análise | Causa raiz`. Separe as **maduras** (≥2 du da análise, que entram no farol de 30%) das que estão **dentro do piso** — estas saem como visibilidade, nunca como cobrança. 56231 e 49800 só como complemento: não aplicam a régua vigente.
   - **Guias analisadas / SLA** (65837, 65839, 32465): `Tipo de instituição ou Status | Qnt | Capacidade esperada | % | Causa raiz`
   - **Faturamento** (65831, 26655, 50631): `Prestador ou Tipo | R$ do mês | Média histórica | Variação | Causa raiz`
   - **Críticas HS** (66766, 38203): `Fatura | Status da crítica | Dias no status | Motivo | Causa raiz`
