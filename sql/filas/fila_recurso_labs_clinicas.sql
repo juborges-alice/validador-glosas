@@ -87,7 +87,9 @@ itens_classificados as (
                     '001041',            -- Santa Catarina
                     '001185',            -- Edmundo Vasconcelos
                     '000811',            -- HAOC
-                    '000830'             -- Sabará
+                    '000830',            -- Sabará
+                    '001618',            -- Hospital Paulista
+                    '001533', '001530', '001497'  -- São Camilo Ipiranga, Pompeia e Santana
                 ))
              ) then 'Recurso de Glosa - Capeante'
             -- Demais recursos: mesma divisão das filas de análise

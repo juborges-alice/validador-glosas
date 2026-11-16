@@ -108,7 +108,7 @@ qtd_guias_por_peg as (
     group by peg_code
 ),
 
--- Fila: PEGs prontas, ainda sem faturamento nem glosa, com os mesmos recortes do card de SLA
+-- Fila: PEGs em conferência ou prontas, ainda sem faturamento nem glosa, com os mesmos recortes do card de SLA
 pegs_em_aberto as (
     select
         *,
@@ -132,13 +132,15 @@ pegs_em_aberto as (
                 '001041',            -- Santa Catarina
                 '001185',            -- Edmundo Vasconcelos
                 '000811',            -- HAOC
-                '000830'             -- Sabará
+                '000830',            -- Sabará
+                '001618',            -- Hospital Paulista
+                '001533', '001530', '001497'  -- São Camilo Ipiranga, Pompeia e Santana
             ) then 'Análise Capeante'
             when institution_type = 'Hospital' then 'Análise de Hospitais'
             else 'Análise de Laboratórios e Clínicas'
         end as fila
     from pegs
-    where invoice_step = '3-Pronta'
+    where invoice_step in ('2-Conferencia', '3-Pronta')
       and invoice_billed_step_date is null
       and disallowance_date is null
       and provider_class = 'Health Institution'
