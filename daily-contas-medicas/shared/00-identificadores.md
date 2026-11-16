@@ -888,16 +888,61 @@ Com Hospital e Clínica no mesmo KPI, o responsável **não é fixo**: Hospital 
 `<@U073Z4ENBNW>`, Clínica → Fernanda `<@U044N26BETU>`. Como o card já separa por tipo, o
 roteamento sai direto da linha que acendeu — não precisa de drill de concentração.
 
-### Além disso: PEGs vencendo hoje saem todo dia
+### Além disso: PEGs vencendo hoje e amanhã saem todo dia, COM o número de cada uma
 
-Pedido da OM em 28/09. Independentemente do farol deste KPI, o report publica **todo dia** a linha
-de PEGs em aberto com exatamente **7 dias úteis** — é o último dia útil para fechar dentro do SLA
-interno, e é o que ainda dá para salvar.
+Pedido da OM em 28/09. Independentemente do farol deste KPI, o report publica **todo dia** as
+PEGs em aberto com exatamente **7 dias úteis** — é o último dia útil para fechar dentro do SLA
+interno, e é o que ainda dá para salvar — **e as de 6 du, que vencem amanhã** (decisão da OM,
+16/11/2026).
+
+**A lista traz o número de cada PEG, nunca só a contagem** (decisão da OM, 16/11/2026). Formato
+completo no Passo 8 de `01-report-slack/SKILL.md`.
 
 **SEM filtro de tipo de instituição.** O escopo Hospital vale só para a produtividade; para prazo,
 a OM quer ver **qualquer PEG vencendo**, inclusive Laboratório, Clínica e Centro de Diagnósticos.
-Fonte: card **76260** (`PEGs em Aberto por Dias Úteis e Tipo de Instituição - HI`), criado em
-28/09/2026, mesmo universo do 73390 e com a quebra por tipo e o valor em R$.
+
+| Fonte | Papel |
+|---|---|
+| **76805** (`PEGs em Aberto por Dias Úteis e Tipo de Instituição - HI (fila viva)`) | agregado por du e tipo, e a fila total em aberto |
+| **82567** (`PEGs vencendo hoje e amanhã no SLA de 7 du - HI (lista)`) | lista item a item de tudo com **6 du ou mais**, com `invoice_step` exposto |
+
+O 82567 foi criado em 16/11/2026 na collection 3609, sem parâmetros, sobre o mesmo source card
+31818 e com exatamente os mesmos filtros do 76805 — muda só o grão (PEG em vez de agregado) e o
+corte de `invoice_to_current_date_working_days >= 6`. Por construção os dois reconciliam. O card
+**76260** saiu desta leitura em 30/09 (não enxerga o balde "Não finalizado fora do SLA") e não
+deve voltar.
+
+> #### ⚠️ PEG em `2-Conferencia` é invisível nas filas de trabalho — e é a maioria do que vence
+>
+> Descoberto em 16/11/2026, depois de a OM relatar que PEGs venceram o SLA sem ninguém ver.
+>
+> As seis filas do dashboard 2794 exigem `invoice_step = '3-Pronta'`, e o alerta de órfãs (80622)
+> cobre só `A1` (pronta e não faturada há mais de 6 meses) e `R1` (recurso protocolado sem data).
+> **PEG parada em conferência não é nenhum dos dois**: ela não entra em fila nenhuma, não dispara
+> alerta de órfã, e ninguém esbarra nela no dia a dia. O relógio do SLA de 7 du, porém, corre
+> normalmente desde o `invoice_date`.
+>
+> Medido em 16/11/2026, sobre a fila viva de 681 PEGs em aberto:
+>
+> | du | 2-Conferencia | 3-Pronta |
+> |---|---|---|
+> | 6 du (vence amanhã) | 3 | 25 |
+> | **7 du (vence hoje)** | **13** | **3** |
+> | 8 du (já perdeu o SLA) | 3 | 1 |
+>
+> Ou seja: **81% do que vencia naquele dia estava em conferência**, e 87,5% do valor
+> (R$266.958,24 de R$305.229,81). Não é cauda — na faixa que importa, conferência é a regra e
+> `3-Pronta` é a exceção, porque a PEG que chega a `3-Pronta` é justamente a que a fila já pegou
+> e o time já trabalhou.
+>
+> **O card 76805 sempre enxergou essas PEGs** (ele só exclui `Cancelada` e `Bloqueada`), e o
+> agregado publicado estava certo. O que faltava era o número de cada uma: "16 PEGs ·
+> R$305.229,81" não diz em que mexer, e por isso a mensagem não virava ação.
+>
+> **Decisão pendente da OM:** criar fila de conferência no 2794, ou ampliar o `WHERE` das filas de
+> análise para incluir `2-Conferencia`, ou acrescentar um código `A4` ao alerta de órfãs. Qualquer
+> das três é mudança de processo e não é da rotina. Enquanto não houver decisão, a marca
+> `⚠️conferência` na lista diária é o controle compensatório.
 
 Fila em 28/09 — **63 PEGs em aberto, 0 vencendo hoje**:
 

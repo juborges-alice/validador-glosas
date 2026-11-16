@@ -501,25 +501,69 @@ para a página do Notion**, que é canônica e não tem limite de densidade.
 Se um dos dois horizontes estiver vazio, escreva a linha mesmo assim com `0 recursos` — a
 ausência é informação, e sumir com a linha quebra a leitura da série.
 
-#### Linha obrigatória — PEGs vencendo hoje (decisão da OM, 28/09/2026)
+#### Linha obrigatória — PEGs vencendo hoje e amanhã (decisão da OM, 28/09/2026; lista item a item desde 16/11/2026)
 
 Independentemente do farol de `PEGs por Status de Análise no SLA - HI` e de
 `Qnt de guias analisadas por dia`, a Mensagem 1 leva **sempre** uma resposta na sua thread com as
 PEGs em aberto que estão a **exatamente 7 dias úteis** do `invoice_date` — o último dia útil para
-fechar dentro do SLA interno, e o que ainda dá para salvar hoje.
+fechar dentro do SLA interno — **e as que estão a 6 du**, que vencem amanhã.
 
-Sai do card **76260**, **sem filtro de tipo de instituição**: a OM quer ver qualquer PEG vencendo,
-inclusive Laboratório, Clínica e Centro de Diagnósticos. O escopo Hospital vale só para o KPI de
-produtividade. A linha sai **mesmo zerada** — ausência não é informação.
+**A lista com o número de cada PEG é obrigatória, nunca só a contagem** (decisão da OM,
+16/11/2026). Contagem agregada não é acionável: quem lê não sabe em qual PEG mexer, e em 16/11
+treze das dezesseis que venciam no dia estavam em `2-Conferencia` — invisíveis nas filas de
+trabalho — e só foram vistas quando a lista saiu. Ver o bloco de ponto cego logo abaixo.
+
+Os agregados saem do card **76805** (fila viva) e **a lista item a item do card 82567**, os dois
+**sem filtro de tipo de instituição**: a OM quer ver qualquer PEG vencendo, inclusive Laboratório,
+Clínica e Centro de Diagnósticos. O escopo Hospital vale só para o KPI de produtividade. O 82567
+devolve todas as PEGs com **6 du ou mais** e expõe `invoice_step`; ele reconcilia com o 76805 por
+construção (mesmo universo, mesmos filtros, grão da PEG em vez do agregado). A resposta sai
+**mesmo zerada** — ausência não é informação.
 
 ```
-⏱️ *PEGs vencendo hoje (7 du)* — {N} PEGs · R$ {valor}
-{tipo}: {n} PEGs · R$ {valor}
-Fila total em aberto: {M} PEGs ({n} em 1 du · {n} em 2 du · …)
+⏱️ *PEGs vencendo hoje e amanhã* — {N} hoje · {M} amanhã
+Fila total em aberto: {T} PEGs ({n} em 1 du · {n} em 2 du · …)
+
+*Vencem HOJE (7 du) — {N} PEGs · R$ {valor}* · {c} em conferência (R$ {valor})
+• `{peg_code}` {⚠️conferência|pronta} · {prestador} · R$ {valor}
+
+*Vencem AMANHÃ (6 du) — {M} PEGs · R$ {valor}* · {c} em conferência (R$ {valor})
+• `{peg_code}` {⚠️conferência|pronta} · {prestador} · R$ {valor}
+
+*Já passaram do SLA interno (8 du ou mais) e seguem em aberto — {K} PEGs · R$ {valor}* · {c} em conferência
+• `{peg_code}` {⚠️conferência|pronta} · {prestador} · R$ {valor}
 ```
 
-Havendo PEG em 7 du, marque o responsável do tipo de instituição concentrado e peça o fechamento
-no dia. Zerado, a linha sai assim mesmo, como confirmação de que a fila está em dia.
+Regras de forma:
+
+1. **Ordene cada bloco por valor, maior primeiro.** É por onde a cobrança começa.
+2. **Liste todas, sem truncar.** Lista longa → encurte cada linha, nunca corte PEGs. Se um bloco
+   passar de 40 PEGs e a mensagem não couber, quebre em duas respostas na mesma thread — nunca
+   publique "e mais N".
+3. **Marque `⚠️conferência` em toda PEG com `invoice_step` = `2-Conferencia`.** É a marca que
+   diz "esta não está em fila de trabalho nenhuma".
+4. **Bloco vazio sai com `0 PEGs` e sem lista.** A ausência é informação.
+5. Havendo PEG em 7 du, marque o responsável do tipo de instituição concentrado e peça o
+   fechamento no dia. Havendo PEG em conferência em qualquer um dos três blocos, marque
+   **também** o responsável do bloco de mapeamento daquele tipo, porque ninguém vai esbarrar
+   nela sozinho.
+
+> ##### ⚠️ Ponto cego: PEG em `2-Conferencia` não aparece em fila de trabalho nenhuma
+>
+> As seis filas do dashboard 2794 só enxergam `3-Pronta` (ver o `WHERE` em
+> `00-identificadores.md`), e o alerta de órfãs (card 80622) cobre só `A1` e `R1` — PEG parada em
+> conferência não é nenhum dos dois. O card 76805 e o 82567 **enxergam** essas PEGs, porque
+> filtram apenas `invoice_step not in (Cancelada, Bloqueada)`; o que faltava era publicar o
+> número de cada uma para que alguém pudesse agir.
+>
+> **Medido em 16/11/2026:** das 16 PEGs vencendo no dia, **13 estavam em `2-Conferencia`**
+> (R$266.958,24 de R$305.229,81, 87,5% do valor), e das 4 que já tinham estourado o SLA interno,
+> 3 também. Elas não estavam em nenhuma das seis filas, ninguém sentiu falta delas, e o report
+> publicava só "16 PEGs · R$305.229,81" — um número que não diz em que mexer.
+>
+> **Isto é ponto cego de processo, não defeito de card.** Criar fila de conferência ou mudar o
+> `WHERE` das filas do 2794 é decisão da OM; a rotina não muda fila por conta própria. Enquanto
+> não houver decisão, a lista com a marca `⚠️conferência` é o que impede o sumiço silencioso.
 
 ### Mensagem 3 — não existe nesta operação
 
@@ -734,7 +778,8 @@ conferindo contra a fonte.
 | 8 | **Toda variação na direção boa com a magnitude do limiar virou 🟡, com o teste de sanidade rodado.** Direção boa só confirma 🟢 quando a variação é menor que o limiar, ou quando decisão vigente citada por link explica exatamente ela. | Reclassifique para 🟡 e poste a linha na thread da Mensagem 1. Se o teste de sanidade falhar, o KPI é ⚪ e a falha vira bug de dado na Mensagem 4. |
 | 9 | **A fila de digitação (card 80620) foi executada**, e, se veio com linhas, a thread da Mensagem 1 foi postada. Se veio vazia, nada foi postado. | O card não está no catálogo do Notion, então o Passo 1 não o pega — execute por ID. Fila vazia **não** se anuncia. |
 | 10 | **O card de órfãs (80622) foi executado**, e a thread só foi postada se ele devolveu alguma linha. | Card vazio é o estado normal e **não** se anuncia. Qualquer linha é exceção e vai para a thread com a OM marcada. |
-| 11 | **Nenhum valor desta base saiu de um `sum(peg_total_value)`.** O campo é atributo da PEG repetido por item; o agregado correto é `max()`. As filas e o card 80622 usam outro campo, `presented_value`, que **é** por item e se soma normalmente. | Refaça o número. Um valor somado de `peg_total_value` é ~100x o real e não parece errado em nenhuma leitura. |
+| 11 | **A lista de PEGs vencendo hoje e amanhã saiu com o número de cada PEG**, não só com a contagem, e as de `2-Conferencia` estão marcadas. Em 16/11 o report publicou só "16 PEGs · R$305.229,81" e 13 delas, paradas em conferência, venceram sem ninguém ver. | Execute o card 82567 e poste a lista. Contagem sem `peg_code` não é acionável e não conta como cumprida. |
+| 12 | **Nenhum valor desta base saiu de um `sum(peg_total_value)`.** O campo é atributo da PEG repetido por item; o agregado correto é `max()`. As filas e o card 80622 usam outro campo, `presented_value`, que **é** por item e se soma normalmente. | Refaça o número. Um valor somado de `peg_total_value` é ~100x o real e não parece errado em nenhuma leitura. |
 
 **Sobre os itens 7 e 8.** Em 07/10/2026 o `R$ Recurso de Glosa acumulado` saiu 🟢 com **+128,65%**
 sobre a média de 3 meses porque a execução decidiu sozinha que o KPI era "maior é melhor". A OM
