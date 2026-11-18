@@ -261,6 +261,10 @@ sem Decision Log —, não porque sejam indicadores. **Não os cadastre no Notio
 
 Para incluir outro KPI nesta classe, acrescente-o à tabela acima. Nada mais precisa mudar.
 
+**Nenhuma thread de fila de PEGs publica Cassi** — nem a de digitação, nem a de PEGs vencendo hoje
+e amanhã. Regra completa, incluindo como identificar a Cassi na base e por que o filtro vem antes
+da contagem, na seção "A Cassi (CIF) não entra nas threads de fila de PEGs".
+
 ## HI e HS são `provider_class` — e essa é a origem de erro mais cara desta base
 
 Descoberto em 03/11/2026, conferindo a fila de digitação contra a visão da OM.
@@ -410,6 +414,51 @@ As filas e o card 80622 usam **`presented_value`** (valor do item, somado com `s
 PEG) e **`appeal_value`** no recurso. Não confunda com `peg_total_value`, que é atributo da PEG
 repetido em toda linha e **só pode ser agregado com `max()`** (ver a seção de armadilhas acima).
 Usar o agregador errado em qualquer um dos dois produz número plausível e falso.
+
+## A Cassi (CIF) não entra nas threads de fila de PEGs
+
+Decisão da OM: 12/11/2026 para a fila de digitação, estendida em 18/11/2026 a **todas** as threads
+de fila de PEGs do report.
+
+**Onde vale:**
+
+| Thread | Cards |
+|---|---|
+| PEGs paradas em digitação | 80620 |
+| PEGs vencendo hoje e amanhã | 76805 (agregado) · 82567 (lista) |
+
+**Como identificar a Cassi na base.** O prestador é a `CAIXA DE ASSISTENCIA DOS FUNCIONARIOS DO
+BANCO DO BRASIL` (CIF), e na `curated.totvs_procedure_invoice` ele é hoje o único ocupante de
+`institution_type = 'Centro De Diagnosticos'`. Filtre **pelo nome do prestador**, não pelo tipo: o
+tipo é o atalho que vale hoje, o nome é o que define a decisão. Se algum dia outro prestador entrar
+como Centro de Diagnósticos, o filtro por tipo passaria a esconder PEGs que a OM quer ver.
+
+**O filtro é aplicado antes de tudo.** Contagem, valor total, quebra por dias úteis, marca de
+`⚠️conferência` e lista item a item saem todos **líquidos de Cassi**. Filtrar só a lista e manter o
+total do cabeçalho produz uma thread que não fecha com ela mesma.
+
+**Uma linha de auditoria, e só uma.** Quando o filtro tirar alguma PEG, a resposta fecha com
+`{n} PEGs da Cassi (CIF) ficaram fora pela decisão de 18/11.` Ela existe para que o número publicado
+seja conferível contra o card, não para reintroduzir o assunto pela porta dos fundos: nada de valor,
+nada de nome de PEG, nada de análise.
+
+**Por que esta regra existe.** A Cassi tem fluxo próprio — remessa semanal, ciclo de processamento
+com prazo de 7 dias corridos, âncoras `V0`/`Vf` e ação própria no Action Log (seção "Ciclo de
+processamento Cassi"). Ela já é acompanhada ali, por quem a acompanha, e com a régua certa. Nas
+threads de fila ela não é trabalho do dia do time de análise: é lote que entra e sai em bloco, e
+quando entra, domina a resposta inteira.
+
+Medido em 18/11/2026, o dia que motivou a extensão: das 81 PEGs publicadas como vencendo amanhã,
+**69 eram da Cassi** — R$2.611.512,72 de R$2.804.520,16, 93% do valor, todas com a mesma data de
+conta (10/11) porque eram a remessa inteira chegando junto ao penúltimo dia do SLA interno. As 12
+PEGs que sobravam, as que o time de fato precisava ver — incluindo as 6 paradas em `2-Conferencia`,
+que não aparecem em fila de trabalho nenhuma —, ficaram enterradas numa lista de 81 linhas quebrada
+em duas mensagens. A thread tinha a informação certa e mesmo assim não era acionável.
+
+**A Cassi não sai do report, sai destas threads.** Ela segue no farol pelo `R$ Faturado Cassi`
+(classe monitoramento), no ciclo semanal, no bloco de pendências e na página do Notion. Se uma PEG
+da Cassi estourar prazo e isso virar assunto, o lugar é a thread do ciclo Cassi ou a Mensagem 4 —
+não a fila de trabalho do time de análise.
 
 ## KPIs do tipo "monitoramento" — leem, publicam, não acendem 🔴
 

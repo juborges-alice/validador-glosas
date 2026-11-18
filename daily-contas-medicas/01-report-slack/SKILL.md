@@ -329,6 +329,11 @@ fila estar vazia ou com uma ou duas PEGs recém-chegadas.
 **Não poste nada se o card voltar vazio.** Fila vazia é o estado esperado — anunciar fila vazia
 todo dia é exatamente o ruído que a OM mandou cortar do canal (23/10/2026).
 
+**A Cassi não entra nesta lista** (decisão da OM, 12/11/2026, reafirmada em 18/11/2026). Filtre as
+PEGs da Cassi antes de contar e antes de listar — regra completa e como identificá-las na base em
+`00-identificadores.md`, seção "A Cassi (CIF) não entra nas threads de fila de PEGs". Se o card só
+devolver PEGs da Cassi, a thread **não é postada**: depois do filtro a fila está vazia.
+
 É **resposta na thread da Mensagem 1**, nunca mensagem solta: mensagem solta é reservada ao 🔴.
 
 ```
@@ -352,6 +357,10 @@ Regras de forma, nesta ordem:
    têm valor e escreva `R$ {soma} (+{n} sem valor)`.
 5. **Não peça plano de ação e não proponha decisão.** Se a daily decidir algo estrutural sobre a
    fila, aí sim vira proposta normal na tarefa 04.
+6. **Nenhuma PEG da Cassi aparece**, nem na lista nem no `{N}` nem no `R$ {valor total}` do
+   cabeçalho. Quando o filtro tirar alguma, feche com uma única linha
+   `O card devolveu {X} PEGs; as {n} da Cassi (CIF) saem do report pela decisão de 12/11.` — ela
+   existe para o número ser auditável contra o card, não para reintroduzir o assunto.
 
 **Quando houver PEG acima de 30 dias**, acrescente uma última linha marcando o responsável da
 operação, uma vez só — a cobrança do dia é a Mensagem 6 e o fechamento das 19h, não esta thread:
@@ -547,6 +556,15 @@ Regras de forma:
    fechamento no dia. Havendo PEG em conferência em qualquer um dos três blocos, marque
    **também** o responsável do bloco de mapeamento daquele tipo, porque ninguém vai esbarrar
    nela sozinho.
+6. **A Cassi não entra** (decisão da OM, 18/11/2026). Filtre as PEGs da Cassi **antes** de montar
+   os três blocos: elas não aparecem na lista, não entram no `{N}`/`{M}`/`{K}` nem nos valores, e
+   não contam no `{c} em conferência`. Como identificá-las na base está em
+   `00-identificadores.md`, seção "A Cassi (CIF) não entra nas threads de fila de PEGs". A linha
+   `Fila total em aberto` do cabeçalho **também sai líquida de Cassi**, para que a quebra por du
+   feche com os blocos publicados. Quando o filtro tirar alguma, feche a resposta com uma única
+   linha `{n} PEGs da Cassi (CIF) ficaram fora pela decisão de 18/11.`, só para o número ser
+   auditável contra os cards 76805 e 82567. Bloco que fique vazio depois do filtro sai com
+   `0 PEGs` normalmente, pela regra 4 — e a resposta sai mesmo que os três zerem.
 
 > ##### ⚠️ Ponto cego: PEG em `2-Conferencia` não aparece em fila de trabalho nenhuma
 >
@@ -780,6 +798,7 @@ conferindo contra a fonte.
 | 10 | **O card de órfãs (80622) foi executado**, e a thread só foi postada se ele devolveu alguma linha. | Card vazio é o estado normal e **não** se anuncia. Qualquer linha é exceção e vai para a thread com a OM marcada. |
 | 11 | **A lista de PEGs vencendo hoje e amanhã saiu com o número de cada PEG**, não só com a contagem, e as de `2-Conferencia` estão marcadas. Em 16/11 o report publicou só "16 PEGs · R$305.229,81" e 13 delas, paradas em conferência, venceram sem ninguém ver. | Execute o card 82567 e poste a lista. Contagem sem `peg_code` não é acionável e não conta como cumprida. |
 | 12 | **Nenhum valor desta base saiu de um `sum(peg_total_value)`.** O campo é atributo da PEG repetido por item; o agregado correto é `max()`. As filas e o card 80622 usam outro campo, `presented_value`, que **é** por item e se soma normalmente. | Refaça o número. Um valor somado de `peg_total_value` é ~100x o real e não parece errado em nenhuma leitura. |
+| 13 | **Nenhuma PEG da Cassi aparece nas threads de fila** — nem na de digitação (80620), nem na de PEGs vencendo hoje e amanhã (76805/82567), nem na lista, nem nas contagens e valores do cabeçalho. Em 18/11 a thread de vencimento saiu com 69 PEGs da Cassi de 81, R$2.611.512,72 de R$2.804.520,16: a resposta inteira virou a remessa da Cassi e o que o time precisava ver se perdeu dentro dela. | Refaça contagem, valor e lista com o filtro aplicado, e feche com a linha de quantas ficaram fora. Fila que esvazia depois do filtro **não** se anuncia na thread de digitação; na de vencimento a resposta sai mesmo zerada. |
 
 **Sobre os itens 7 e 8.** Em 07/10/2026 o `R$ Recurso de Glosa acumulado` saiu 🟢 com **+128,65%**
 sobre a média de 3 meses porque a execução decidiu sozinha que o KPI era "maior é melhor". A OM
